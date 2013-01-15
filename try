@@ -1,0 +1,161 @@
+#!/bin/env php
+<?php
+
+set_include_path(
+    get_include_path() 
+    . PATH_SEPARATOR . '/usr/share/pear'  // CentOS
+    . PATH_SEPARATOR . '/usr/lib/php/PEAR'  // MacOS
+);
+
+require_once 'Console/Getopt.php';
+require_once("CommandRunner.php");
+require_once("JenkinsRunner.php");
+require_once("PatchGenerator.php");
+
+function getOptions() {
+    global $argv;
+    
+    $options = array(
+        'jobs' => array(),
+        'verbose' => false,
+        'dry-run' => false,
+        'patch' => null,
+        'branch' => null,
+        'pretty' => false,
+        'staged-only' => false,
+        'poll_for_completion' => false,
+        );
+    
+    // Using the evil @ operator here because Console_Getopt
+    // is still PHP4 and spews a bunch of deprecation warnings:
+    $ret = @Console_Getopt::getopt($argv, 'h?tvnp:b:l:r:cPs');
+
+    if ($ret instanceOf PEAR_Error) {
+        error_log($ret->getMessage());
+        showHelp();
+    }
+    
+    list($opt, $args) = $ret;
+
+    foreach ($opt as $tuple) {
+        list($k, $v) = $tuple;
+        
+        switch($k) {
+            case 'h':
+            case '?':
+                showHelp();
+                break;
+
+            case 'P':
+                $options['poll_for_completion'] = true;
+                $options['pretty'] = true;
+                break;
+            
+            case 'v':
+                $options['verbose'] = true;
+                break;
+                
+            case 'n':
+                $options['dry-run'] = true;
+                break;
+                
+            case 'p':
+                $options['patch'] = $v;
+                break;
+
+            case 'b':
+                $options['branch'] = $v;
+                break;
+
+            case 'c':
+                $options['poll_for_completion'] = true;
+                break;
+
+            case 's':
+                $options['staged-only'] = true;
+                break;
+        }
+    }
+
+    if (count($args)) {
+        $options['jobs'] = $args;
+    }
+
+    return $options;
+}
+
+/**
+ * Display the help menu.
+ */
+function showHelp() {
+    print <<<eof
+USAGE: try [options] suite [tests ...]
+
+OPTIONS:
+    -h          show help
+    -n          create diff, but do not send to Hudson
+    -v          verbose (show shell commands as they're run)
+    -p path     don't generate diffs; use custom patch file instead
+    -b branch   name of remote branch to try; used by 'review' script and search try jobs
+    -r repo     name of repository to try
+    -c          poll for job completion and print results
+    -P          print subtasks progressively as they complete (implies c)
+    -s          use staged changes only to generate the diff
+eof
+;
+    print "\n\n";
+    exit(1);
+}
+
+function getRepoLocation($user) {
+    $location = getenv('ETSY_SRC');
+    if (!$location) {
+        if (preg_match(";development/([^/]+);", getcwd(), $matches) > 0) {
+            $location = "/home/$user/development/".$matches[1];
+        } else {
+            $location = "/home/$user/development/Etsyweb"; // Backwards compatibility
+        }
+    }
+    return $location;
+}
+
+function getUser() {
+    $user = getenv('LDAP_USER');  // LDAP_USER will override USER
+    if (!$user) {
+        $user = getenv("USER");
+    } 
+    return $user;
+}
+
+function main() {
+    $options = getOptions();
+    $user = getUser();
+    $location = getRepoLocation($user);
+
+    $cmdRunner = new CmdRunner($options['verbose']);
+
+    # Run checks
+
+    # Generate diff if required
+    $patch = $options['patch'];
+    
+    if (is_null($patch)) {
+        $patchGenerator = new PatchGenerator($location, $cmdRunner);
+        $patch = $patchGenerator->generateDiff($options['staged-only']);
+    }
+
+    if ($options['dry-run']) {
+        print "Not sending job to Jenkins (-n) diff is here: $patch\n";
+        exit(0);
+    }
+
+    # Send to jenkins 
+    $jenkinsRunner = new JenkinsRunner($cmdRunner, $patch, $user);
+
+    $jenkinsRunner->startJenkinsJob($options['jobs']);
+    if ($options['poll_for_completion']) {
+        $jenkinsRunner->pollForCompletion($options['pretty']);
+    }
+}
+
+main();
