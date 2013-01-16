@@ -3,7 +3,7 @@
 class CmdRunner {
     private $verbose;
     private $stderr;
-    private $lastOutput;
+    private $out;
     
     public function __construct(
         $verbose = false,
@@ -17,18 +17,18 @@ class CmdRunner {
 
         $this->stderr = $stderr;    
 
-        $this->lastOutput = null;
+        $this->out = array();
     }
     
     public function getLastOutput() {
-        return $this->lastOutput;
+        return end($this->out);
     } 
     
     public function run($cmd) {
         if ($this->verbose) {
             fputs($this->stderr, "$cmd\n");
         }
-        $this->lastOutput = system($cmd, $ret);
+        exec($cmd, $this->out, $ret);
         return $ret;
     }
 }

@@ -8,9 +8,9 @@ set_include_path(
 );
 
 require_once 'Console/Getopt.php';
-require_once("CommandRunner.php");
-require_once("JenkinsRunner.php");
-require_once("RepoManager.php");
+require_once("trylib/CommandRunner.php");
+require_once("trylib/JenkinsRunner.php");
+require_once("trylib/RepoManager.php");
 
 function getOptions() {
     global $argv;
