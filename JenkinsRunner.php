@@ -5,19 +5,23 @@ const TRY_VERSION = 1;
 
 class JenkinsRunner {
     
-    const HUDSON = "try.etsycorp.com";
+    //const HUDSON = "try.etsycorp.com";
+    const HUDSON = "cimaster-dev2.vm.ny4dev.etsy.com:8080";
     const JENKINS_CLI = '/usr/etsy/jenkins-cli.jar';
     
     private $cmdRunner;
+    private $branch;
     private $patch;
     private $user;
 
     public function __construct(
         $cmdRunner,
+        $branch,
         $patch,
         $user
     ) {
         $this->cmdRunner = $cmdRunner;
+        $this->branch = $branch;
         $this->patch = $patch;
         $this->user = $user;
     }
@@ -63,13 +67,10 @@ class JenkinsRunner {
 
         $command .= " -p guid=$guid ";
         $command .= " -p ssh_login=true";
+        $command .= " -p branch=" . $this->branch;
         $command .= " -p patch.diff=" . $this->patch;
         $command .= " -p try_version=" . TRY_VERSION;
 
-        // If the branch parameter is set, always add (search or web)
-        //if (!empty($this->branch)) {
-        //    $command .= " -p branch=$this->branch";
-        //}
         return $command;
     }
 
