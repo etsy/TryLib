@@ -20,7 +20,6 @@ function getOptions() {
         'verbose' => false,
         'dry-run' => false,
         'patch' => null,
-        'branch' => "master",
         'pretty' => false,
         'staged-only' => false,
         'poll_for_completion' => false,
@@ -63,10 +62,6 @@ function getOptions() {
                 $options['patch'] = $v;
                 break;
 
-            case 'b':
-                $options['branch'] = $v;
-                break;
-
             case 'c':
                 $options['poll_for_completion'] = true;
                 break;
@@ -96,7 +91,6 @@ OPTIONS:
     -n          create diff, but do not send to Hudson
     -v          verbose (show shell commands as they're run)
     -p path     don't generate diffs; use custom patch file instead
-    -b branch   name of remote branch to try; used by 'review' script and search try jobs
     -r repo     name of repository to try
     -c          poll for job completion and print results
     -P          print subtasks progressively as they complete (implies c)
