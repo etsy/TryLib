@@ -2,7 +2,7 @@
 <?php
 
 set_include_path(
-    get_include_path() 
+    get_include_path()
     . PATH_SEPARATOR . '/usr/share/pear'  // CentOS
     . PATH_SEPARATOR . '/usr/lib/php/PEAR'  // MacOS
 );
@@ -14,7 +14,7 @@ require_once("trylib/RepoManager.php");
 
 function getOptions() {
     global $argv;
-    
+
     $options = array(
         'jobs' => array(),
         'verbose' => false,
@@ -23,22 +23,23 @@ function getOptions() {
         'pretty' => false,
         'staged-only' => false,
         'poll_for_completion' => false,
+        'callback' => null
         );
-    
+
     // Using the evil @ operator here because Console_Getopt
     // is still PHP4 and spews a bunch of deprecation warnings:
-    $ret = @Console_Getopt::getopt($argv, 'h?tvnp:b:l:r:cPs');
+    $ret = @Console_Getopt::getopt($argv, 'h?vnp:g:cPs');
 
     if ($ret instanceOf PEAR_Error) {
         error_log($ret->getMessage());
         showHelp();
     }
-    
+
     list($opt, $args) = $ret;
 
     foreach ($opt as $tuple) {
         list($k, $v) = $tuple;
-        
+
         switch($k) {
             case 'h':
             case '?':
@@ -49,15 +50,15 @@ function getOptions() {
                 $options['poll_for_completion'] = true;
                 $options['pretty'] = true;
                 break;
-            
+
             case 'v':
                 $options['verbose'] = true;
                 break;
-                
+
             case 'n':
                 $options['dry-run'] = true;
                 break;
-                
+
             case 'p':
                 $options['patch'] = $v;
                 break;
@@ -68,6 +69,10 @@ function getOptions() {
 
             case 's':
                 $options['staged-only'] = true;
+                break;
+
+            case 'g':
+                $options['callback'] = $v;
                 break;
         }
     }
@@ -91,14 +96,13 @@ OPTIONS:
     -n          create diff, but do not send to Hudson
     -v          verbose (show shell commands as they're run)
     -p path     don't generate diffs; use custom patch file instead
-    -r repo     name of repository to try
     -c          poll for job completion and print results
     -P          print subtasks progressively as they complete (implies c)
     -s          use staged changes only to generate the diff
 eof
 ;
     print "\n\n";
-    exit(1);
+    exit(0);
 }
 
 function getRepoLocation($user) {
@@ -117,12 +121,13 @@ function getUser() {
     $user = getenv('LDAP_USER');  // LDAP_USER will override USER
     if (!$user) {
         $user = getenv("USER");
-    } 
+    }
     return $user;
 }
 
 function main() {
     $options = getOptions();
+
     $user = getUser();
     $location = getRepoLocation($user);
 
@@ -143,7 +148,7 @@ function main() {
         exit(0);
     }
 
-    # Send to jenkins 
+    # Send to jenkins
     $jenkinsRunner = new JenkinsRunner(
         $cmdRunner,
         $repoManager->getRemotebranch("master"),
@@ -151,9 +156,13 @@ function main() {
         $user
     );
 
+    $callback = $options['callback'];
+
     $jenkinsRunner->startJenkinsJob($options['jobs']);
-    if ($options['poll_for_completion']) {
+
+    if ($options['poll_for_completion'] || !is_null($callback)) {
         $jenkinsRunner->pollForCompletion($options['pretty']);
+        $jenkinsRunner->executeCallback($callback);
     }
 }
 

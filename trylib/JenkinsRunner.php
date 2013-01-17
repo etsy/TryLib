@@ -4,15 +4,17 @@ require_once 'AnsiColor.php';
 const TRY_VERSION = 1;
 
 class JenkinsRunner {
-    
+
     //const HUDSON = "try.etsycorp.com";
     const HUDSON = "cimaster-dev2.vm.ny4dev.etsy.com:8080";
     const JENKINS_CLI = '/usr/etsy/jenkins-cli.jar';
-    
+
     private $cmdRunner;
     private $branch;
     private $patch;
     private $user;
+    private $overall_result;
+    private $try_base_url;
 
     public function __construct(
         $cmdRunner,
@@ -24,11 +26,13 @@ class JenkinsRunner {
         $this->branch = $branch;
         $this->patch = $patch;
         $this->user = $user;
+        $this->overall_result = null;
+        $this->try_base_url = null;
     }
 
     public function runJenkinsCommand($command) {
         $cmd = sprintf("java -jar %s -s http://%s/ %s", self::JENKINS_CLI, self::HUDSON, $command);
-        $this->cmdRunner->run($cmd);    
+        $this->cmdRunner->run($cmd);
     }
 
     /**
@@ -37,10 +41,10 @@ class JenkinsRunner {
     public function startJenkinsJob($jobs) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
-        
+
         // Build up the jenkins command incrementally
         $cliCommand = $this->buildCLICommand($jobs);
-        
+
         // Run the job
         $this->runJenkinsCommand($cliCommand);
     }
@@ -79,15 +83,15 @@ class JenkinsRunner {
      */
     function pollForCompletion($pretty) {
         $try_output = $this->cmdRunner->getLastOutput();
-        
+
         // Find job URL
         $matches = array();
         if (!preg_match('|http://[^/]+/job/try/\d+|m', $try_output, $matches)) {
             echo "Could not find try URL\n";
             exit(1);
         }
-        $try_base_url = $matches[0];
-        $try_poll_url = $try_base_url . '/consoleText';
+        $this->try_base_url = $matches[0];
+        $try_poll_url = $this->try_base_url . '/consoleText';
 
         $prev_text = '';
 
@@ -105,12 +109,14 @@ class JenkinsRunner {
             }
 
             if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-                echo "\n\n{$try_base_url}\n";
-                $overall_result = $matches[0];
+                echo "\n\n{$this->try_base_url}\n";
+                $this->overall_result = $matches[0];
                 if (!$pretty) {
                     $this->printJobResults($try_log, $pretty);
                 }
-                echo "\n{$overall_result}\n";
+                echo "\n{$this->overall_result}\n";
+                $this->overall_result = str_replace("Finished: ", "", $this->overall_result);
+                echo $this->overall_result;
                 break;
             }
             if ($pretty) {
@@ -156,5 +162,17 @@ class JenkinsRunner {
             return true;
         }
         return false;
+    }
+
+    function executeCallback($callback) {
+        if (!is_string($callback)) {
+            return;
+        }
+        if (is_null($this->try_base_url) || is_null($this->overall_result)) {
+            return;
+        }
+
+        $status = "**Try status : [$this->overall_result]($this->try_base_url)**";
+        system(sprintf($callback, $status));
     }
 }
