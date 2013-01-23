@@ -45,7 +45,7 @@ class Precheck_CopyAge implements Precheck {
      * @param string $repoPath          location of the git repo
      **/
     function check($cmdRunner, $repoPath) {
-        $cmdRunner->run("cd $repoPath && git log -1 --format='%cd' --date=iso");
+        $cmdRunner->run("git log -1 --format='%cd' --date=iso");
         $output = $cmdRunner->getLastOutput();
         if ( is_string($output)) {
             $wc_date = strtotime($output);

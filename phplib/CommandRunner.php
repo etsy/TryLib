@@ -39,4 +39,14 @@ class CommandRunner {
         fputs($this->stderr, "$how\n");
         exit(1);
     }
+
+    public function chdir($wd) {
+        if ($this->verbose) {
+            fputs($this->stderr, "\$ cd $wd");
+        }
+
+        if (!chdir($wd)) {
+            $this->terminate("chdir $wd");
+        }
+    }
 }

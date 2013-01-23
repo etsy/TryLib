@@ -88,6 +88,7 @@ class RepoManager {
 
     function runPreChecks($preChecks) {
         foreach ($preChecks as $c) {
+            $this->cmdRunner->chdir($this->repoPath);
             $c->check($this->cmdRunner, $this->repoPath);
         }
     }
