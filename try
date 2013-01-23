@@ -43,13 +43,14 @@ function main() {
         $user
     );
 
-    $callback = $options['callback'];
 
     $jenkinsRunner->startJenkinsJob($options['jobs']);
 
+    $callback = $options['callback'];
     if ($options['poll_for_completion'] || !is_null($callback)) {
         $jenkinsRunner->pollForCompletion($options['pretty']);
         $jenkinsRunner->executeCallback($callback);
     }
 }
+
 main();
