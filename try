@@ -9,6 +9,8 @@ set_include_path(
 );
 
 require_once 'Autoload.php';
+require_once 'Console/Getopt.php';
+
 
 function getOptions() {
     global $argv;
@@ -124,8 +126,14 @@ function getUser() {
 }
 
 function main() {
-    $options = getOptions();
-
+    echo "now";
+    
+    $options = Util_OptionsParser::getOptions();
+    echo "now";
+    echo $options;
+    echo "yo";
+    var_dump($options);
+    exit(0);
     $user = getUser();
     $location = getRepoLocation($user);
 
@@ -171,5 +179,4 @@ function main() {
         $jenkinsRunner->executeCallback($callback);
     }
 }
-
 main();
