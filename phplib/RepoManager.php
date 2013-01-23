@@ -1,17 +1,17 @@
 <?php
 
 class RepoManager {
-    private $location;
+    private $repoPath;
     private $cmdRunner;
     private $branch;
     private $remote;
     private $remoteBranch;
     
     public function __construct(
-        $location,
+        $repoPath,
         $cmdRunner
     ) {    
-        $this->location = $location;
+        $this->repoPath = $repoPath;
         $this->cmdRunner = $cmdRunner;
         $this->branch = null;
         $this->remote = null;
@@ -26,14 +26,14 @@ class RepoManager {
 
     function getLocalBranch() {
         if (is_null($this->branch)) {
-            $this->cmdRunner->run("cd $this->location;git symbolic-ref HEAD");
+            $this->cmdRunner->run("cd $this->repoPath;git symbolic-ref HEAD");
             $this->branch = $this->cleanRef($this->cmdRunner->getLastOutput());
         }
         return $this->branch;
     }
 
     function getConfig($prop) {
-        $this->cmdRunner->run("cd $this->location;git config '$prop'");
+        $this->cmdRunner->run("cd $this->repoPath;git config '$prop'");
         return $this->cleanRef($this->cmdRunner->getLastOutput());
     }
 
@@ -68,7 +68,7 @@ class RepoManager {
     }
 
     function generateDiff($staged_only=false) {    
-        $patch = $this->location . "/patch.diff";
+        $patch = $this->repoPath . "/patch.diff";
 
         $args = array(
             "--src-prefix=''",
@@ -81,8 +81,14 @@ class RepoManager {
             $args[] = "--staged";
         }
         
-        $cmd = "cd $this->location;git diff " . implode(' ', $args) . " > " . $patch;
+        $cmd = "cd $this->repoPath;git diff " . implode(' ', $args) . " > " . $patch;
         $this->cmdRunner->run($cmd);
         return $patch;
+    }
+
+    function runPreChecks($preChecks) {
+        foreach ($preChecks as $c) {
+            $c->check($this->cmdRunner, $this->repoPath);
+        }
     }
 }

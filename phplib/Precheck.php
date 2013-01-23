@@ -1,5 +1,5 @@
 <?php
 
 interface PreCheck {
-    function check();
+    function check($cmdRunner, $location);
 }

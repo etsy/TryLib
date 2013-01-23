@@ -14,19 +14,15 @@ function main() {
     $user = Util_EtsyUtil::getUser();
     $location = Util_EtsyUtil::getRepoLocation($user);
 
-    $cmdRunner = new CommandRunner($options['verbose']);
-
-    # Run checks
     $preChecks = array(
-        new Precheck_BinaryFileSize($cmdRunner, $location),
-        new Precheck_CopyAge($cmdRunner, $location)
+        new Precheck_BinaryFileSize(),
+        new Precheck_CopyAge()
     );
 
-    foreach($preChecks as $c) {
-        $c->check();
-    }
+    $cmdRunner = new CommandRunner($options['verbose']);
 
     $repoManager = new RepoManager($location, $cmdRunner);
+    $repoManager->runPrechecks($preChecks);
 
     # Generate diff if required
     $patch = $options['patch'];
