@@ -1,6 +1,6 @@
 <?php
 
-class CmdRunner {
+class CommandRunner {
     private $verbose;
     private $stderr;
     private $out;
@@ -20,6 +20,9 @@ class CmdRunner {
         $this->out = array();
     }
     
+    public function getOutput() {
+        return implode("\n", $this->out);
+    } 
     public function getLastOutput() {
         return end($this->out);
     } 
@@ -30,5 +33,10 @@ class CmdRunner {
         }
         exec($cmd, $this->out, $ret);
         return $ret;
+    }
+    
+    public function terminate($how) {
+        fputs($this->stderr, "$how\n");
+        exit(1);
     }
 }

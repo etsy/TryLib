@@ -5,12 +5,10 @@ set_include_path(
     get_include_path()
     . PATH_SEPARATOR . '/usr/share/pear'  // CentOS
     . PATH_SEPARATOR . '/usr/lib/php/PEAR'  // MacOS
+    . PATH_SEPARATOR . './phplib' 
 );
 
-require_once 'Console/Getopt.php';
-require_once("trylib/CommandRunner.php");
-require_once("trylib/JenkinsRunner.php");
-require_once("trylib/RepoManager.php");
+require_once 'Autoload.php';
 
 function getOptions() {
     global $argv;
@@ -131,9 +129,17 @@ function main() {
     $user = getUser();
     $location = getRepoLocation($user);
 
-    $cmdRunner = new CmdRunner($options['verbose']);
+    $cmdRunner = new CommandRunner($options['verbose']);
 
     # Run checks
+    $preChecks = array(
+        new Precheck_BinaryFileSize($cmdRunner, $location),
+        new Precheck_CopyAge($cmdRunner, $location)
+    );
+
+    foreach($preChecks as $c) {
+        $c->check();
+    }
 
     $repoManager = new RepoManager($location, $cmdRunner);
 
