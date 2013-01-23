@@ -21,7 +21,7 @@ function main() {
 
     $cmdRunner = new CommandRunner($options['verbose']);
 
-    $repoManager = new RepoManager($location, $cmdRunner);
+    $repoManager = new RepoManager_Git($location, $cmdRunner);
     $repoManager->runPrechecks($preChecks);
 
     # Generate diff if required
