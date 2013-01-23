@@ -12,16 +12,16 @@ function main() {
     $options = Util_OptionsParser::getOptions();
 
     $user = Util_EtsyUtil::getUser();
-    $location = Util_EtsyUtil::getRepoLocation($user);
+    $repoPath = Util_EtsyUtil::getReporepoPath($user);
 
     $preChecks = array(
-        new Precheck_ScriptRunner($location . '/bin/check_file_size'),
+        new Precheck_ScriptRunner($repoPath . '/bin/check_file_size'),
         new Precheck_CopyAge()
     );
 
     $cmdRunner = new CommandRunner($options['verbose']);
 
-    $repoManager = new RepoManager_Git($location, $cmdRunner);
+    $repoManager = new RepoManager_Git($repoPath, $cmdRunner);
     $repoManager->runPrechecks($preChecks);
 
     # Generate diff if required
@@ -37,14 +37,22 @@ function main() {
 
     # Send to jenkins
     $jenkinsRunner = new JenkinsRunner(
+        'cimaster-dev2.vm.ny4dev.etsy.com:8080',
+        '/usr/etsy/jenkins-cli.jar',
+        'try',
         $cmdRunner,
-        $repoManager->getRemotebranch("master"),
-        $patch,
-        $user
+        $patch
     );
 
+    $jenkinsRunner->setbranch($repoManager->getRemotebranch("master"));
 
-    $jenkinsRunner->startJenkinsJob($options['jobs']);
+    $jenkinsRunner->setSshKey('/home' . $user . '/.ssh/try_id_rsa');
+
+    $jenkinsRunner->setUid($user . time());
+
+    $jenkinsRunner->setSubJobs($options['jobs']);
+
+    $jenkinsRunner->startJenkinsJob($patch);
 
     $callback = $options['callback'];
     if ($options['poll_for_completion'] || !is_null($callback)) {

@@ -1,81 +1,93 @@
 <?php
 require_once 'AnsiColor.php';
 
-const TRY_VERSION = 1;
-
 class JenkinsRunner {
 
-    //const HUDSON = "try.etsycorp.com";
-    const HUDSON = "cimaster-dev2.vm.ny4dev.etsy.com:8080";
-    const JENKINS_CLI = '/usr/etsy/jenkins-cli.jar';
+    private $jenkinsUrl;
+    private $jenkinsCli;
 
+    private $options;
     private $cmdRunner;
+    private $tryJobName;
     private $branch;
-    private $patch;
-    private $user;
+    private $jobs;
     private $overall_result;
     private $try_base_url;
 
     public function __construct(
-        $cmdRunner,
-        $branch,
-        $patch,
-        $user
+        $jenkinsUrl,
+        $jenkinsCli,
+        $tryJobName,
+        $cmdRunner
     ) {
+        $this->jenkinsUrl = $jenkinsUrl;
+        $this->jenkinsCli = $jenkinsCli;
+        $this->tryJobName = $tryJobName;
         $this->cmdRunner = $cmdRunner;
-        $this->branch = $branch;
-        $this->patch = $patch;
-        $this->user = $user;
+
+        $this->options = array();
+        $this->jobs = array();
         $this->overall_result = null;
         $this->try_base_url = null;
+        $this->branch = null;
     }
 
     public function runJenkinsCommand($command) {
-        $cmd = sprintf("java -jar %s -s http://%s/ %s", self::JENKINS_CLI, self::HUDSON, $command);
+        $cmd = sprintf(
+            "java -jar %s -s http://%s/ %s",
+            $this->jenkinsCli,
+            $this->jenkinsUrl,
+            $command
+        );
         $this->cmdRunner->run($cmd);
     }
 
     /**
      * Logout, and Start the Jenkins job
      */
-    public function startJenkinsJob($jobs) {
+    public function startJenkinsJob($patch) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
 
         // Build up the jenkins command incrementally
-        $cliCommand = $this->buildCLICommand($jobs);
+        $cliCommand = $this->buildCLICommand($patch);
 
         // Run the job
         $this->runJenkinsCommand($cliCommand);
     }
 
+    public function setSshKey($sshKeyPath) {
+        if (file_exists($sshKeyPath)) {
+            $this->options[] = "-i $sshKeyPath";
+        }
+    }
+
+    public function setUid($uid) {
+        $this->options[] = "-p guid=$uid";
+    }
+
+    public function setBranch($branch) {
+        $this->options[] = "-p branch=$branch";
+    }
+
+    public function setSubJobs($jobs) {
+        $this->jobs = $jobs;
+    }
+
     /**
      * Build the Jenkins CLI command, based on all options
      */
-    function buildCLICommand($jobs) {
-        $command = "";
+    function buildCLICommand($patch) {
+        $command = array("build-master");
+        $command[] = $this->tryJobName;
 
-        $optional_ssh_key = "/home/" . $this->user . "/.ssh/try_id_rsa";
-        if (file_exists($optional_ssh_key)) {
-            $command .= " -i $optional_ssh_key";
+        foreach($this->jobs as $job) {
+            $command[] = $this->tryJobName . "-" . $job;
         }
 
-        $command .= " build-master try ";
+        $this->options[] = "-p patch.diff=" . $patch;
 
-        if (count($jobs)) {
-            $command .= "try-" . implode(" try-", $jobs);
-        }
-
-        $time = time();
-        $guid = "$this->user"."$time";
-
-        $command .= " -p guid=$guid ";
-        $command .= " -p ssh_login=true";
-        $command .= " -p branch=" . $this->branch;
-        $command .= " -p patch.diff=" . $this->patch;
-        $command .= " -p try_version=" . TRY_VERSION;
-
-        return $command;
+        return implode(' ' , array_merge($command, $this->options));
     }
 
     /**
@@ -86,7 +98,7 @@ class JenkinsRunner {
 
         // Find job URL
         $matches = array();
-        if (!preg_match('|http://[^/]+/job/try/\d+|m', $try_output, $matches)) {
+        if (!preg_match('|http://[^/]+/job/' . $this->tryJobName . '/\d+|m', $try_output, $matches)) {
             echo "Could not find try URL\n";
             exit(1);
         }
