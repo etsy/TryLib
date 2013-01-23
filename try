@@ -15,7 +15,7 @@ function main() {
     $location = Util_EtsyUtil::getRepoLocation($user);
 
     $preChecks = array(
-        new Precheck_BinaryFileSize(),
+        new Precheck_ScriptRunner($location . '/bin/check_file_size'),
         new Precheck_CopyAge()
     );
 
