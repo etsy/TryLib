@@ -21,7 +21,7 @@ class Util_OptionsParser {
 
 	    if ($ret instanceOf PEAR_Error) {
 	        error_log($ret->getMessage());
-	        showHelp();
+	        self::showHelp();
 	    }
 
 	    list($opt, $args) = $ret;
@@ -32,7 +32,7 @@ class Util_OptionsParser {
 	        switch($k) {
 	            case 'h':
 	            case '?':
-	                showHelp();
+	                self::showHelp();
 	                break;
 
 	            case 'P':
