@@ -1,4 +1,5 @@
 <?php
+require_once 'Console/Getopt.php';
 
 class Try_Util_OptionsParser {
 	public static function getOptions() {
@@ -87,8 +88,8 @@ OPTIONS:
     -P          print subtasks progressively as they complete (implies c)
     -s          use staged changes only to generate the diff
     -C          Callback string to execute at the end of the try run.
-                Use ${status} and ${url} as placeholders for the try build status and url
-                Example: -C 'echo "**Try status : [${status}](${url})**"'
+                Use \${status} and \${url} as placeholders for the try build status and url
+                Example: -C 'echo "**Try status : [\${status}](\${url})**"'
 eof
 		;
 	    print PHP_EOL . PHP_EOL;

@@ -1,7 +1,8 @@
 <?php
 
-function __autoload($class_name) {
-    $path = str_replace('_', '/', $class_name);
-    require_once $path . '.php';
-}
-
+spl_autoload_register(
+    function($class_name) {
+        $path = __DIR__ . "/../" . str_replace('_', '/', $class_name);
+        include $path . '.php';
+    }
+);
