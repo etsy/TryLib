@@ -142,7 +142,6 @@ class JenkinsRunner {
                 }
                 echo PHP_EOL . $this->overall_result . PHP_EOL;
                 $this->overall_result = str_replace("Finished: ", "", $this->overall_result);
-                echo $this->overall_result;
                 break;
             }
             if ($pretty) {
