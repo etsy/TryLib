@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Autoload.php';
-
 class Util_Etsyutil {
     public static function getRepoPath($user) {
         $location = getenv('ETSY_SRC');

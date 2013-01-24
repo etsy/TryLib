@@ -9,12 +9,7 @@ An example try script can look like:
         #!/bin/env php
         <?php
         
-        set_include_path(
-            get_include_path()
-            . PATH_SEPARATOR . './Try' 
-        );
-        
-        require_once 'Autoload.php';
+        require_once 'Try/Autoload.php';
         
         function main() {
             $options = Util_OptionsParser::getOptions();
