@@ -1,0 +1,14 @@
+#!/usr/bin/php
+<?php
+
+require_once "Try/Autoload.php";
+
+$jenkinsServer = 'cimaster-dev2.vm.ny4dev.etsy.com:8080';
+$jenkinsCliJar = '/usr/etsy/jenkins-cli.jar';
+$jenkinsMasterJob = 'try';
+list($user, $repoPath) = Try_Util_EtsyUtil::getUserAndRepoPath();
+
+$cli = new Try_Cli($jenkinsServer, $jenkinsCliJar, $jenkinsMasterJob);
+$cli->setOptions(Try_Util_OptionsParser::getOptions());
+$cli->setUserAndRepoPath($user, $repoPath);
+$cli->run();
