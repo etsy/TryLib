@@ -1,16 +1,18 @@
 <?php
+
 require_once 'AnsiColor.php';
 
 class JenkinsRunner {
 
     private $jenkinsUrl;
     private $jenkinsCli;
-
-    private $options;
-    private $cmdRunner;
     private $tryJobName;
+    private $cmdRunner;
+
     private $branch;
+    private $options;
     private $jobs;
+    private $callbacks;
     private $overall_result;
     private $try_base_url;
 
@@ -27,6 +29,7 @@ class JenkinsRunner {
 
         $this->options = array();
         $this->jobs = array();
+        $this->callbacks = array();
         $this->overall_result = null;
         $this->try_base_url = null;
         $this->branch = null;
@@ -45,7 +48,7 @@ class JenkinsRunner {
     /**
      * Logout, and Start the Jenkins job
      */
-    public function startJenkinsJob($patch) {
+    public function startJenkinsJob($patch, $pollForCompletion=false) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
 
@@ -54,6 +57,11 @@ class JenkinsRunner {
 
         // Run the job
         $this->runJenkinsCommand($cliCommand);
+
+        if ($pollForCompletion || !empty($this->callbacks)) {
+            $this->pollForCompletion($pollForCompletion);
+            $this->executeCallbacks();
+        }
     }
 
     public function setSshKey($sshKeyPath) {
@@ -72,6 +80,12 @@ class JenkinsRunner {
 
     public function setSubJobs($jobs) {
         $this->jobs = $jobs;
+    }
+
+    public function addCallback($callback) {
+        if (is_string($callback)) {
+            $this->callbacks[] = $callback;
+        }
     }
 
     /**
@@ -99,9 +113,9 @@ class JenkinsRunner {
         // Find job URL
         $matches = array();
         if (!preg_match('|http://[^/]+/job/' . $this->tryJobName . '/\d+|m', $try_output, $matches)) {
-            echo "Could not find try URL\n";
-            exit(1);
+            $this->cmdRunner->terminate('Could not find ' . $this->tryJobName . 'URL' . PHP_EOL);
         }
+
         $this->try_base_url = $matches[0];
         $try_poll_url = $this->try_base_url . '/consoleText';
 
@@ -116,25 +130,25 @@ class JenkinsRunner {
 
             if ($pretty) {
                 if ($this->printJobResults($new_text, $pretty)) {
-                    echo "\n......... waiting for job to finish ..";
+                    echo PHP_EOL . '......... waiting for job to finish ..';
                 }
             }
 
             if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-                echo "\n\n{$this->try_base_url}\n";
+                echo PHP_EOL . $this->try_base_url . PHP_EOL;
                 $this->overall_result = $matches[0];
                 if (!$pretty) {
                     $this->printJobResults($try_log, $pretty);
                 }
-                echo "\n{$this->overall_result}\n";
+                echo PHP_EOL . $this->overall_result . PHP_EOL;
                 $this->overall_result = str_replace("Finished: ", "", $this->overall_result);
                 echo $this->overall_result;
                 break;
             }
             if ($pretty) {
-                echo ".";
+                echo '.';
             } else {
-                echo "......... waiting for job to finish\n";
+                echo '......... waiting for job to finish' . PHP_EOL;
             }
             sleep(30);
         }
@@ -151,7 +165,7 @@ class JenkinsRunner {
     function printJobResults($log, $pretty) {
         $colors = new AnsiColor();
         if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
-            echo "\n\n";
+            echo PHP_EOL . PHP_EOL;
             foreach ($matches[0] as $k => $_) {
                 $success = $matches[1][$k];
                 if ($pretty) {
@@ -165,7 +179,7 @@ class JenkinsRunner {
                 }
 
                 printf(
-                    "% 32s % -10s %s\n",
+                    "% 32s % -10s %s" . PHP_EOL,
                     $matches[2][$k],
                     $success,
                     $matches[1][$k] !== 'SUCCESS' ? $matches[3][$k] : ''
@@ -176,10 +190,13 @@ class JenkinsRunner {
         return false;
     }
 
-    function executeCallback($callback) {
-        if (!is_string($callback)) {
-            return;
+    function executeCallbacks() {
+        foreach($this->callbacks as $callback) {
+            $this->executeCallback($callback);
         }
+    }
+
+    function executeCallback($callback) {
         if (is_null($this->try_base_url) || is_null($this->overall_result)) {
             return;
         }

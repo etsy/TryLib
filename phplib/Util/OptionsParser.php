@@ -9,7 +9,6 @@ class Util_OptionsParser {
 	        'verbose' => false,
 	        'dry-run' => false,
 	        'patch' => null,
-	        'pretty' => false,
 	        'staged-only' => false,
 	        'poll_for_completion' => false,
 	        'callback' => null
@@ -37,7 +36,6 @@ class Util_OptionsParser {
 
 	            case 'P':
 	                $options['poll_for_completion'] = true;
-	                $options['pretty'] = true;
 	                break;
 
 	            case 'v':
@@ -90,7 +88,7 @@ OPTIONS:
     -s          use staged changes only to generate the diff
 eof
 		;
-	    print "\n\n";
+	    print PHP_EOL . PHP_EOL;
 	    exit(0);
 	}
 }

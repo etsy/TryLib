@@ -12,7 +12,7 @@ function main() {
     $options = Util_OptionsParser::getOptions();
 
     $user = Util_EtsyUtil::getUser();
-    $repoPath = Util_EtsyUtil::getReporepoPath($user);
+    $repoPath = Util_EtsyUtil::getRepoPath($user);
 
     $preChecks = array(
         new Precheck_ScriptRunner($repoPath . '/bin/check_file_size'),
@@ -31,7 +31,7 @@ function main() {
     }
 
     if ($options['dry-run']) {
-        print "Not sending job to Jenkins (-n) diff is here: $patch\n";
+        print 'Not sending job to Jenkins (-n) diff is here:' . $patch . PHP_EOL;
         exit(0);
     }
 
@@ -52,13 +52,9 @@ function main() {
 
     $jenkinsRunner->setSubJobs($options['jobs']);
 
-    $jenkinsRunner->startJenkinsJob($patch);
+    $jenkinsRunner->addCallback($options['callback']);
 
-    $callback = $options['callback'];
-    if ($options['poll_for_completion'] || !is_null($callback)) {
-        $jenkinsRunner->pollForCompletion($options['pretty']);
-        $jenkinsRunner->executeCallback($callback);
-    }
+    $jenkinsRunner->startJenkinsJob($patch, $options['poll_for_completion']);
 }
 
 main();

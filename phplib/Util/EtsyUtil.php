@@ -3,7 +3,7 @@
 require_once 'Autoload.php';
 
 class Util_Etsyutil {
-    public static function getRepoLocation($user) {
+    public static function getRepoPath($user) {
         $location = getenv('ETSY_SRC');
         if (!$location) {
             if (preg_match(";development/([^/]+);", getcwd(), $matches) > 0) {
