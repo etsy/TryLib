@@ -14,6 +14,7 @@ class Try_JenkinsRunner {
     private $sshKeyPath;
     private $overall_result;
     private $try_base_url;
+    private $colors;
 
     public function __construct(
         $jenkinsUrl,
@@ -33,6 +34,12 @@ class Try_JenkinsRunner {
         $this->overall_result = null;
         $this->try_base_url = null;
         $this->branch = null;
+
+        if(defined("STDERR") && posix_isatty(STDERR)){
+            $this->colors = new Try_Util_AnsiColor();
+        } else {
+            $this->colors = null;
+        }
     }
 
     public function runJenkinsCommand($command) {
@@ -174,18 +181,17 @@ class Try_JenkinsRunner {
      * @return boolean Returns true if any job results were printed, false otherwise
      */
     function printJobResults($log, $pretty) {
-        $colors = new Try_Util_AnsiColor();
         if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             echo PHP_EOL . PHP_EOL;
             foreach ($matches[0] as $k => $_) {
                 $success = $matches[1][$k];
-                if ($pretty) {
+                if ($pretty && !is_null($this->colors)) {
                     if ($success == 'SUCCESS') {
-                        $success = $colors->green($success);
+                        $success = $this->colors->green($success);
                     } else if ($success == 'UNSTABLE') {
-                        $success = $colors->yellow($success);
+                        $success = $this->colors->yellow($success);
                     } else {
-                        $success = $colors->red($success);
+                        $success = $this->colors->red($success);
                     }
                 }
 
