@@ -38,6 +38,7 @@
         <file name="Autoload.php" role="php" />
         <file name="CommandRunner.php" role="php" />
         <file name="JenkinsRunner.php" role="php" />
+        <file name="Cli.php" role="php" />
         <file name="RepoManager.php" role="php" />
         <dir name="RepoManager">
           <file name="Git.php" role="php"/>
@@ -53,6 +54,7 @@
           <file name="AnsiColor.php" role="php" />
         </dir>
       </dir>
+      <file name="try" role="script" />
    </dir>
  </contents>
  <dependencies>
