@@ -3,7 +3,7 @@
 
 set_include_path(
     get_include_path()
-    . PATH_SEPARATOR . './phplib' 
+    . PATH_SEPARATOR . './Try' 
 );
 
 require_once 'Autoload.php';
