@@ -21,17 +21,21 @@ class Try_CommandRunner {
     }
     
     public function getOutput() {
-        return implode("\n", $this->out);
+        return $this->out;
     } 
-    public function getLastOutput() {
-        return end($this->out);
-    } 
-    
-    public function run($cmd) {
+
+    public function run($cmd, $silent=true) {
         if ($this->verbose) {
             fputs($this->stderr, "$cmd\n");
         }
-        exec($cmd, $this->out, $ret);
+
+        if ($silent) {
+            exec($cmd, $out, $ret);
+            $this->out = implode('\n', $out);
+        } else {
+            $this->out = system($cmd, $ret);
+        }
+
         return $ret;
     }
     

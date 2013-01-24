@@ -11,6 +11,7 @@ class Try_JenkinsRunner {
     private $options;
     private $jobs;
     private $callbacks;
+    private $sshKeyPath;
     private $overall_result;
     private $try_base_url;
 
@@ -28,6 +29,7 @@ class Try_JenkinsRunner {
         $this->options = array();
         $this->jobs = array();
         $this->callbacks = array();
+        $this->sshKeyPath = null;
         $this->overall_result = null;
         $this->try_base_url = null;
         $this->branch = null;
@@ -40,7 +42,7 @@ class Try_JenkinsRunner {
             $this->jenkinsUrl,
             $command
         );
-        $this->cmdRunner->run($cmd);
+        $this->cmdRunner->run($cmd, $silent=false);
     }
 
     /**
@@ -64,7 +66,9 @@ class Try_JenkinsRunner {
 
     public function setSshKey($sshKeyPath) {
         if (file_exists($sshKeyPath)) {
-            $this->options[] = "-i $sshKeyPath";
+            $this->sshKeyPath = $sshKeyPath;
+        } else {
+           echo PHP_EOL . "WARNING : SSH key file not found (${sshKeyPath})" . PHP_EOL; 
         }
     }
 
@@ -81,8 +85,12 @@ class Try_JenkinsRunner {
     }
 
     public function addCallback($callback) {
-        if (is_string($callback)) {
+        if (is_null($callback)) {
+            return;
+        } else if (is_string($callback)) {
             $this->callbacks[] = $callback;
+        } else {
+           echo PHP_EOL . "WARNING : Invalid callback - must be a string" . PHP_EOL; 
         }
     }
 
@@ -90,7 +98,13 @@ class Try_JenkinsRunner {
      * Build the Jenkins CLI command, based on all options
      */
     function buildCLICommand($patch) {
-        $command = array("build-master");
+        $command = array();
+
+        if (!is_null($this->sshKeyPath)) {
+            $command[] = '-i ' . $this->sshKeyPath;
+        }
+
+        $command[] = "build-master";
         $command[] = $this->tryJobName;
 
         foreach($this->jobs as $job) {
@@ -106,7 +120,7 @@ class Try_JenkinsRunner {
      * Poll for completion of try job and print results
      */
     function pollForCompletion($pretty) {
-        $try_output = $this->cmdRunner->getLastOutput();
+        $try_output = $this->cmdRunner->getOutput();
 
         // Find job URL
         $matches = array();

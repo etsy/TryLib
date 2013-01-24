@@ -12,13 +12,9 @@ class Try_Precheck_ScriptRunner implements Try_Precheck {
      **/
     function check($cmdRunner, $repoPath) {
         if (file_exists($this->scriptPath)) {
-            $return = $cmdRunner->run($this->scriptPath);
+            $return = $cmdRunner->run($this->scriptPath, $silent=false);
             if ($return) {
-                $cmdRunner->terminate(
-                    "Pre-check script failed with output: " .
-                    PHP_EOL .
-                    $cmdRunner->getOutput()
-                );
+                $cmdRunner->terminate("Failed running pre-check script $this->scriptPath");
             }
         }
     }

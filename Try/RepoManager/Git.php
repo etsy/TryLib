@@ -28,7 +28,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
         if (is_null($this->branch)) {
             $this->cmdRunner->chdir($this->repoPath);
             $this->cmdRunner->run("git symbolic-ref HEAD");
-            $this->branch = $this->cleanRef($this->cmdRunner->getLastOutput());
+            $this->branch = $this->cleanRef($this->cmdRunner->getOutput());
         }
         return $this->branch;
     }
@@ -36,7 +36,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
     function getConfig($prop) {
         $this->cmdRunner->chdir($this->repoPath);
         $this->cmdRunner->run("git config '$prop'");
-        return $this->cleanRef($this->cmdRunner->getLastOutput());
+        return $this->cleanRef($this->cmdRunner->getOutput());
     }
 
     function getRemote($default=null) {

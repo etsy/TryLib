@@ -29,7 +29,7 @@ class Try_Precheck_CopyAge implements Try_Precheck {
      **/
     function check($cmdRunner, $repoPath) {
         $cmdRunner->run("git log -1 --format='%cd' --date=iso");
-        $output = $cmdRunner->getLastOutput();
+        $output = $cmdRunner->getOutput();
         if ( is_string($output)) {
             $wc_date = strtotime($output);
     
