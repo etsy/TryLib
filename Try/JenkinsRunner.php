@@ -160,7 +160,7 @@ class Try_JenkinsRunner {
      * @return boolean Returns true if any job results were printed, false otherwise
      */
     function printJobResults($log, $pretty) {
-        $colors = new Util_AnsiColor();
+        $colors = new Try_Util_AnsiColor();
         if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             echo PHP_EOL . PHP_EOL;
             foreach ($matches[0] as $k => $_) {
