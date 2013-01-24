@@ -12,7 +12,7 @@ class Try_Precheck_ScriptRunner implements Try_Precheck {
      **/
     function check($cmdRunner, $repoPath) {
         if (file_exists($this->scriptPath)) {
-            $return = $cmdRunner->run($this->scriptPath, $silent=false);
+            $return = $cmdRunner->run($this->scriptPath, $silent=false, $ignore_errors=true);
             if ($return) {
                 $cmdRunner->terminate("Failed running pre-check script $this->scriptPath");
             }

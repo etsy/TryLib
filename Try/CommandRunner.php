@@ -4,7 +4,7 @@ class Try_CommandRunner {
     private $verbose;
     private $stderr;
     private $out;
-    
+
     public function __construct(
         $verbose = false,
         $stderr = null
@@ -15,16 +15,16 @@ class Try_CommandRunner {
             $stderr = fopen('php://stderr', 'w');
         }
 
-        $this->stderr = $stderr;    
+        $this->stderr = $stderr;
 
         $this->out = array();
     }
-    
+
     public function getOutput() {
         return $this->out;
-    } 
+    }
 
-    public function run($cmd, $silent=true) {
+    public function run($cmd, $silent=true, $ignore_errors=false) {
         if ($this->verbose) {
             fputs($this->stderr, "$cmd\n");
         }
@@ -36,9 +36,12 @@ class Try_CommandRunner {
             $this->out = system($cmd, $ret);
         }
 
+        if (!$ignore_errors && $ret) {
+            $this->terminate('Failed running command ' . $cmd);
+        }
         return $ret;
     }
-    
+
     public function terminate($how) {
         fputs($this->stderr, "$how\n");
         exit(1);
