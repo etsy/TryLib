@@ -1,6 +1,6 @@
 <?php
 
-class Precheck_CopyAge implements Precheck {
+class Try_Precheck_CopyAge implements Try_Precheck {
     private $maxAgeWarning;
 
     function __construct($maxAgeWarning = 24) {

@@ -1,6 +1,6 @@
 <?php
 
-class Precheck_ScriptRunner implements Precheck {
+class Try_Precheck_ScriptRunner implements Try_Precheck {
     private $scriptPath;
 
     function __construct($scriptPath) {

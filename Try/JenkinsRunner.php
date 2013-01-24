@@ -1,6 +1,6 @@
 <?php
 
-class JenkinsRunner {
+class Try_JenkinsRunner {
 
     private $jenkinsUrl;
     private $jenkinsCli;

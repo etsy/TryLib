@@ -1,6 +1,6 @@
 <?php
 
-class RepoManager_Git implements RepoManager {
+class Try_RepoManager_Git implements Try_RepoManager {
     private $repoPath;
     private $cmdRunner;
     private $branch;

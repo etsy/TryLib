@@ -1,6 +1,6 @@
 <?php
 
-class CommandRunner {
+class Try_CommandRunner {
     private $verbose;
     private $stderr;
     private $out;

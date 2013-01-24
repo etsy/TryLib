@@ -1,6 +1,6 @@
 <?php
 
-class Util_Etsyutil {
+class Try_Util_Etsyutil {
     public static function getRepoPath($user) {
         $location = getenv('ETSY_SRC');
         if (!$location) {

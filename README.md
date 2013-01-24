@@ -18,13 +18,13 @@ An example try script can look like:
             $repoPath = Util_EtsyUtil::getRepoPath($user);
         
             $preChecks = array(
-                new Precheck_ScriptRunner($repoPath . '/bin/check_file_size'),
-                new Precheck_CopyAge()
+                new Try_Precheck_ScriptRunner($repoPath . '/bin/check_file_size'),
+                new Try_Precheck_CopyAge()
             );
         
-            $cmdRunner = new CommandRunner($options['verbose']);
+            $cmdRunner = new Try_CommandRunner($options['verbose']);
         
-            $repoManager = new RepoManager_Git($repoPath, $cmdRunner);
+            $repoManager = new Try_RepoManager_Git($repoPath, $cmdRunner);
             $repoManager->runPrechecks($preChecks);
         
             # Generate diff if required
@@ -39,7 +39,7 @@ An example try script can look like:
             }
         
             # Send to jenkins
-            $jenkinsRunner = new JenkinsRunner(
+            $jenkinsRunner = new Try_JenkinsRunner(
                 'cimaster-dev2.vm.ny4dev.etsy.com:8080',
                 '/usr/etsy/jenkins-cli.jar',
                 'try',
