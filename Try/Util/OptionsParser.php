@@ -16,7 +16,7 @@ class Try_Util_OptionsParser {
 
 	    // Using the evil @ operator here because Console_Getopt
 	    // is still PHP4 and spews a bunch of deprecation warnings:
-	    $ret = @Console_Getopt::getopt($argv, 'h?vnp:g:cPs');
+	    $ret = @Console_Getopt::getopt($argv, 'h?vnp:C:cPs');
 
 	    if ($ret instanceOf PEAR_Error) {
 	        error_log($ret->getMessage());
@@ -58,7 +58,7 @@ class Try_Util_OptionsParser {
 	                $options['staged-only'] = true;
 	                break;
 
-	            case 'g':
+	            case 'C':
 	                $options['callback'] = $v;
 	                break;
 	        }
@@ -86,6 +86,9 @@ OPTIONS:
     -c          poll for job completion and print results
     -P          print subtasks progressively as they complete (implies c)
     -s          use staged changes only to generate the diff
+    -C          Callback string to execute at the end of the try run.
+                Use ${status} and ${url} as placeholders for the try build status and url
+                Example: -C 'echo "**Try status : [${status}](${url})**"'
 eof
 		;
 	    print PHP_EOL . PHP_EOL;

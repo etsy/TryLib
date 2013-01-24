@@ -198,7 +198,8 @@ class Try_JenkinsRunner {
             return;
         }
 
-        $status = "**Try status : [$this->overall_result]($this->try_base_url)**";
-        system(sprintf($callback, $status));
+        $callback = str_replace('${status}', $this->overall_result, $callback);
+        $callback = str_replace('${url}', $this->try_base_url, $callback);
+        system($callback);
     }
 }
