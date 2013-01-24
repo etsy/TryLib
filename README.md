@@ -12,10 +12,10 @@ An example try script can look like:
         require_once 'Try/Autoload.php';
         
         function main() {
-            $options = Util_OptionsParser::getOptions();
+            $options = Try_Util_OptionsParser::getOptions();
         
-            $user = Util_EtsyUtil::getUser();
-            $repoPath = Util_EtsyUtil::getRepoPath($user);
+            $user = Try_Util_EtsyUtil::getUser();
+            $repoPath = Try_Util_EtsyUtil::getRepoPath($user);
         
             $preChecks = array(
                 new Try_Precheck_ScriptRunner($repoPath . '/bin/check_file_size'),
