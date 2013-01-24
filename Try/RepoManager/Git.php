@@ -26,14 +26,16 @@ class RepoManager_Git implements RepoManager {
 
     function getLocalBranch() {
         if (is_null($this->branch)) {
-            $this->cmdRunner->run("cd $this->repoPath;git symbolic-ref HEAD");
+            $this->cmdRunner->chdir($this->repoPath);
+            $this->cmdRunner->run("git symbolic-ref HEAD");
             $this->branch = $this->cleanRef($this->cmdRunner->getLastOutput());
         }
         return $this->branch;
     }
 
     function getConfig($prop) {
-        $this->cmdRunner->run("cd $this->repoPath;git config '$prop'");
+        $this->cmdRunner->chdir($this->repoPath);
+        $this->cmdRunner->run("git config '$prop'");
         return $this->cleanRef($this->cmdRunner->getLastOutput());
     }
 
@@ -81,8 +83,8 @@ class RepoManager_Git implements RepoManager {
             $args[] = "--staged";
         }
         
-        $cmd = "cd $this->repoPath;git diff " . implode(' ', $args) . " > " . $patch;
-        $this->cmdRunner->run($cmd);
+        $this->cmdRunner->chdir($this->repoPath);
+        $this->cmdRunner->run('git diff ' . implode(' ', $args) . ' > ' . $patch);
         return $patch;
     }
 
