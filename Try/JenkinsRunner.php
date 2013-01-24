@@ -200,6 +200,6 @@ class Try_JenkinsRunner {
 
         $callback = str_replace('${status}', $this->overall_result, $callback);
         $callback = str_replace('${url}', $this->try_base_url, $callback);
-        system($callback);
+        $this->cmdRunner->run($callback);
     }
 }
