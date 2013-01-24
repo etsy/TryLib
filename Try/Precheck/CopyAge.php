@@ -14,27 +14,10 @@ class Try_Precheck_CopyAge implements Try_Precheck {
      * @return string human representation of time difference
      **/
     public static function formatTimeDiff($secs) {
-        $bit = array(
-            ' year'        => $secs / 31556926 % 12,
-            ' week'        => $secs / 604800 % 52,
-            ' day'        => $secs / 86400 % 7,
-            ' hour'        => $secs / 3600 % 24,
-            ' minute'    => $secs / 60 % 60,
-            ' second'    => $secs % 60
-            );
-    
-        foreach ($bit as $k => $v) {
-            if ($v > 1) {
-                $ret[] = $v . $k . 's';
-            }
-            if ($v == 1) {
-                $ret[] = $v . $k;
-            }
-        }
-    
-        array_splice($ret, count($ret)-1, 0, 'and');
-    
-        return join(' ', $ret);
+        $d = new DateTime();
+        $d->add(new DateInterval('PT' . $secs . 'S'));
+        $dv=$d->diff(new DateTime());
+        return $dv->format("%m month, %d days, %h hours, %m minutes and %s seconds");
     }
     
     /**
