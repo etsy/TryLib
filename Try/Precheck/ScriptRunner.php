@@ -1,7 +1,7 @@
 <?php
 
 class Try_Precheck_ScriptRunner implements Try_Precheck {
-    private $script_path;
+    protected $script_path;
 
     function __construct($script_path) {
         $this->script_path = $script_path;

@@ -2,19 +2,19 @@
 
 class Try_JenkinsRunner {
 
-    private $jenkins_url;
-    private $jenkins_cli;
-    private $try_job_name;
-    private $cmd_runner;
+    protected $jenkins_url;
+    protected $jenkins_cli;
+    protected $try_job_name;
+    protected $cmd_runner;
+    protected $overall_result;
+    protected $try_base_url;
+    protected $colors;
 
     private $branch;
     private $options;
     private $jobs;
     private $callbacks;
     private $ssh_key_path;
-    private $overall_result;
-    private $try_base_url;
-    private $colors;
 
     public function __construct(
         $jenkins_url,

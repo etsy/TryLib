@@ -1,9 +1,9 @@
 <?php
 
 class Try_CommandRunner {
-    private $verbose;
-    private $stderr;
-    private $out;
+    protected $verbose;
+    protected $stderr;
+    protected $out;
 
     public function __construct($verbose = false, $stderr = null) {
         $this->verbose = $verbose;

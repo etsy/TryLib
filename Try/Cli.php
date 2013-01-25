@@ -1,16 +1,16 @@
 <?php
 
 class Try_CLI {
-    private $jenkins_server;
-    private $jenkins_cli_jar;
-    private $jenkins_master_job;
+    protected $jenkins_server;
+    protected $jenkins_cli_jar;
+    protected $jenkins_master_job;
+    protected $cmd_runner;
+    protected $repo_manager;
+    protected $pre_checks;
+
     private $user;
     private $repo_path;
     private $options;
-    private $patch;
-    private $cmd_runner;
-    private $repo_manager;
-    PRIVATE $pre_checks;
 
     public function __construct($jenkins_server, $jenkins_cli_jar, $jenkins_master_job) {
         $this->jenkins_server = $jenkins_server;
@@ -41,13 +41,13 @@ class Try_CLI {
         $this->repo_manager = new Try_RepoManager_Git($this->repo_path, $this->cmd_runner);
         $this->repo_manager->runPrechecks($this->pre_checks);
 
-        $this->patch = $this->options['patch'];
-        if (is_null($this->patch)) {
-            $this->patch = $this->repo_manager->generateDiff($this->options['staged-only']);
+        $patch = $this->options['patch'];
+        if (is_null($patch)) {
+            $patch = $this->repo_manager->generateDiff($this->options['staged-only']);
         }
 
         if ($this->options['dry-run']) {
-            print 'Not sending job to Jenkins (-n) diff is here:' . $this->patch . PHP_EOL;
+            print 'Not sending job to Jenkins (-n) diff is here:' . $patch . PHP_EOL;
             exit(0);
         }
 
@@ -63,6 +63,6 @@ class Try_CLI {
         $jenkins_runner->setUid($this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
         $jenkins_runner->addCallback($this->options['callback']);
-        $jenkins_runner->startJenkinsJob($this->patch, $this->options['poll_for_completion']);
+        $jenkins_runner->startJenkinsJob($patch, $this->options['poll_for_completion']);
     }
 }

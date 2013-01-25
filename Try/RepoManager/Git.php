@@ -1,11 +1,11 @@
 <?php
 
 class Try_RepoManager_Git implements Try_RepoManager {
-    private $repo_path;
-    private $cmd_runner;
-    private $branch;
-    private $remote;
-    private $remote_branch;
+    protected $repo_path;
+    protected $cmd_runner;
+    protected $branch;
+    protected $remote;
+    protected $remote_branch;
     
     public function __construct($repo_path, $cmd_runner) {    
         $this->repo_path = $repo_path;
