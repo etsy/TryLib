@@ -58,7 +58,7 @@ class Try_CLI {
             $this->cmdRunner
         );
 
-        $jenkinsRunner->setbranch($this->repoManager->getRemotebranch("master"));
+        $jenkinsRunner->setBranch($this->repoManager->getRemotebranch("master"));
         $jenkinsRunner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
         $jenkinsRunner->setUid($this->user . time());
         $jenkinsRunner->setSubJobs($this->options['jobs']);
