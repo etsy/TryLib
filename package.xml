@@ -53,8 +53,10 @@
           <file name="OptionsParser.php" role="php" />
           <file name="AnsiColor.php" role="php" />
         </dir>
+        <dir name="bin">
+          <file name="try" role="script" />
+        </dir>
       </dir>
-      <file name="try" role="script" />
    </dir>
  </contents>
  <dependencies>
