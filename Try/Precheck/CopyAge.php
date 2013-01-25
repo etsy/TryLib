@@ -1,10 +1,10 @@
 <?php
 
 class Try_Precheck_CopyAge implements Try_Precheck {
-    private $maxAgeWarning;
+    private $max_age_warning;
 
-    function __construct($maxAgeWarning = 24) {
-        $this->maxAgeWarning = $maxAgeWarning;
+    function __construct($max_age_warning = 24) {
+        $this->max_age_warning = $max_age_warning;
     }
 
     /**
@@ -22,20 +22,20 @@ class Try_Precheck_CopyAge implements Try_Precheck {
     
     /**
      * Check the age of the working copy and warn user if
-     * it's greater than $maxAgeWarning in hrs ( defaults to 24)
+     * it's greater than $max_age_warning in hrs ( defaults to 24)
      *
-     * @param CommandRunner $cmdRunner  cmd runner object
-     * @param string $repoPath          location of the git repo
+     * @param CommandRunner $cmd_runner  cmd runner object
+     * @param string $repo_path          location of the git repo
      **/
-    function check($cmdRunner, $repoPath) {
-        $cmdRunner->run("git log -1 --format='%cd' --date=iso");
-        $output = $cmdRunner->getOutput();
+    function check($cmd_runner, $repo_path) {
+        $cmd_runner->run("git log -1 --format='%cd' --date=iso");
+        $output = $cmd_runner->getOutput();
         if ( is_string($output)) {
             $wc_date = strtotime($output);
     
             $wc_age = time() - $wc_date;
     
-            if ($wc_age >= $this->maxAgeWarning * 60 * 60) {
+            if ($wc_age >= $this->max_age_warning * 60 * 60) {
                 echo "WARNING - you working copy is " . self::formatTimeDiff($wc_age) . " old.\n";
                 echo "You may want to run `git rpull` to avoid merging conflicts in the try job.\n\n";
             }

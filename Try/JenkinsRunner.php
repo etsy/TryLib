@@ -2,35 +2,35 @@
 
 class Try_JenkinsRunner {
 
-    private $jenkinsUrl;
-    private $jenkinsCli;
-    private $tryJobName;
-    private $cmdRunner;
+    private $jenkins_url;
+    private $jenkins_cli;
+    private $try_job_name;
+    private $cmd_runner;
 
     private $branch;
     private $options;
     private $jobs;
     private $callbacks;
-    private $sshKeyPath;
+    private $ssh_key_path;
     private $overall_result;
     private $try_base_url;
     private $colors;
 
     public function __construct(
-        $jenkinsUrl,
-        $jenkinsCli,
-        $tryJobName,
-        $cmdRunner
+        $jenkins_url,
+        $jenkins_cli,
+        $try_job_name,
+        $cmd_runner
     ) {
-        $this->jenkinsUrl = $jenkinsUrl;
-        $this->jenkinsCli = $jenkinsCli;
-        $this->tryJobName = $tryJobName;
-        $this->cmdRunner = $cmdRunner;
+        $this->jenkins_url = $jenkins_url;
+        $this->jenkins_cli = $jenkins_cli;
+        $this->try_job_name = $try_job_name;
+        $this->cmd_runner = $cmd_runner;
 
         $this->options = array();
         $this->jobs = array();
         $this->callbacks = array();
-        $this->sshKeyPath = null;
+        $this->ssh_key_path = null;
         $this->overall_result = null;
         $this->try_base_url = null;
         $this->branch = null;
@@ -45,11 +45,11 @@ class Try_JenkinsRunner {
     public function runJenkinsCommand($command) {
         $cmd = sprintf(
             "java -jar %s -s http://%s/ %s",
-            $this->jenkinsCli,
-            $this->jenkinsUrl,
+            $this->jenkins_cli,
+            $this->jenkins_url,
             $command
         );
-        $this->cmdRunner->run($cmd, $silent=false);
+        $this->cmd_runner->run($cmd, $silent=false);
     }
 
     /**
@@ -71,11 +71,11 @@ class Try_JenkinsRunner {
         }
     }
 
-    public function setSshKey($sshKeyPath) {
-        if (file_exists($sshKeyPath)) {
-            $this->sshKeyPath = $sshKeyPath;
+    public function setSshKey($ssh_key_path) {
+        if (file_exists($ssh_key_path)) {
+            $this->ssh_key_path = $ssh_key_path;
         } else {
-           echo PHP_EOL . "WARNING : SSH key file not found (${sshKeyPath})" . PHP_EOL; 
+           echo PHP_EOL . "WARNING : SSH key file not found (${ssh_key_path})" . PHP_EOL; 
         }
     }
 
@@ -107,15 +107,15 @@ class Try_JenkinsRunner {
     function buildCLICommand($patch) {
         $command = array();
 
-        if (!is_null($this->sshKeyPath)) {
-            $command[] = '-i ' . $this->sshKeyPath;
+        if (!is_null($this->ssh_key_path)) {
+            $command[] = '-i ' . $this->ssh_key_path;
         }
 
         $command[] = "build-master";
-        $command[] = $this->tryJobName;
+        $command[] = $this->try_job_name;
 
         foreach($this->jobs as $job) {
-            $command[] = $this->tryJobName . "-" . $job;
+            $command[] = $this->try_job_name . "-" . $job;
         }
 
         $this->options[] = "-p patch.diff=" . $patch;
@@ -127,12 +127,12 @@ class Try_JenkinsRunner {
      * Poll for completion of try job and print results
      */
     function pollForCompletion($pretty) {
-        $try_output = $this->cmdRunner->getOutput();
+        $try_output = $this->cmd_runner->getOutput();
 
         // Find job URL
         $matches = array();
-        if (!preg_match('|http://[^/]+/job/' . $this->tryJobName . '/\d+|m', $try_output, $matches)) {
-            $this->cmdRunner->terminate('Could not find ' . $this->tryJobName . 'URL' . PHP_EOL);
+        if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
+            $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
         }
 
         $this->try_base_url = $matches[0];
@@ -220,6 +220,6 @@ class Try_JenkinsRunner {
 
         $callback = str_replace('${status}', $this->overall_result, $callback);
         $callback = str_replace('${url}', $this->try_base_url, $callback);
-        $this->cmdRunner->run($callback);
+        $this->cmd_runner->run($callback);
     }
 }

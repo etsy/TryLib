@@ -6,5 +6,5 @@ interface Try_RepoManager {
 
     function generateDiff();
 
-    function runPreChecks(array $preChecks);
+    function runPreChecks(array $pre_checks);
 }

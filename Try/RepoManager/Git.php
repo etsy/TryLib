@@ -1,21 +1,21 @@
 <?php
 
 class Try_RepoManager_Git implements Try_RepoManager {
-    private $repoPath;
-    private $cmdRunner;
+    private $repo_path;
+    private $cmd_runner;
     private $branch;
     private $remote;
-    private $remoteBranch;
+    private $remote_branch;
     
     public function __construct(
-        $repoPath,
-        $cmdRunner
+        $repo_path,
+        $cmd_runner
     ) {    
-        $this->repoPath = $repoPath;
-        $this->cmdRunner = $cmdRunner;
+        $this->repo_path = $repo_path;
+        $this->cmd_runner = $cmd_runner;
         $this->branch = null;
         $this->remote = null;
-        $this->remoteBranch = null;
+        $this->remote_branch = null;
     }
 
     function cleanRef($ref) {
@@ -26,17 +26,17 @@ class Try_RepoManager_Git implements Try_RepoManager {
 
     function getLocalBranch() {
         if (is_null($this->branch)) {
-            $this->cmdRunner->chdir($this->repoPath);
-            $this->cmdRunner->run("git symbolic-ref HEAD");
-            $this->branch = $this->cleanRef($this->cmdRunner->getOutput());
+            $this->cmd_runner->chdir($this->repo_path);
+            $this->cmd_runner->run("git symbolic-ref HEAD");
+            $this->branch = $this->cleanRef($this->cmd_runner->getOutput());
         }
         return $this->branch;
     }
 
     function getConfig($prop) {
-        $this->cmdRunner->chdir($this->repoPath);
-        $this->cmdRunner->run("git config '$prop'");
-        return $this->cleanRef($this->cmdRunner->getOutput());
+        $this->cmd_runner->chdir($this->repo_path);
+        $this->cmd_runner->run("git config '$prop'");
+        return $this->cleanRef($this->cmd_runner->getOutput());
     }
 
     function getRemote($default=null) {
@@ -52,25 +52,25 @@ class Try_RepoManager_Git implements Try_RepoManager {
         return $this->remote;
     }
     function getRemoteBranch($default=null) {
-        if (is_null($this->remoteBranch)) {
+        if (is_null($this->remote_branch)) {
             $branch = $this->getLocalBranch();
-            $this->remoteBranch = $this->getConfig("branch.$branch.merge");
+            $this->remote_branch = $this->getConfig("branch.$branch.merge");
         }
 
-        if ($this->remoteBranch === "" && !is_null($default)) {
+        if ($this->remote_branch === "" && !is_null($default)) {
             return $default;
         }
-        return $this->remoteBranch;
+        return $this->remote_branch;
     }
 
     function getUpstream() {
         $remote = $this->getRemote("origin");
-        $remoteBranch = $this->getRemoteBranch("master");
-        return $remote . "/" . $remoteBranch;
+        $remote_branch = $this->getRemoteBranch("master");
+        return $remote . "/" . $remote_branch;
     }
 
     function generateDiff($staged_only=false) {    
-        $patch = $this->repoPath . "/patch.diff";
+        $patch = $this->repo_path . "/patch.diff";
 
         $args = array(
             "--src-prefix=''",
@@ -83,15 +83,15 @@ class Try_RepoManager_Git implements Try_RepoManager {
             $args[] = "--staged";
         }
         
-        $this->cmdRunner->chdir($this->repoPath);
-        $this->cmdRunner->run('git diff ' . implode(' ', $args) . ' > ' . $patch);
+        $this->cmd_runner->chdir($this->repo_path);
+        $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch);
         return $patch;
     }
 
-    function runPreChecks(array $preChecks) {
-        foreach ($preChecks as $c) {
-            $this->cmdRunner->chdir($this->repoPath);
-            $c->check($this->cmdRunner, $this->repoPath);
+    function runPreChecks(array $pre_checks) {
+        foreach ($pre_checks as $c) {
+            $this->cmd_runner->chdir($this->repo_path);
+            $c->check($this->cmd_runner, $this->repo_path);
         }
     }
 }
