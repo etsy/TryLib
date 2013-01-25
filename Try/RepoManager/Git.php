@@ -19,8 +19,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
     }
 
     function cleanRef($ref) {
-        $ref = str_replace("refs/heads/", "", $ref);
-        return rtrim($ref);
+        return rtrim(str_replace("refs/heads/", "", $ref));
     } 
 
 
