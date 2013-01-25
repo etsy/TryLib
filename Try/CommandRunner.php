@@ -26,12 +26,12 @@ class Try_CommandRunner {
 
     public function run($cmd, $silent=true, $ignore_errors=false) {
         if ($this->verbose) {
-            fputs($this->stderr, "$cmd\n");
+            fputs($this->stderr, $cmd . PHP_EOL);
         }
 
         if ($silent) {
             exec($cmd, $out, $ret);
-            $this->out = implode('\n', $out);
+            $this->out = implode(PHP_EOL, $out);
         } else {
             $this->out = system($cmd, $ret);
         }
@@ -43,7 +43,7 @@ class Try_CommandRunner {
     }
 
     public function terminate($how) {
-        fputs($this->stderr, "$how\n");
+        fputs($this->stderr, $how . PHP_EOL);
         exit(1);
     }
 

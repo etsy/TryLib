@@ -36,8 +36,8 @@ class Try_Precheck_CopyAge implements Try_Precheck {
             $wc_age = time() - $wc_date;
     
             if ($wc_age >= $this->max_age_warning * 60 * 60) {
-                echo "WARNING - you working copy is " . self::formatTimeDiff($wc_age) . " old.\n";
-                echo "You may want to run `git rpull` to avoid merging conflicts in the try job.\n\n";
+                echo 'WARNING - you working copy is ' . self::formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
+                echo 'You may want to run `git rpull` to avoid merging conflicts in the try job.' . PHP_EOL . PHP_EOL;
             }
         }
     }

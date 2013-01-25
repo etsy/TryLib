@@ -35,10 +35,9 @@ class Try_JenkinsRunner {
         $this->try_base_url = null;
         $this->branch = null;
 
+        $this->colors = null;
         if(defined("STDERR") && posix_isatty(STDERR)){
             $this->colors = new Try_Util_AnsiColor();
-        } else {
-            $this->colors = null;
         }
     }
 
@@ -49,7 +48,7 @@ class Try_JenkinsRunner {
             $this->jenkins_url,
             $command
         );
-        $this->cmd_runner->run($cmd, $silent=false);
+        $this->cmd_runner->run($cmd, false);
     }
 
     /**

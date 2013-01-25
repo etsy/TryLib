@@ -47,7 +47,7 @@ class Try_CLI {
         }
 
         if ($this->options['dry-run']) {
-            print "Not sending job to Jenkins (-n) diff is here: $patch" . PHP_EOL;
+            print 'Not sending job to Jenkins (-n) diff is here:' . $this->patch . PHP_EOL;
             exit(0);
         }
 
