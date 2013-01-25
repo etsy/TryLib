@@ -1,98 +1,105 @@
 <?php
-require_once 'Console/Getopt.php';
+
+require_once 'Console/GetoptPlus.php';
 
 class Try_Util_OptionsParser {
-	public static function getOptions() {
-		global $argv;
-	
-	    $options = array(
-	        'jobs' => array(),
-	        'verbose' => false,
-	        'dry-run' => false,
-	        'patch' => null,
-	        'staged-only' => false,
-	        'poll_for_completion' => false,
-	        'callback' => null
-	        );
+    private $config;
+    private $defaults;
 
-	    // Using the evil @ operator here because Console_Getopt
-	    // is still PHP4 and spews a bunch of deprecation warnings:
-	    $ret = @Console_Getopt::getopt($argv, 'h?vnp:C:cPs');
+    public function __construct() {
+        $this->config = null;
+        $this->defaults = null;
+    }
 
-	    if ($ret instanceOf PEAR_Error) {
-	        error_log($ret->getMessage());
-	        self::showHelp();
-	    }
+    public function getConfig() {
+        if (is_null($this->config)) {
+            $this->config = array(
+                'header' => array('"try" your changeset on Jenkins'),
+                'usage' => array('','[options] [subjobs]'),
+                'options' => array(
+                    array('short' => 'n', 'long' => 'diffonly', 'type' => 'noarg',
+                       'desc' => array('Create diff, but do not send to Jenkins')
+                    ),
 
-	    list($opt, $args) = $ret;
+                    array('short' => 'v', 'long' => 'verbose', 'type' => 'noarg',
+                        'desc' => array('Show shell commands as they run.')
+                    ),
 
-	    foreach ($opt as $tuple) {
-	        list($k, $v) = $tuple;
+                    array('short' => 'p', 'long' => 'patch', 'type' => 'mandatory',
+                        'desc' => array(
+                                    '/path/to/patch.diff',
+                                    'Don\'t generate diffs; use custom patch file instead'
+                                  )
+                    ),
 
-	        switch($k) {
-	            case 'h':
-	            case '?':
-	                self::showHelp();
-	                break;
+                    array('short' => 'c', 'long' => 'poll', 'type' => 'noarg',
+                        'desc' => array('Poll for job completion and print results')
+                    ),
 
-	            case 'P':
-	                $options['poll_for_completion'] = true;
-	                break;
+                    array('short' => 'P', 'long' => 'showprogress', 'type' => 'noarg',
+                        'desc' => array('print subtasks progressively as they complete (implies c)')
+                    ),
 
-	            case 'v':
-	                $options['verbose'] = true;
-	                break;
+                    array('short' => 's', 'long' => 'staged', 'type' => 'noarg',
+                        'desc' => array('use staged changes only to generate the diff')
+                    ),
 
-	            case 'n':
-	                $options['dry-run'] = true;
-	                break;
+                    array('short' => 'C', 'long' => 'callback', 'type' => 'mandatory',
+                        'desc' => array('callback string',
+                                'Callback string to execute at the end of the try run.',
+                                'Use ${status} and ${url} as placeholders ' .
+                                'for the try build status and url',
+                                'Example: -C \'echo "**Try status : [\${status}](\${url})**"\''
+                                )
+                    ),
+                ),
+                'parameters' => array('[subjobs]',
+                                      'try subjobs to execute (without the "try-" prefix)','Example : unit-tests'),
+                'footer' => array(''),
+            );
+        }
 
-	            case 'p':
-	                $options['patch'] = $v;
-	                break;
+        return $this->config;
+    }
 
-	            case 'c':
-	                $options['poll_for_completion'] = true;
-	                break;
+    public function setConfig($config) {
+        $this->config = $config;
+    }
 
-	            case 's':
-	                $options['staged-only'] = true;
-	                break;
+    public function getDefaults() {
+        if (is_null($this->defaults)) {
+            $this->defaults = array(
+                'verbose' => false,
+                'diffonly' =>false,
+                'patch' => null,
+                'staged' => false,
+                'showprogress' => false,
+                'callback' => null
+            );
+        }
+        return $this->defaults;
+    }
 
-	            case 'C':
-	                $options['callback'] = $v;
-	                break;
-	        }
-	    }
+    public function setDefaults($defaults) {
+        $this->defaults = $defaults;
+    }
 
-	    if (count($args)) {
-	        $options['jobs'] = $args;
-	    }
+    public function getOptions() {
+        try {
+            list($options, $jobs) = Console_Getoptplus::getoptplus($this->getConfig(), 'short2long', true);
+        } catch(Console_GetoptPlus_Exception $e) {
+            echo $e->getMessage() . PHP_EOL;
+            exit(1);
+        }
 
-	    return $options;
-	}
+        foreach($options as $key=>$val) {
+            if ($val === '') {
+                $options[$key] = true;
+            }
+        }
 
-	/**
-	 * Display the help menu.
-	 */
-	public static function showHelp() {
-	    print <<<eof
-USAGE: try [options] suite [tests ...]
-
-OPTIONS:
-    -h          show help
-    -n          create diff, but do not send to Hudson
-    -v          verbose (show shell commands as they're run)
-    -p path     don't generate diffs; use custom patch file instead
-    -c          poll for job completion and print results
-    -P          print subtasks progressively as they complete (implies c)
-    -s          use staged changes only to generate the diff
-    -C          Callback string to execute at the end of the try run.
-                Use \${status} and \${url} as placeholders for the try build status and url
-                Example: -C 'echo "**Try status : [\${status}](\${url})**"'
-eof
-		;
-	    print PHP_EOL . PHP_EOL;
-	    exit(0);
-	}
+        $options = array_merge($this->getDefaults(), $options);
+        $options['jobs'] = $jobs;
+        return $options;
+    }
 }

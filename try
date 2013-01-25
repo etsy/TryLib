@@ -6,9 +6,11 @@ require_once "Try/Autoload.php";
 $jenkins_server = 'cimaster-dev2.vm.ny4dev.etsy.com:8080';
 $jenkins_cli_jar = '/usr/etsy/jenkins-cli.jar';
 $jenkins_master_job = 'try';
+$option_parser = new Try_Util_OptionsParser();
+
 list($user, $repo_path) = Try_Util_EtsyUtil::getUserAndRepoPath();
 
 $cli = new Try_Cli($jenkins_server, $jenkins_cli_jar, $jenkins_master_job);
-$cli->setOptions(Try_Util_OptionsParser::getOptions());
+$cli->setOptions($option_parser->getOptions());
 $cli->setUserAndRepoPath($user, $repo_path);
 $cli->run();

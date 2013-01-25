@@ -43,10 +43,10 @@ class Try_CLI {
 
         $patch = $this->options['patch'];
         if (is_null($patch)) {
-            $patch = $this->repo_manager->generateDiff($this->options['staged-only']);
+            $patch = $this->repo_manager->generateDiff($this->options['staged']);
         }
 
-        if ($this->options['dry-run']) {
+        if ($this->options['diffonly']) {
             print 'Not sending job to Jenkins (-n) diff is here:' . $patch . PHP_EOL;
             exit(0);
         }
@@ -63,6 +63,6 @@ class Try_CLI {
         $jenkins_runner->setUid($this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
         $jenkins_runner->addCallback($this->options['callback']);
-        $jenkins_runner->startJenkinsJob($patch, $this->options['poll_for_completion']);
+        $jenkins_runner->startJenkinsJob($patch, $this->options['showprogress']);
     }
 }
