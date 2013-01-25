@@ -217,8 +217,11 @@ class Try_JenkinsRunner {
             return;
         }
 
-        $callback = str_replace('${status}', $this->overall_result, $callback);
-        $callback = str_replace('${url}', $this->try_base_url, $callback);
+        $callback = str_replace(
+            array('${status}', '${url}'),
+            array($this->overall_result, $this->try_base_url),
+            $callback
+        );
         $this->cmd_runner->run($callback);
     }
 }
