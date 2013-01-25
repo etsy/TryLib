@@ -18,7 +18,7 @@
  <lead>
   <name>Laura Beth Lincoln Denker</name>
   <user>llincoln</user>
-  <email>lbdenker@etsy.com</email>
+  <email>>github@elblinkin.info</email>
   <active>no</active>
  </lead>
  <date>2013-01-24</date>
@@ -67,11 +67,6 @@
    <pearinstaller>
     <min>1.9.1</min>
    </pearinstaller>
-   <package>
-    <name>Console_GetoptPlus</name>
-    <channel>pear.etsycorp.com</channel>
-    <min>1.0.0RC1</min>
-   </package>
   </required>
  </dependencies>
  <phprelease />
