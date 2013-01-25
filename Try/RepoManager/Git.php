@@ -7,10 +7,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
     private $remote;
     private $remote_branch;
     
-    public function __construct(
-        $repo_path,
-        $cmd_runner
-    ) {    
+    public function __construct($repo_path, $cmd_runner) {    
         $this->repo_path = $repo_path;
         $this->cmd_runner = $cmd_runner;
         $this->branch = null;

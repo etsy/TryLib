@@ -5,10 +5,7 @@ class Try_CommandRunner {
     private $stderr;
     private $out;
 
-    public function __construct(
-        $verbose = false,
-        $stderr = null
-    ) {
+    public function __construct($verbose = false, $stderr = null) {
         $this->verbose = $verbose;
 
         if (is_null($stderr)) {
