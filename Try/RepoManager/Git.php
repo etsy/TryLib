@@ -23,16 +23,24 @@ class Try_RepoManager_Git implements Try_RepoManager {
     function getLocalBranch() {
         if (is_null($this->branch)) {
             $this->cmd_runner->chdir($this->repo_path);
-            $this->cmd_runner->run("git symbolic-ref HEAD");
-            $this->branch = $this->cleanRef($this->cmd_runner->getOutput());
+            $ret = $this->cmd_runner->run("git symbolic-ref HEAD", true, true);
+            if ($ret) {
+                $this->branch = "";
+            } else {
+                $this->branch = $this->cleanRef($this->cmd_runner->getOutput());
+            }
         }
         return $this->branch;
     }
 
     function getConfig($prop) {
         $this->cmd_runner->chdir($this->repo_path);
-        $this->cmd_runner->run("git config '$prop'");
-        return $this->cleanRef($this->cmd_runner->getOutput());
+        $ret = $this->cmd_runner->run("git config '$prop'", true, true);
+        if ($ret) {
+            return "";
+        } else {
+            return $this->cleanRef($this->cmd_runner->getOutput());
+        }
     }
 
     function getRemote($default=null) {
@@ -54,6 +62,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
         }
 
         if ($this->remote_branch === "" && !is_null($default)) {
+            echo "Remote branch not found - using default remote: $default" . PHP_EOL;
             return $default;
         }
         return $this->remote_branch;
@@ -80,7 +89,7 @@ class Try_RepoManager_Git implements Try_RepoManager {
         }
         
         $this->cmd_runner->chdir($this->repo_path);
-        $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch);
+        $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch, true, false);
         return $patch;
     }
 
