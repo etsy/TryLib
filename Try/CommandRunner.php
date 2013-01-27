@@ -46,7 +46,7 @@ class Try_CommandRunner {
 
     public function chdir($wd) {
         if ($this->verbose) {
-            fputs($this->stderr, "\$ cd $wd");
+            fputs($this->stderr, "\$ cd $wd" . PHP_EOL);
         }
 
         if (!chdir($wd)) {
