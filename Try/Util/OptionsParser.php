@@ -39,7 +39,7 @@ class Try_Util_OptionsParser {
 
                 case 'n':
                 case 'diff-only':
-                    $options['dry-run'] = true;
+                    $options['diffonly'] = true;
                     break;
 
                 case 'p':
@@ -49,12 +49,12 @@ class Try_Util_OptionsParser {
 
                 case 'P':
                 case 'show-progress':
-                    $options['poll_for_completion'] = true;
+                    $options['showprogress'] = true;
                     break;
 
                 case 's':
                 case 'staged':
-                    $options['staged-only'] = true;
+                    $options['staged'] = true;
                     break;
 
                 case 'c':
