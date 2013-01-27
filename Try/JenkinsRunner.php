@@ -222,6 +222,6 @@ class Try_JenkinsRunner {
             array($this->overall_result, $this->try_base_url),
             $callback
         );
-        $this->cmd_runner->run($callback);
+        $this->cmd_runner->run($callback, false, true);
     }
 }
