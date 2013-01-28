@@ -23,7 +23,7 @@ class TryLib_CommandRunner {
 
     public function run($cmd, $silent=true, $ignore_errors=false) {
         if ($this->verbose) {
-            fputs($this->stderr, $cmd . PHP_EOL);
+            fputs($this->stderr, '$ ' . $cmd . PHP_EOL);
         }
 
         if ($silent) {
@@ -46,7 +46,7 @@ class TryLib_CommandRunner {
 
     public function chdir($wd) {
         if ($this->verbose) {
-            fputs($this->stderr, "\$ cd $wd" . PHP_EOL);
+            fputs($this->stderr, '$ cd ' . $wd . PHP_EOL);
         }
 
         if (!chdir($wd)) {
