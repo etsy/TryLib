@@ -1,6 +1,6 @@
 <?php
 
-class Try_Util_Etsyutil {
+class TryLib_Util_Etsyutil {
 
     public static function getUserAndRepoPath() {
         $user = self::getUser();

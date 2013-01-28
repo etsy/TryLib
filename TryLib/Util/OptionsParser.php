@@ -1,6 +1,6 @@
 <?php
 
-class Try_Util_OptionsParser {
+class TryLib_Util_OptionsParser {
     public static function getOptions() {
         global $argv;
 

@@ -1,6 +1,6 @@
 <?php
 
-class Try_JenkinsRunner {
+class TryLib_JenkinsRunner {
 
     protected $jenkins_url;
     protected $jenkins_cli;
@@ -37,7 +37,7 @@ class Try_JenkinsRunner {
 
         $this->colors = null;
         if(defined("STDERR") && posix_isatty(STDERR)){
-            $this->colors = new Try_Util_AnsiColor();
+            $this->colors = new TryLib_Util_AnsiColor();
         }
     }
 

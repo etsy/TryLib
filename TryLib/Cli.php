@@ -1,6 +1,6 @@
 <?php
 
-class Try_CLI {
+class TryLib_CLI {
     protected $jenkins_server;
     protected $jenkins_cli_jar;
     protected $jenkins_master_job;
@@ -32,13 +32,13 @@ class Try_CLI {
 
     public function run() {
         $this->pre_checks = array(
-            new Try_Precheck_ScriptRunner($this->repo_path . '/bin/check_file_size'),
-            new Try_Precheck_CopyAge(),
+            new TryLib_Precheck_ScriptRunner($this->repo_path . '/bin/check_file_size'),
+            new TryLib_Precheck_CopyAge(),
         );
 
-        $this->cmd_runner = new Try_CommandRunner($this->options['verbose']);
+        $this->cmd_runner = new TryLib_CommandRunner($this->options['verbose']);
 
-        $this->repo_manager = new Try_RepoManager_Git($this->repo_path, $this->cmd_runner);
+        $this->repo_manager = new TryLib_RepoManager_Git($this->repo_path, $this->cmd_runner);
         $this->repo_manager->runPrechecks($this->pre_checks);
 
         $patch = $this->options['patch'];
@@ -51,7 +51,7 @@ class Try_CLI {
             exit(0);
         }
 
-        $jenkins_runner = new Try_JenkinsRunner(
+        $jenkins_runner = new TryLib_JenkinsRunner(
             $this->jenkins_server,
             $this->jenkins_cli_jar,
             $this->jenkins_master_job,

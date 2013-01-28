@@ -27,7 +27,7 @@
  *     bold, underline, blink, reverse
  *
  */
-class Try_Util_AnsiColor {
+class TryLib_Util_AnsiColor {
     private $color_opts = array(
         'black'   => '30',
         'red'     => '31',

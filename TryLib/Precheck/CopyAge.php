@@ -1,6 +1,6 @@
 <?php
 
-class Try_Precheck_CopyAge implements Try_Precheck {
+class TryLib_Precheck_CopyAge implements TryLib_Precheck {
     protected $max_age_warning;
 
     function __construct($max_age_warning = 24) {

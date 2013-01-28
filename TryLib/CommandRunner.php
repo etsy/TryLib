@@ -1,6 +1,6 @@
 <?php
 
-class Try_CommandRunner {
+class TryLib_CommandRunner {
     protected $verbose;
     protected $stderr;
     protected $out;
