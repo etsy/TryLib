@@ -3,7 +3,7 @@
 
 require_once "Try/Autoload.php";
 
-$jenkins_server = 'cimaster-dev2.vm.ny4dev.etsy.com:8080';
+$jenkins_server = 'try.etsycorp.com';
 $jenkins_cli_jar = '/usr/etsy/jenkins-cli.jar';
 $jenkins_master_job = 'try';
 
