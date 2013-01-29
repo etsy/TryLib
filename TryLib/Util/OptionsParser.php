@@ -9,6 +9,7 @@ class TryLib_Util_OptionsParser {
             'verbose' => false,
             'diffonly' => false,
             'patch' => null,
+            'branch' => null,
             'staged' => false,
             'showprogress' => false,
             'callback' => null
@@ -18,6 +19,7 @@ class TryLib_Util_OptionsParser {
             'h' => 'help',
             'v' => 'verbose',
             'n' => 'diff-only',
+            'b:' => 'branch:',
             'p:' => 'patch:',
             'c:' => 'callback:',
             'P' => 'show-progress',
@@ -45,6 +47,11 @@ class TryLib_Util_OptionsParser {
                 case 'p':
                 case 'patch':
                     $options['patch'] = $v;
+                    break;
+
+                case 'b':
+                case 'branch':
+                    $options['branch'] = $v;
                     break;
 
                 case 'P':
@@ -96,6 +103,7 @@ OPTIONS:
     -n --diff-only              Create diff, but do not send to Hudson
     -v --verbose                Verbose (show shell commands as they're run)
     -p|--patch=</path/to/diff>  Don't generate diffs; use custom patch file instead
+    -b|--branch=<remote branch> Name of the remote branch to diff and try against
     -P --show-progress          Print subtasks progressively as they complete (implies c)
     -s --staged                 Use staged changes only to generate the diff
     -c|--callback <string>      Callback string to execute at the end of the try run.

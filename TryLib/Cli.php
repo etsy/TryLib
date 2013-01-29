@@ -41,6 +41,13 @@ class TryLib_CLI {
         $this->repo_manager = new TryLib_RepoManager_Git($this->repo_path, $this->cmd_runner);
         $this->repo_manager->runPrechecks($this->pre_checks);
 
+        $remote_branch = $this->options['branch'];
+        if (is_null($remote_branch)) {
+            $remote_branch = $this->repo_manager->getRemotebranch('master');
+        }
+
+        $this->repo_manager->setRemoteBranch($remote_branch);
+
         $patch = $this->options['patch'];
         if (is_null($patch)) {
             $patch = $this->repo_manager->generateDiff($this->options['staged']);
@@ -58,7 +65,7 @@ class TryLib_CLI {
             $this->cmd_runner
         );
 
-        $jenkins_runner->setBranch($this->repo_manager->getRemotebranch("master"));
+        $jenkins_runner->setBranch($remote_branch);
         $jenkins_runner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
         $jenkins_runner->setUid($this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
