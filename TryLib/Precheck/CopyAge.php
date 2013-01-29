@@ -10,7 +10,7 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
     /**
      * Return a human representation of a time difference
      *
-     * @param int $secs time delta in secods
+     * @param int $secs time delta in seconds
      * @return string human representation of time difference
      **/
     public static function formatTimeDiff($secs) {
