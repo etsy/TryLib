@@ -104,3 +104,21 @@ More info in the [divide and concur](http://codeascraft.etsy.com/2011/04/20/divi
 	echo "Patch..."
     patch --verbose -p0 -f -i patch.diff
     git add .
+
+
+## Working with branches (Git)
+
+Try will work with your branches! The below scenarios are supported:
+
+* You are working on **master**:
+	* You want to try against master --> run ***try [options] [subjobs]***
+	* You want to diff and try against a different branch --> run ***try --branch=my_other_branch [options] [subjobs]***
+
+* You are working on a **branch tracked remotely**
+	* You want to try against that branch --> run ***try [options] [subjobs]***
+	* You want to diff and try against a different branch (master for example) --> run ***try --branch=master [options] [subjobs]***  
+
+* You are working on a **local branch not tracked**
+	* If the remote has a branch with the same name, it will be used to generate the diff and try against it
+	* If the remote does not have a branch with the same name, it will use the default remote : **master**
+	* You want to diff and try against a specific remote branch --> run ***try --branch=my_branch_ [options] [subjobs]**
