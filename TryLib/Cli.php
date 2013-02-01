@@ -41,8 +41,8 @@ class TryLib_CLI {
         $this->repo_manager = new TryLib_RepoManager_Git($this->repo_path, $this->cmd_runner);
         $this->repo_manager->runPrechecks($this->pre_checks);
 
-        $remote_branch = $this->options['branch'];
-        if (is_null($remote_branch)) {
+        $remote_branch = 'master';
+        if (in_array('search', $this->options['jobs'], true)) {
             $remote_branch = $this->repo_manager->getRemotebranch('master');
         }
 
