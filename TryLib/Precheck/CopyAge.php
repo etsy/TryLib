@@ -27,7 +27,7 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
         $dv=$d->diff(new DateTime());
         return $dv->format("%m month, %d days, %h hours, %m minutes and %s seconds");
     }
-    
+
     /**
      * Check the age of the working copy and warn user if
      * it's greater than $max_age_warning in hrs ( defaults to 24)
@@ -39,7 +39,7 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
         $cmd = "git log -1 --format='%cd' --date=iso";
         if (!is_null($this->remote_branch)) {
             $cmd .= ' origin/' . $this->remote_branch;
-        } 
+        }
 
         $cmd_runner->run($cmd);
         $output = $cmd_runner->getOutput();
@@ -51,7 +51,7 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
                 $msg = 'ERROR - you working copy is ' . self::formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
                 $msg .= 'The code you want to `try` does not reflect the state of the repository' . PHP_EOL;
                 $msg .= 'Please run `git pull` and try again' . PHP_EOL . PHP_EOL;
-                //$cmd_runner->terminate($msg);
+                $cmd_runner->terminate($msg);
             } elseif ($wc_age >= $this->max_age_warning) {
                 echo 'WARNING - you working copy is ' . self::formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
                 echo 'You may want to run `git fetch` to avoid merging conflicts in the try job.' . PHP_EOL . PHP_EOL;
