@@ -31,6 +31,9 @@ class TryLib_CLI {
     }
 
     public function run() {
+        $this->cmd_runner = new TryLib_CommandRunner($this->options['verbose']);
+        $this->repo_manager = new TryLib_RepoManager_Git($this->repo_path, $this->cmd_runner);
+
         $remote_branch = 'master';
         if (in_array('search', $this->options['jobs'], true)) {
             $remote_branch = $this->repo_manager->getRemotebranch('master');
@@ -40,9 +43,6 @@ class TryLib_CLI {
             new TryLib_Precheck_ScriptRunner($this->repo_path . '/bin/check_file_size'),
             new TryLib_Precheck_CopyAge(48, 96, $remote_branch),
         );
-
-        $this->cmd_runner = new TryLib_CommandRunner($this->options['verbose']);
-        $this->repo_manager = new TryLib_RepoManager_Git($this->repo_path, $this->cmd_runner);
 
         $this->repo_manager->runPrechecks($this->pre_checks);
         $this->repo_manager->setRemoteBranch($remote_branch);
