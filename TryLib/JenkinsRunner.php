@@ -48,13 +48,13 @@ class TryLib_JenkinsRunner {
             $this->jenkins_url,
             $command
         );
-        $this->cmd_runner->run($cmd, false);
+        $this->cmd_runner->run($cmd, false, false);
     }
 
     /**
      * Logout, and Start the Jenkins job
      */
-    public function startJenkinsJob($patch, $pollForCompletion=false) {
+    public function startJenkinsJob($patch, $pollForCompletion = false) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
 

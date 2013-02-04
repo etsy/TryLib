@@ -46,7 +46,12 @@ class TryLib_Util_OptionsParser {
 
                 case 'p':
                 case 'patch':
-                    $options['patch'] = $v;
+                    $patch = realpath($v);
+                    if (!file_exists($patch)) {
+                        print "ERROR : Patch file `$v` not found" . PHP_EOL;
+                        exit(1);
+                    }
+                    $options['patch'] = $patch;
                     break;
 
                 case 'b':
