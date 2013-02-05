@@ -68,6 +68,7 @@ class TryLib_CLI {
         $jenkins_runner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
         $jenkins_runner->setUid($this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
+        $jenkins_runner->setExcludedSubJobs($this->options['exclude']);
         $jenkins_runner->addCallback($this->options['callback']);
         $jenkins_runner->startJenkinsJob($patch, $this->options['showprogress']);
     }

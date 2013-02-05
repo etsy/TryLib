@@ -13,6 +13,7 @@ class TryLib_JenkinsRunner {
     private $branch;
     private $options;
     private $jobs;
+    private $excluded_jobs;
     private $callbacks;
     private $ssh_key_path;
 
@@ -59,10 +60,11 @@ class TryLib_JenkinsRunner {
         $this->runJenkinsCommand("logout");
 
         // Build up the jenkins command incrementally
-        $cliCommand = $this->buildCLICommand($patch);
-
+        $cli_command = $this->buildCLICommand($patch);
+        echo $cli_command;
+        return;
         // Run the job
-        $this->runJenkinsCommand($cliCommand);
+        $this->runJenkinsCommand($cli_command);
 
         if ($pollForCompletion || !empty($this->callbacks)) {
             $this->pollForCompletion($pollForCompletion);
@@ -74,7 +76,7 @@ class TryLib_JenkinsRunner {
         if (file_exists($ssh_key_path)) {
             $this->ssh_key_path = $ssh_key_path;
         } else {
-           echo PHP_EOL . "WARNING : SSH key file not found (${ssh_key_path})" . PHP_EOL; 
+           echo PHP_EOL . "WARNING : SSH key file not found (${ssh_key_path})" . PHP_EOL;
         }
     }
 
@@ -87,7 +89,25 @@ class TryLib_JenkinsRunner {
     }
 
     public function setSubJobs($jobs) {
-        $this->jobs = $jobs;
+        $this->jobs = array_unique($jobs);
+    }
+
+    public function setExcludedSubJobs($jobs) {
+        $this->excluded_jobs = array_unique($jobs);
+    }
+
+    public function getJobsList() {
+        $tryjobs = array();
+        foreach($this->jobs as $job) {
+            if ( !in_array($job, $this->excluded_jobs)) {
+                $tryjobs[] = $this->try_job_name . '-' . $job;
+            }
+        }
+
+        foreach($this->excluded_jobs as $job) {
+            $tryjobs[] = '-' . $this->try_job_name . '-' . $job;
+        }
+        return $tryjobs;
     }
 
     public function addCallback($callback) {
@@ -96,7 +116,7 @@ class TryLib_JenkinsRunner {
         } else if (is_string($callback)) {
             $this->callbacks[] = $callback;
         } else {
-           echo PHP_EOL . "WARNING : Invalid callback - must be a string" . PHP_EOL; 
+           echo PHP_EOL . "WARNING : Invalid callback - must be a string" . PHP_EOL;
         }
     }
 
@@ -113,9 +133,7 @@ class TryLib_JenkinsRunner {
         $command[] = "build-master";
         $command[] = $this->try_job_name;
 
-        foreach($this->jobs as $job) {
-            $command[] = $this->try_job_name . "-" . $job;
-        }
+        $command = array_merge($command, $this->getJobsList());
 
         $this->options[] = "-p patch.diff=" . $patch;
 
