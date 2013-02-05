@@ -1,11 +1,39 @@
 <?php
 
 class TryLib_Util_OptionsParser {
+
+    /**
+      * Return the list of arguments in a command line (remove the options)
+      */
+    public static function pruneOptions($parsed_options) {
+        global $argv;
+
+        $pruneargv = array();
+        foreach ($parsed_options as $option => $values) {
+            if (is_string($values)) {
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                foreach ($argv as $key => $chunk) {
+                    $regex = '/^'. (isset($option[1]) ? '--' : '-') . $option . '/';
+                    if ($chunk == $value && $argv[$key-1][0] == '-' || preg_match($regex, $chunk)) {
+                        if (preg_match($regex,$chunk)){echo "preg match $regex\n";};
+                        array_push($pruneargv, $key);
+                     }
+                }
+            }
+        }
+        while ($key = array_pop($pruneargv)) unset($argv[$key]);
+
+        return array_slice($argv, 1);
+    }
+
     public static function getOptions() {
         global $argv;
 
         $options = array(
             'jobs' => array(),
+            'exclude' => array(),
             'verbose' => false,
             'diffonly' => false,
             'patch' => null,
@@ -19,6 +47,7 @@ class TryLib_Util_OptionsParser {
             'h' => 'help',
             'v' => 'verbose',
             'n' => 'diff-only',
+            'e:' => 'exclude:',
             'b:' => 'branch:',
             'p:' => 'patch:',
             'c:' => 'callback:',
@@ -77,21 +106,19 @@ class TryLib_Util_OptionsParser {
                     }
                     $options['callback'] = $v;
                     break;
-            }
-        }
-        # Now remove the options from argv to get the jobs
-        $pruneargv = array();
-        foreach ($opt as $option => $value) {
-          foreach ($argv as $key => $chunk) {
-            $regex = '/^'. (isset($option[1]) ? '--' : '-') . $option . '/';
-            if ($chunk == $value && $argv[$key-1][0] == '-' || preg_match($regex, $chunk)) {
-                array_push($pruneargv, $key);
-            }
-          }
-        }
-        while ($key = array_pop($pruneargv)) unset($argv[$key]);
 
-        $options['jobs'] = array_slice($argv, 1);
+                case 'e':
+                case 'exclude':
+                    if (is_array($v)) {
+                        $options['exclude'] = $v;
+                    } else {
+                        $options['exclude'][] = $v;
+                    }
+                    break;
+            }
+        }
+
+        $options['jobs'] = self::pruneOptions($opt);
 
         return $options;
     }
