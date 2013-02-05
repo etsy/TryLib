@@ -61,8 +61,7 @@ class TryLib_JenkinsRunner {
 
         // Build up the jenkins command incrementally
         $cli_command = $this->buildCLICommand($patch);
-        echo $cli_command;
-        return;
+
         // Run the job
         $this->runJenkinsCommand($cli_command);
 
