@@ -17,7 +17,6 @@ class TryLib_Util_OptionsParser {
                 foreach ($argv as $key => $chunk) {
                     $regex = '/^'. (isset($option[1]) ? '--' : '-') . $option . '/';
                     if ($chunk == $value && $argv[$key-1][0] == '-' || preg_match($regex, $chunk)) {
-                        if (preg_match($regex,$chunk)){echo "preg match $regex\n";};
                         array_push($pruneargv, $key);
                      }
                 }
