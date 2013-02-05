@@ -39,7 +39,7 @@ class TryLib_Util_OptionsParser {
             'branch' => null,
             'staged' => false,
             'showprogress' => false,
-            'callback' => null
+            'callbacks' => array()
             );
 
         $parameters = array(
@@ -100,10 +100,10 @@ class TryLib_Util_OptionsParser {
                 case 'c':
                 case 'callback':
                     if (is_array($v)) {
-                        print 'You can specify only 1 callback string' . PHP_EOL;
-                        exit(1);
+                        $options['callbacks'] = $v;
+                    } else {
+                        $options['callbacks'][] = $v;
                     }
-                    $options['callback'] = $v;
                     break;
 
                 case 'e':

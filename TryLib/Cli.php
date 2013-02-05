@@ -69,7 +69,9 @@ class TryLib_CLI {
         $jenkins_runner->setUid($this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
         $jenkins_runner->setExcludedSubJobs($this->options['exclude']);
-        $jenkins_runner->addCallback($this->options['callback']);
+        foreach ($this->options['callbacks'] as $cb) {
+            $jenkins_runner->addCallback($cb);
+        }
         $jenkins_runner->startJenkinsJob($patch, $this->options['showprogress']);
     }
 }
