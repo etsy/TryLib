@@ -1,19 +1,15 @@
 <?php
 
-class TryLib_JenkinsRunner {
-
+abstract class TryLib_JenkinsRunner {
     protected $jenkins_url;
     protected $jenkins_cli;
     protected $try_job_name;
     protected $cmd_runner;
-    protected $overall_result;
+    protected $overall_results;
     protected $try_base_url;
-    protected $colors;
 
     private $branch;
     private $options;
-    private $jobs;
-    private $excluded_jobs;
     private $callbacks;
     private $ssh_key_path;
 
@@ -29,18 +25,18 @@ class TryLib_JenkinsRunner {
         $this->cmd_runner = $cmd_runner;
 
         $this->options = array();
-        $this->jobs = array();
         $this->callbacks = array();
         $this->ssh_key_path = null;
-        $this->overall_result = null;
-        $this->try_base_url = null;
         $this->branch = null;
-
-        $this->colors = null;
-        if(defined("STDERR") && posix_isatty(STDERR)){
-            $this->colors = new TryLib_Util_AnsiColor();
-        }
+        $this->overall_results = null;
+        $this->try_base_url = null;
     }
+
+    abstract protected function pollForCompletion($pretty);
+
+    abstract protected function getBuildCommand();
+
+    abstract protected function getBuildExtraArguments($poll_for_completion);
 
     public function runJenkinsCommand($command) {
         $cmd = sprintf(
@@ -55,18 +51,18 @@ class TryLib_JenkinsRunner {
     /**
      * Logout, and Start the Jenkins job
      */
-    public function startJenkinsJob($patch, $pollForCompletion = false) {
+    public function startJenkinsJob($poll_for_completion = false) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
 
         // Build up the jenkins command incrementally
-        $cli_command = $this->buildCLICommand($patch);
+        $cli_command = $this->buildCLICommand($poll_for_completion);
 
         // Run the job
         $this->runJenkinsCommand($cli_command);
 
-        if ($pollForCompletion || !empty($this->callbacks)) {
-            $this->pollForCompletion($pollForCompletion);
+        if ($poll_for_completion || !empty($this->callbacks)) {
+            $this->pollForCompletion($poll_for_completion);
             $this->executeCallbacks();
         }
     }
@@ -80,33 +76,15 @@ class TryLib_JenkinsRunner {
     }
 
     public function setUid($uid) {
-        $this->options[] = "-p guid=$uid";
+        $this->options[] = '-p guid=' . $uid;
     }
 
     public function setBranch($branch) {
-        $this->options[] = "-p branch=$branch";
+        $this->options[] = '-p branch=' . $branch;
     }
 
-    public function setSubJobs($jobs) {
-        $this->jobs = array_unique($jobs);
-    }
-
-    public function setExcludedSubJobs($jobs) {
-        $this->excluded_jobs = array_unique($jobs);
-    }
-
-    public function getJobsList() {
-        $tryjobs = array();
-        foreach($this->jobs as $job) {
-            if ( !in_array($job, $this->excluded_jobs)) {
-                $tryjobs[] = $this->try_job_name . '-' . $job;
-            }
-        }
-
-        foreach($this->excluded_jobs as $job) {
-            $tryjobs[] = '-' . $this->try_job_name . '-' . $job;
-        }
-        return $tryjobs;
+    public function setPatch($patch) {
+        $this->options[] = '-p patch.diff=' . $patch;
     }
 
     public function addCallback($callback) {
@@ -122,106 +100,22 @@ class TryLib_JenkinsRunner {
     /**
      * Build the Jenkins CLI command, based on all options
      */
-    function buildCLICommand($patch) {
+    function buildCLICommand($poll_for_completion) {
         $command = array();
 
         if (!is_null($this->ssh_key_path)) {
             $command[] = '-i ' . $this->ssh_key_path;
         }
 
-        $command[] = "build-master";
+        $command[] = $this->getBuildCommand();
+
         $command[] = $this->try_job_name;
 
-        $command = array_merge($command, $this->getJobsList());
+        $extra_args = $this->getBuildExtraArguments($poll_for_completion);
 
-        $this->options[] = "-p patch.diff=" . $patch;
-
-        return implode(' ' , array_merge($command, $this->options));
+        return implode(' ' , array_merge($command, $extra_args, $this->options));
     }
 
-    /**
-     * Poll for completion of try job and print results
-     */
-    function pollForCompletion($pretty) {
-        $try_output = $this->cmd_runner->getOutput();
-
-        // Find job URL
-        $matches = array();
-        if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
-            $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
-        }
-
-        $this->try_base_url = $matches[0];
-        $try_poll_url = $this->try_base_url . '/consoleText';
-
-        $prev_text = '';
-
-        // Poll job URL for completion
-        while (true) {
-            $try_log = file_get_contents($try_poll_url);
-
-            $new_text = str_replace($prev_text, '', $try_log);
-            $prev_text = $try_log;
-
-            if ($pretty) {
-                if ($this->printJobResults($new_text, $pretty)) {
-                    echo PHP_EOL . '......... waiting for job to finish ..';
-                }
-            }
-
-            if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-                echo PHP_EOL . $this->try_base_url . PHP_EOL;
-                $this->overall_result = $matches[0];
-                if (!$pretty) {
-                    $this->printJobResults($try_log, $pretty);
-                }
-                echo PHP_EOL . $this->overall_result . PHP_EOL;
-                $this->overall_result = str_replace("Finished: ", "", $this->overall_result);
-                break;
-            }
-            if ($pretty) {
-                echo '.';
-            } else {
-                echo '......... waiting for job to finish' . PHP_EOL;
-            }
-            sleep(30);
-        }
-    }
-
-    /**
-     * Given a string of the try logs, print the results from any individual
-     * job found in the text.
-     *
-     * @param string $log
-     * @access public
-     * @return boolean Returns true if any job results were printed, false otherwise
-     */
-    function printJobResults($log, $pretty) {
-        if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
-            echo PHP_EOL . PHP_EOL;
-            foreach ($matches[0] as $k => $_) {
-                $success = $matches[1][$k];
-                if ($pretty && !is_null($this->colors)) {
-                    if ($success == 'SUCCESS') {
-                        $success = $this->colors->green($success);
-                    } else if ($success == 'UNSTABLE') {
-                        $success = $this->colors->yellow($success);
-                    } else {
-                        $success = $this->colors->red($success);
-                    }
-                }
-
-                printf(
-                    "% 32s % -10s %s" . PHP_EOL,
-                    $matches[2][$k],
-                    $success,
-                    $matches[1][$k] !== 'SUCCESS' ? $matches[3][$k] : ''
-                );
-            }
-            return true;
-        }
-        return false;
-    }
 
     function executeCallbacks() {
         foreach($this->callbacks as $callback) {

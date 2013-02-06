@@ -2,13 +2,13 @@
 
 require_once "TryLib/Autoload.php";
 
-class JenkinsRunnerTest extends \PHPUnit_Framework_TestCase {
+class MasterProjectTest extends PHPUnit_Framework_TestCase {
 
     private $jenkins_runner;
 
     function setUp() {
         parent::setUp();
-        $this->jenkins_runner = new TryLib_JenkinsRunner(
+        $this->jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
             'url.to.jenkins.com:8080',
             '/path/to/cli.jar',
             'test-try',

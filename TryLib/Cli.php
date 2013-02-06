@@ -57,13 +57,14 @@ class TryLib_CLI {
             exit(0);
         }
 
-        $jenkins_runner = new TryLib_JenkinsRunner(
+        $jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
             $this->jenkins_server,
             $this->jenkins_cli_jar,
             $this->jenkins_master_job,
             $this->cmd_runner
         );
 
+        $jenkins_runner->setPatch($patch);
         $jenkins_runner->setBranch($remote_branch);
         $jenkins_runner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
         $jenkins_runner->setUid($this->user . time());
@@ -72,6 +73,6 @@ class TryLib_CLI {
         foreach ($this->options['callbacks'] as $cb) {
             $jenkins_runner->addCallback($cb);
         }
-        $jenkins_runner->startJenkinsJob($patch, $this->options['showprogress']);
+        $jenkins_runner->startJenkinsJob($this->options['showprogress']);
     }
 }
