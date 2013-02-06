@@ -10,7 +10,7 @@ class TryLib_Util_OptionsParser {
 
         $pruneargv = array();
         foreach ($parsed_options as $option => $values) {
-            if (is_string($values)) {
+            if (!is_array($values)) {
                 $values = array($values);
             }
             foreach ($values as $value) {
