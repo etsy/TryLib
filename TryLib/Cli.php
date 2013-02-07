@@ -65,9 +65,9 @@ class TryLib_CLI {
         );
 
         $jenkins_runner->setPatch($patch);
-        $jenkins_runner->setBranch($remote_branch);
         $jenkins_runner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
-        $jenkins_runner->setUid($this->user . time());
+        $jenkins_runner->setParam('branch', $remote_branch);
+        $jenkins_runner->setParam('guid', $this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
         $jenkins_runner->setExcludedSubJobs($this->options['exclude']);
         foreach ($this->options['callbacks'] as $cb) {

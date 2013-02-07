@@ -67,6 +67,13 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
+    public function setParam($key, $value) {
+        $param = sprintf('-p %s=%s', $key, $value);
+        if (!in_array($param, $this->options)) {
+            $this->options[] = $param;
+        }
+    }
+
     public function setSshKey($ssh_key_path) {
         if (file_exists($ssh_key_path)) {
             $this->ssh_key_path = $ssh_key_path;
@@ -75,16 +82,12 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
-    public function setUid($uid) {
-        $this->options[] = '-p guid=' . $uid;
-    }
-
-    public function setBranch($branch) {
-        $this->options[] = '-p branch=' . $branch;
-    }
-
     public function setPatch($patch) {
-        $this->options[] = '-p patch.diff=' . $patch;
+        if (file_exists($patch)) {
+            $this->options[] = '-p patch.diff=' . realpath($patch);
+        } else {
+            $this->cmd_runner->terminate("Patch file not found (${patch})");
+        }
     }
 
     public function addCallback($callback) {
