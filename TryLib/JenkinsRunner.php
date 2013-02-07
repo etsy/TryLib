@@ -116,12 +116,12 @@ abstract class TryLib_JenkinsRunner {
 
         $extra_args = $this->getBuildExtraArguments($poll_for_completion);
 
-        return implode(' ' , array_merge($command, $extra_args, $this->options));
+        return implode(' ', array_merge($command, $extra_args, $this->options));
     }
 
 
     function executeCallbacks() {
-        foreach($this->callbacks as $callback) {
+        foreach ($this->callbacks as $callback) {
             $this->executeCallback($callback);
         }
     }

@@ -18,11 +18,13 @@ class TryLib_Util_OptionsParser {
                     $regex = '/^'. (isset($option[1]) ? '--' : '-') . $option . '/';
                     if ($chunk == $value && $argv[$key-1][0] == '-' || preg_match($regex, $chunk)) {
                         array_push($pruneargv, $key);
-                     }
+                    }
                 }
             }
         }
-        while ($key = array_pop($pruneargv)) unset($argv[$key]);
+        while ($key = array_pop($pruneargv)) {
+            unset($argv[$key]);
+        }
 
         return array_slice($argv, 1);
     }

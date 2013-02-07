@@ -30,6 +30,5 @@ class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
                 $matches[1]
             );
         }
-        return;
     }
 }
