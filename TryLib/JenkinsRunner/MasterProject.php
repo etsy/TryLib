@@ -20,11 +20,18 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
         $this->jobs = array();
         $this->excluded_jobs = array();
-
         $this->colors = null;
-        if(defined("STDERR") && posix_isatty(STDERR)){
-            $this->colors = new TryLib_Util_AnsiColor();
+    }
+
+    public function getColors() {
+        if (is_null($this->colors)) {
+            if (defined("STDERR") && posix_isatty(STDERR)) {
+                $this->colors = new TryLib_Util_AnsiColor();
+            } else {
+                $this->colors = false;
+            }
         }
+        return $this->colors;
     }
 
     public function getBuildCommand() {
@@ -41,13 +48,13 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
     public function getJobsList() {
         $tryjobs = array();
-        foreach($this->jobs as $job) {
+        foreach ($this->jobs as $job) {
             if ( !in_array($job, $this->excluded_jobs)) {
                 $tryjobs[] = $this->try_job_name . '-' . $job;
             }
         }
 
-        foreach($this->excluded_jobs as $job) {
+        foreach ($this->excluded_jobs as $job) {
             $tryjobs[] = '-' . $this->try_job_name . '-' . $job;
         }
         return $tryjobs;
@@ -117,17 +124,18 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
      * @return boolean Returns true if any job results were printed, false otherwise
      */
     protected function printJobResults($log, $pretty) {
+        $colors = $this->getColors();
         if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             echo PHP_EOL . PHP_EOL;
             foreach ($matches[0] as $k => $_) {
                 $success = $matches[1][$k];
-                if ($pretty && !is_null($this->colors)) {
+                if ($pretty && $colors) {
                     if ($success == 'SUCCESS') {
-                        $success = $this->colors->green($success);
+                        $success = $colors->green($success);
                     } else if ($success == 'UNSTABLE') {
-                        $success = $this->colors->yellow($success);
+                        $success = $colors->yellow($success);
                     } else {
-                        $success = $this->colors->red($success);
+                        $success = $colors->red($success);
                     }
                 }
 
