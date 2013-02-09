@@ -11,7 +11,7 @@ abstract class TryLib_JenkinsRunner {
     private $branch;
     private $options;
     private $callbacks;
-    public $ssh_key_path;
+    private $ssh_key_path;
 
     public function __construct(
         $jenkins_url,
@@ -86,6 +86,10 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
+	public function getSsKey() {
+		return $this->ssh_key_path;
+	}
+
     public function setPatch($patch) {
         if (file_exists($patch)) {
             $this->options[] = '-p patch.diff=' . $patch;
@@ -110,8 +114,8 @@ abstract class TryLib_JenkinsRunner {
     function buildCLICommand($poll_for_completion) {
         $command = array();
 
-        if (!is_null($this->ssh_key_path)) {
-            $command[] = '-i ' . $this->ssh_key_path;
+        if (!is_null($this->getSsKey())) {
+            $command[] = '-i ' . $this->getSsKey();
         }
 
         $command[] = $this->getBuildCommand();

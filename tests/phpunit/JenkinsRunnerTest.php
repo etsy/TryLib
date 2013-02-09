@@ -77,7 +77,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 			->at(vfsStreamWrapper::getRoot());
 
 		$this->jenkins_runner->setSshKey(vfsStream::url($expected));
-		$this->assertEquals('vfs://' . $expected, $this->jenkins_runner->ssh_key_path);
+		$this->assertEquals('vfs://' . $expected, $this->jenkins_runner->getSsKey());
 	}
 	
 	function testSetSshKeyFileDoesNotExists() {
@@ -85,7 +85,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 							  ->method('warn')
 							  ->with($this->equalTo('SSH key file not found (~/foo)'));
 		$this->jenkins_runner->setSshKey('~/foo');
-		$this->assertNull($this->jenkins_runner->ssh_key_path);
+		$this->assertNull($this->jenkins_runner->getSsKey());
 	}
 
 	function testPatchFileExists() {
