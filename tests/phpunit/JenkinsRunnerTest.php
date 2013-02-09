@@ -126,4 +126,23 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->addCallback((object) 'echo');
 		$this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
 	}
+	
+	function provideCallbackData() {
+		return array(
+			array('echo "hello world"', 'SUCCESS', 'URL', 'echo "hello world"'),
+			array('echo "${status}"', 'SUCCESS', 'URL', 'echo "SUCCESS"'),
+			array('echo "${url}"', 'SUCCESS', 'URL', 'echo "URL"'),
+			array('echo "${status} : ${url}"', 'SUCCESS', 'URL', 'echo "SUCCESS : URL"')
+		);
+	}
+	
+	/** @dataProvider provideCallbackData */
+	function testExecuteCallback($callback, $status, $url, $expected) {
+		$this->jenkins_runner->overall_result = $status;
+		$this->jenkins_runner->try_base_url = $url;
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('run')
+							  ->with($this->equalTo($expected));
+		$this->jenkins_runner->executeCallback($callback);
+	}
 }

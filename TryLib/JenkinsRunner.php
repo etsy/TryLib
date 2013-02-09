@@ -5,8 +5,9 @@ abstract class TryLib_JenkinsRunner {
     protected $jenkins_cli;
     protected $try_job_name;
     protected $cmd_runner;
-    protected $overall_results;
-    protected $try_base_url;
+    
+	public $overall_results;
+    public $try_base_url;
 
     private $branch;
     private $options;
@@ -28,8 +29,8 @@ abstract class TryLib_JenkinsRunner {
         $this->callbacks = array();
         $this->ssh_key_path = null;
         $this->branch = null;
-        $this->overall_results = null;
-        $this->try_base_url = null;
+        $this->overall_results = '';
+        $this->try_base_url = '';
     }
 
     abstract protected function pollForCompletion($pretty);
@@ -141,10 +142,6 @@ abstract class TryLib_JenkinsRunner {
     }
 
     function executeCallback($callback) {
-        if (is_null($this->try_base_url) || is_null($this->overall_result)) {
-            return;
-        }
-
         $callback = str_replace(
             array('${status}', '${url}'),
             array($this->overall_result, $this->try_base_url),
