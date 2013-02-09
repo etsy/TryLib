@@ -107,4 +107,23 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->setPatch(vfsStream::url('patch.diff'));
 		$this->assertEquals(array(), $this->jenkins_runner->getOptions());
 	}
+
+	function testAddNullCallback() {
+		$this->jenkins_runner->addCallback(null);
+		$this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
+	}
+
+	function testAddStringCallback() {
+		$callback = 'echo "Hello Test"';
+		$this->jenkins_runner->addCallback($callback);
+		$this->assertEquals(array($callback), $this->jenkins_runner->getCallbacks());
+	}
+
+	function testAddObjallback() {
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('warn')
+							  ->with($this->equalTo('Invalid callback - must be a string'));
+		$this->jenkins_runner->addCallback((object) 'echo');
+		$this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
+	}
 }

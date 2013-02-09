@@ -108,6 +108,10 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
+    public function getCallbacks() {
+		return $this->callbacks;
+	}
+
     /**
      * Build the Jenkins CLI command, based on all options
      */
@@ -131,7 +135,7 @@ abstract class TryLib_JenkinsRunner {
 
 
     function executeCallbacks() {
-        foreach ($this->callbacks as $callback) {
+        foreach ($this->getCallbacks() as $callback) {
             $this->executeCallback($callback);
         }
     }
