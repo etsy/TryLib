@@ -44,6 +44,10 @@ class TryLib_CommandRunner {
         exit(1);
     }
 
+    public function warn($about) {
+        fputs($this->stderr, PHP_EOL . $about . PHP_EOL);
+    }
+
     public function chdir($wd) {
         if ($this->verbose) {
             fputs($this->stderr, '$ cd ' . $wd . PHP_EOL);
