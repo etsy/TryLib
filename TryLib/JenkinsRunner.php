@@ -62,7 +62,7 @@ abstract class TryLib_JenkinsRunner {
         // Run the job
         $this->runJenkinsCommand($cli_command);
 
-        if ($poll_for_completion || !empty($this->callbacks)) {
+        if ($poll_for_completion || $this->getCallbacks()) {
             $this->pollForCompletion($poll_for_completion);
             $this->executeCallbacks();
         }

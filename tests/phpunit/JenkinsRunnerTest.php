@@ -27,14 +27,14 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 	const JENKINS_URL = 'url.to.jenkins.com:8080';
 	const JENKINS_CLI = '/path/to/cli.jar';
 	const JENKINS_JOB = 'test-try';
-	
+
     private $jenkins_runner;
 
     function setUp() {
         parent::setUp();
-		
+
 		$this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
-		
+
         $this->jenkins_runner = new TestRunner(
             self::JENKINS_URL,
             self::JENKINS_CLI,
@@ -47,34 +47,34 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 
 	function testRunJenkinsCommand() {
 		$expected_cmd = 'java -jar ' . self::JENKINS_CLI . ' -s http://' . self::JENKINS_URL . '/ dummy-cmd';
-		
+
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('run')
 							  ->with($this->equalTo($expected_cmd));
 
 		$this->jenkins_runner->runJenkinsCommand('dummy-cmd');
 	}
-	
+
 	function testSetParam() {
 		$this->jenkins_runner->setParam('foo', 'bar');
 		$this->jenkins_runner->setParam('foo', 'baz');
-		
+
 		$actual = $this->jenkins_runner->getOptions();
 		$expected = array('-p foo=bar', '-p foo=baz');
 		$this->assertEquals($expected, $actual);
 	}
-	
+
 	function testSetDuplicateParam() {
 		$this->jenkins_runner->setParam('foo', 'bar');
 		$this->jenkins_runner->setParam('foo', 'bar');
 		$this->jenkins_runner->setParam('foo', 'baz');
 		$this->jenkins_runner->setParam('foo', 'baz');
-		
+
 		$actual = $this->jenkins_runner->getOptions();
 		$expected = array('-p foo=bar', '-p foo=baz');
 		$this->assertEquals($expected, $actual);
 	}
-	
+
 	function testSetSshKeyFileExists() {
 		$expected = 'testDir/try_id_rsa';
 		vfsStream::newFile('try_id_rsa')
@@ -83,7 +83,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->setSshKey(vfsStream::url($expected));
 		$this->assertEquals('vfs://' . $expected, $this->jenkins_runner->getSsKey());
 	}
-	
+
 	function testSetSshKeyFileDoesNotExists() {
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('warn')
@@ -130,7 +130,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->addCallback((object) 'echo');
 		$this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
 	}
-	
+
 	function provideCallbackData() {
 		return array(
 			array('echo "hello world"', 'SUCCESS', 'URL', 'echo "hello world"'),
@@ -139,7 +139,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 			array('echo "${status} : ${url}"', 'SUCCESS', 'URL', 'echo "SUCCESS : URL"')
 		);
 	}
-	
+
 	/** @dataProvider provideCallbackData */
 	function testExecuteCallback($callback, $status, $url, $expected) {
 		$this->jenkins_runner->overall_result = $status;
@@ -149,27 +149,118 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 							  ->with($this->equalTo($expected));
 		$this->jenkins_runner->executeCallback($callback);
 	}
-	
-	
+
+
 	function testBuildCLICommandNoSshKey() {
 		$this->jenkins_runner->setParam('foo', 'bar');
 		$this->jenkins_runner->setParam('foo', 'baz');
-		
+
 		$expected = 'test test-try -s -p foo=bar -p foo=baz';
 		$actual = $this->jenkins_runner->buildCLICommand(true);
 		$this->assertEquals($expected, $actual);
 	}
-	
+
 	function testBuildCLICommandWithSshKey() {
 		$this->jenkins_runner->setParam('foo', 'bar');
-		
+
 		$ssh_key = 'testDir/try_id_rsa';
 		vfsStream::newFile('try_id_rsa')
 			->at(vfsStreamWrapper::getRoot());
 		$this->jenkins_runner->setSshKey(vfsStream::url($ssh_key));
-				
+
 		$expected = '-i vfs://testDir/try_id_rsa test test-try -p foo=bar';
 		$actual = $this->jenkins_runner->buildCLICommand(false);
 		$this->assertEquals($expected, $actual);
+	}
+
+	function testStartJenkinsJobNoPollingNoCallback() {
+		$jenkins_runner = $this->getMock(
+				'TestRunner',
+				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
+		);
+
+		$jenkins_runner->expects($this->at(0))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('logout'));
+
+		$jenkins_runner->expects($this->at(1))
+		     ->method('buildCLICommand')
+			 ->with($this->equalTo(false))
+			 ->will($this->returnValue('cmd'));
+
+		$jenkins_runner->expects($this->at(2))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('cmd'));
+
+		$jenkins_runner->expects($this->never())
+		               ->method('pollForCompletion');
+
+		$jenkins_runner->expects($this->never())
+		               ->method('executeCallbacks');
+
+		$jenkins_runner->startJenkinsJob(false);
+	}
+
+	function testStartJenkinsJobPollingNoCallback() {
+		$jenkins_runner = $this->getMock(
+				'TestRunner',
+				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
+		);
+
+		$jenkins_runner->expects($this->at(0))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('logout'));
+
+		$jenkins_runner->expects($this->at(1))
+		     ->method('buildCLICommand')
+			 ->with($this->equalTo(true))
+			 ->will($this->returnValue('cmd'));
+
+		$jenkins_runner->expects($this->at(2))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('cmd'));
+
+		$jenkins_runner->expects($this->once())
+		               ->method('pollForCompletion')
+					   ->with($this->equalTo(true));
+
+		$jenkins_runner->expects($this->once())
+		               ->method('executeCallbacks');
+
+		$jenkins_runner->startJenkinsJob(true);
+	}
+
+	function testStartJenkinsJobNoPollingCallback() {
+		$jenkins_runner = $this->getMock(
+				'TestRunner',
+				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
+		);
+
+		$jenkins_runner->expects($this->at(0))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('logout'));
+
+		$jenkins_runner->expects($this->at(1))
+		     ->method('buildCLICommand')
+			 ->with($this->equalTo(false))
+			 ->will($this->returnValue('cmd'));
+
+		$jenkins_runner->expects($this->at(2))
+		     ->method('runJenkinsCommand')
+			 ->with($this->equalTo('cmd'));
+
+		$jenkins_runner->expects($this->once())
+		               ->method('pollForCompletion')
+					   ->with($this->equalTo(false));
+
+		$jenkins_runner->expects($this->once())
+		               ->method('executeCallbacks');
+
+		$jenkins_runner->addCallback('echo "hello world!"');
+
+		$jenkins_runner->startJenkinsJob(false);
 	}
 }
