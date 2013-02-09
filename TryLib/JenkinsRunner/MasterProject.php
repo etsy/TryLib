@@ -61,10 +61,18 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     }
 
 
+
     /** For a master project, the extra arguments are a list of subjobs */
     public function getBuildExtraArguments($poll_for_completion) {
         return $this->getJobsList();
     }
+
+	public function getJobOutput() {
+		if (is_string($this->try_base_url)) {
+			return file_get_contents($this->try_base_url . '/consoleText');
+		}
+		return null;
+	}
 
     /**
      * Poll for completion of try job and print results
@@ -79,41 +87,49 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         }
 
         $this->try_base_url = $matches[0];
-        $try_poll_url = $this->try_base_url . '/consoleText';
 
         $prev_text = '';
-
         // Poll job URL for completion
         while (true) {
-            $try_log = file_get_contents($try_poll_url);
-
-            $new_text = str_replace($prev_text, '', $try_log);
-            $prev_text = $try_log;
-
-            if ($pretty) {
-                if ($this->printJobResults($new_text, $pretty)) {
-                    echo PHP_EOL . '......... waiting for job to finish ..';
-                }
-            }
-
-            if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-                echo PHP_EOL . $this->try_base_url . PHP_EOL;
-                $this->try_status = $matches[0];
-                if (!$pretty) {
-                    $this->printJobResults($try_log, $pretty);
-                }
-                echo PHP_EOL . $this->try_status . PHP_EOL;
-                $this->try_status = str_replace("Finished: ", "", $this->try_status);
-                break;
-            }
-            if ($pretty) {
-                echo '.';
-            } else {
-                echo '......... waiting for job to finish' . PHP_EOL;
-            }
+			$prev_text = $this->processLogOuput($prev_text)
+			if (is_null($prev_text, $pretty)) {
+				break
+			}
             sleep(30);
         }
     }
+
+	public function processLogOuput($prev_text, $pretty) {
+		$try_log = $this->getJobOutput();
+
+        $new_text = str_replace($prev_text, '', $try_log);
+        $prev_text = $try_log;
+
+        if ($pretty) {
+            if ($this->printJobResults($new_text, $pretty)) {
+                echo PHP_EOL . '......... waiting for job to finish ..';
+            }
+        }
+
+        if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
+            echo PHP_EOL . $this->try_base_url . PHP_EOL;
+            $this->try_status = $matches[0];
+            if (!$pretty) {
+                $this->printJobResults($try_log, $pretty);
+            }
+            echo PHP_EOL . $this->try_status . PHP_EOL;
+            $this->try_status = str_replace("Finished: ", "", $this->try_status);
+            return null;
+        }
+
+        if ($pretty) {
+            echo '.';
+        } else {
+            echo '......... waiting for job to finish' . PHP_EOL;
+        }
+		return $prev_text
+	}
+
 
     /**
      * Given a string of the try logs, print the results from any individual
