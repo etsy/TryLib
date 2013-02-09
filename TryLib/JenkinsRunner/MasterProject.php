@@ -91,9 +91,9 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $prev_text = '';
         // Poll job URL for completion
         while (true) {
-			$prev_text = $this->processLogOuput($prev_text)
+			$prev_text = $this->processLogOuput($prev_text);
 			if (is_null($prev_text, $pretty)) {
-				break
+				break;
 			}
             sleep(30);
         }
@@ -127,7 +127,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         } else {
             echo '......... waiting for job to finish' . PHP_EOL;
         }
-		return $prev_text
+		return $prev_text;	
 	}
 
 
