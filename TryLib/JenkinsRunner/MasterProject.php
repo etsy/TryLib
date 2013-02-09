@@ -60,7 +60,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         return $tryjobs;
     }
 
-    
+
     /** For a master project, the extra arguments are a list of subjobs */
     public function getBuildExtraArguments($poll_for_completion) {
         return $this->getJobsList();
@@ -123,10 +123,11 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
      * @access public
      * @return boolean Returns true if any job results were printed, false otherwise
      */
-    protected function printJobResults($log, $pretty) {
+    public function printJobResults($log, $pretty) {
         $colors = $this->getColors();
+
         if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
-            echo PHP_EOL . PHP_EOL;
+            $this->cmd_runner->info(PHP_EOL);
             foreach ($matches[0] as $k => $_) {
                 $success = $matches[1][$k];
                 if ($pretty && $colors) {
@@ -139,12 +140,13 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
                     }
                 }
 
-                printf(
-                    "% 32s % -10s %s" . PHP_EOL,
+	            $status = sprintf(
+                    "% 32s % -10s %s",
                     $matches[2][$k],
                     $success,
                     $matches[1][$k] !== 'SUCCESS' ? $matches[3][$k] : ''
                 );
+				$this->cmd_runner->info($status);
             }
             return true;
         }
