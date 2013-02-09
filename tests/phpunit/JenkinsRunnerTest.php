@@ -11,7 +11,11 @@ class TestRunner extends TryLib_JenkinsRunner{
     }
 
     public function getBuildExtraArguments($poll_for_completion) {
-        return array('test1', 'test2');
+		if ($poll_for_completion){
+			return array('-s');
+		} else {
+			return array();
+		}
     }
 
     public function pollForCompletion($pretty) {
@@ -144,5 +148,28 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 							  ->method('run')
 							  ->with($this->equalTo($expected));
 		$this->jenkins_runner->executeCallback($callback);
+	}
+	
+	
+	function testBuildCLICommandNoSshKey() {
+		$this->jenkins_runner->setParam('foo', 'bar');
+		$this->jenkins_runner->setParam('foo', 'baz');
+		
+		$expected = 'test test-try -s -p foo=bar -p foo=baz';
+		$actual = $this->jenkins_runner->buildCLICommand(true);
+		$this->assertEquals($expected, $actual);
+	}
+	
+	function testBuildCLICommandWithSshKey() {
+		$this->jenkins_runner->setParam('foo', 'bar');
+		
+		$ssh_key = 'testDir/try_id_rsa';
+		vfsStream::newFile('try_id_rsa')
+			->at(vfsStreamWrapper::getRoot());
+		$this->jenkins_runner->setSshKey(vfsStream::url($ssh_key));
+				
+		$expected = '-i vfs://testDir/try_id_rsa test test-try -p foo=bar';
+		$actual = $this->jenkins_runner->buildCLICommand(false);
+		$this->assertEquals($expected, $actual);
 	}
 }
