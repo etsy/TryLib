@@ -45,7 +45,7 @@ class TryLib_CommandRunner {
     }
 
     public function warn($about) {
-        fputs($this->stderr, PHP_EOL . $about . PHP_EOL);
+        fputs($this->stderr, PHP_EOL . 'WARNING : ' . $about . PHP_EOL);
     }
 
     public function chdir($wd) {

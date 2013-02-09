@@ -11,7 +11,7 @@ abstract class TryLib_JenkinsRunner {
     private $branch;
     private $options;
     private $callbacks;
-    private $ssh_key_path;
+    public $ssh_key_path;
 
     public function __construct(
         $jenkins_url,
@@ -67,6 +67,10 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
+	public function getOptions() {
+		return $this->options;
+	}
+
     public function setParam($key, $value) {
         $param = sprintf('-p %s=%s', $key, $value);
         if (!in_array($param, $this->options)) {
@@ -78,7 +82,7 @@ abstract class TryLib_JenkinsRunner {
         if (file_exists($ssh_key_path)) {
             $this->ssh_key_path = $ssh_key_path;
         } else {
-           echo PHP_EOL . "WARNING : SSH key file not found (${ssh_key_path})" . PHP_EOL;
+           $this->cmd_runner->warn("SSH key file not found (${ssh_key_path})");
         }
     }
 
@@ -96,7 +100,7 @@ abstract class TryLib_JenkinsRunner {
         } else if (is_string($callback)) {
             $this->callbacks[] = $callback;
         } else {
-           echo PHP_EOL . "WARNING : Invalid callback - must be a string" . PHP_EOL;
+           $this->cmd_runner->warn('Invalid callback - must be a string');
         }
     }
 
@@ -116,7 +120,9 @@ abstract class TryLib_JenkinsRunner {
 
         $extra_args = $this->getBuildExtraArguments($poll_for_completion);
 
-        return implode(' ', array_merge($command, $extra_args, $this->options));
+		$options = $this->getOptions();
+
+        return implode(' ', array_merge($command, $extra_args, $options));
     }
 
 
