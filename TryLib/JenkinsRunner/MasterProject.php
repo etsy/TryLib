@@ -142,7 +142,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     public function printJobResults($log, $pretty) {
         $colors = $this->getColors();
 
-        if (preg_match_all('|^\[([^\]]+)\] (try[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
+        if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_name . '[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             $this->cmd_runner->info(PHP_EOL);
             foreach ($matches[0] as $k => $_) {
                 $success = $matches[1][$k];

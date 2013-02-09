@@ -83,18 +83,18 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array(
 				'green',
-				'                try-validate-css \e[green SUCCESS\[0m ',
-				'[SUCCESS] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css \e[green SUCCESS\[0m ',
+				'[SUCCESS] test-try-validate-css (http://link/to/job/testReport)'
 			),
 			array(
 				'yellow',
-				'                try-validate-css \e[yellow UNSTABLE\[0m (http://link/to/job/testReport)',
-				'[UNSTABLE] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css \e[yellow UNSTABLE\[0m (http://link/to/job/testReport)',
+				'[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)'
 			),
 			array(
 				'red',
-				'                try-validate-css \e[red FAILURE\[0m (http://link/to/job/testReport)',
-				'[FAILURE] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css \e[red FAILURE\[0m (http://link/to/job/testReport)',
+				'[FAILURE] test-try-validate-css (http://link/to/job/testReport)'
 			)
 
 
@@ -133,16 +133,16 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 	function provideJobResultsData() {
 		return array(
 			array(
-				'                try-validate-css SUCCESS    ',
-				'[SUCCESS] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css SUCCESS    ',
+				'[SUCCESS] test-try-validate-css (http://link/to/job/testReport)'
 			),
 			array(
-				'                try-validate-css UNSTABLE   (http://link/to/job/testReport)',
-				'[UNSTABLE] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css UNSTABLE   (http://link/to/job/testReport)',
+				'[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)'
 			),
 			array(
-				'                try-validate-css FAILURE    (http://link/to/job/testReport)',
-				'[FAILURE] try-validate-css (http://link/to/job/testReport)'
+				'           test-try-validate-css FAILURE    (http://link/to/job/testReport)',
+				'[FAILURE] test-try-validate-css (http://link/to/job/testReport)'
 			)
 
 
