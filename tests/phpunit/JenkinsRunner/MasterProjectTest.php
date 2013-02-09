@@ -102,7 +102,7 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/** @dataProvider providePrettyJobResultsData */
-	function testPrintJobResultsunstablePretty($color, $expected_output, $log_line) {
+	function testPrintJobResultSuccessAndPretty($color, $expected_output, $log_line) {
 		$mock_colors = $this->getMock('TryLib_Util_AnsiColor', array('green', 'yellow', 'red'));
 
 		$mock_colors->expects($this->once())
@@ -128,5 +128,47 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 							  ->with($this->equalTo($expected_output));
 
 		$this->assertTrue($jenkins_runner->printJobResults($log_line, true));
+	}
+	
+	function provideJobResultsData() {
+		return array(
+			array(
+				'                try-validate-css SUCCESS    ',
+				'[SUCCESS] try-validate-css (http://link/to/job/testReport)'
+			),
+			array(
+				'                try-validate-css UNSTABLE   (http://link/to/job/testReport)',
+				'[UNSTABLE] try-validate-css (http://link/to/job/testReport)'
+			),
+			array(
+				'                try-validate-css FAILURE    (http://link/to/job/testReport)',
+				'[FAILURE] try-validate-css (http://link/to/job/testReport)'
+			)
+
+
+		);
+	}
+
+	/** @dataProvider provideJobResultsData */
+	function testPrintJobResultSuccessNotPretty($expected_output, $log_line) {
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getColors'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+
+		$jenkins_runner->expects($this->once())
+					   ->method('getColors')
+					   ->will($this->returnValue(null));
+
+		$this->mock_cmd_runner->expects($this->at(0))
+							  ->method('info')
+							  ->with($this->equalTo(PHP_EOL));
+
+		$this->mock_cmd_runner->expects($this->at(1))
+							  ->method('info')
+							  ->with($this->equalTo($expected_output));
+
+		$this->assertTrue($jenkins_runner->printJobResults($log_line, false));
 	}
 }
