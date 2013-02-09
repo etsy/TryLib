@@ -5,7 +5,7 @@ class TryLib_CommandRunner {
     protected $stderr;
     protected $out;
 
-    public function __construct($verbose = false, $stderr = null) {
+    public function __construct($verbose = false, $stdout = null, $stderr = null) {
         $this->verbose = $verbose;
 
         if (is_null($stderr)) {
@@ -13,6 +13,12 @@ class TryLib_CommandRunner {
         }
 
         $this->stderr = $stderr;
+
+        if (is_null($stdout)) {
+            $stdout = fopen('php://stderr', 'w');
+        }
+
+        $this->stdout = $stdout;
 
         $this->out = array();
     }
@@ -42,6 +48,10 @@ class TryLib_CommandRunner {
     public function terminate($how) {
         fputs($this->stderr, $how . PHP_EOL);
         exit(1);
+    }
+
+    public function info($what) {
+        fputs($this->stdout, $what . PHP_EOL);
     }
 
     public function warn($about) {
