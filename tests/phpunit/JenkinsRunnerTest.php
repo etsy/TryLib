@@ -87,4 +87,24 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->setSshKey('~/foo');
 		$this->assertNull($this->jenkins_runner->ssh_key_path);
 	}
+
+	function testPatchFileExists() {
+		$patch = 'testDir/patch.diff';
+		vfsStream::newFile('patch.diff')
+			->at(vfsStreamWrapper::getRoot());
+
+		$this->jenkins_runner->setPatch(vfsStream::url($patch));
+
+		$expected = array('-p patch.diff=vfs://' . $patch);
+		$this->assertEquals($expected, $this->jenkins_runner->getOptions());
+	}
+
+	function testPatchFileDoesNotExists() {
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('terminate')
+							  ->with($this->equalTo('Patch file not found (vfs://patch.diff)'));
+
+		$this->jenkins_runner->setPatch(vfsStream::url('patch.diff'));
+		$this->assertEquals(array(), $this->jenkins_runner->getOptions());
+	}
 }

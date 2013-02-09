@@ -64,7 +64,7 @@ class TryLib_CLI {
             $this->cmd_runner
         );
 
-        $jenkins_runner->setPatch($patch);
+        $jenkins_runner->setPatch(realpath($patch));
         $jenkins_runner->setSshKey('/home/' . $this->user . '/.ssh/try_id_rsa');
         $jenkins_runner->setParam('branch', $remote_branch);
         $jenkins_runner->setParam('guid', $this->user . time());

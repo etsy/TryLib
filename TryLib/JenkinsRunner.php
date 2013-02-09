@@ -88,7 +88,7 @@ abstract class TryLib_JenkinsRunner {
 
     public function setPatch($patch) {
         if (file_exists($patch)) {
-            $this->options[] = '-p patch.diff=' . realpath($patch);
+            $this->options[] = '-p patch.diff=' . $patch;
         } else {
             $this->cmd_runner->terminate("Patch file not found (${patch})");
         }
