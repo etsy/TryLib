@@ -172,7 +172,7 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($jenkins_runner->printJobResults($log_line, false));
 	}
 	
-	function testPrintJobResultFailure($expected_output, $log_line) {
+	function testPrintJobResultFailure() {
 		$jenkins_runner = $this->getMock(
 				'TryLib_JenkinsRunner_MasterProject',
 				array('getColors'),
@@ -183,9 +183,9 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 					   ->method('getColors')
 					   ->will($this->returnValue(null));
 
-		$this->mock_cmd_runner->expects($never)
-							  ->method('info')
+		$this->mock_cmd_runner->expects($this->never())
+							  ->method('info');
 
-		$this->assertTrue($jenkins_runner->printJobResults("random line", false));
+		$this->assertFalse($jenkins_runner->printJobResults("random line", false));
 	}
 }
