@@ -50,8 +50,11 @@ class TryLib_CommandRunner {
         exit(1);
     }
 
-    public function info($what) {
-        fputs($this->stdout, $what . PHP_EOL);
+    public function info($what, $new_line=true) {
+        fputs($this->stdout, $what);
+		if ($new_line) {
+			fputs($this->stdout, PHP_EOL);
+		}
     }
 
     public function warn($about) {

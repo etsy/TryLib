@@ -141,7 +141,7 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 				'[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)'
 			),
 			array(
-				'           test-try-validate-css FAILURE    (http://link/to/job/testReport)',
+			'           test-try-validate-css FAILURE    (http://link/to/job/testReport)',
 				'[FAILURE] test-try-validate-css (http://link/to/job/testReport)'
 			)
 

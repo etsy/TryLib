@@ -107,25 +107,25 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
         if ($pretty) {
             if ($this->printJobResults($new_text, $pretty)) {
-                echo PHP_EOL . '......... waiting for job to finish ..';
+                $this->cmd_runner->info(PHP_EOL . '......... waiting for job to finish ..');
             }
         }
 
         if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-            echo PHP_EOL . $this->try_base_url . PHP_EOL;
+            $this->cmd_runner->info(PHP_EOL . $this->try_base_url);
             $this->try_status = $matches[0];
             if (!$pretty) {
                 $this->printJobResults($try_log, $pretty);
             }
-            echo PHP_EOL . $this->try_status . PHP_EOL;
+            $this->cmd_runner->info(PHP_EOL . $this->try_status);
             $this->try_status = str_replace("Finished: ", "", $this->try_status);
             return null;
         }
 
         if ($pretty) {
-            echo '.';
+            $this->cmd_runner->info('.', false);
         } else {
-            echo '......... waiting for job to finish' . PHP_EOL;
+            $this->cmd_runner->info('......... waiting for job to finish');
         }
 		return $prev_text;	
 	}
