@@ -127,6 +127,6 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 							  ->method('info')
 							  ->with($this->equalTo($expected_output));
 
-		$jenkins_runner->printJobResults($log_line, true);
+		$this->assertTrue($jenkins_runner->printJobResults($log_line, true));
 	}
 }
