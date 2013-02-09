@@ -142,7 +142,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 
 	/** @dataProvider provideCallbackData */
 	function testExecuteCallback($callback, $status, $url, $expected) {
-		$this->jenkins_runner->overall_result = $status;
+		$this->jenkins_runner->try_status = $status;
 		$this->jenkins_runner->try_base_url = $url;
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('run')

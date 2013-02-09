@@ -21,8 +21,9 @@ class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
      */
     public function pollForCompletion($pretty) {
         $out = $this->cmd_runner->getOutput();
+
         if (preg_match('|Completed ' . $this->try_job_name . ' #(\d+) : (.*)|m', $out, $matches)) {
-            $this->overall_result = $matches[2];
+			$this->try_status = $matches[2];
             $this->try_base_url = sprintf(
                 'http://%s/job/%s/%s',
                 $this->jenkins_url,

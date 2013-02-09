@@ -6,7 +6,7 @@ abstract class TryLib_JenkinsRunner {
     protected $try_job_name;
     protected $cmd_runner;
     
-	public $overall_results;
+	public $try_status;
     public $try_base_url;
 
     private $branch;
@@ -29,7 +29,7 @@ abstract class TryLib_JenkinsRunner {
         $this->callbacks = array();
         $this->ssh_key_path = null;
         $this->branch = null;
-        $this->overall_results = '';
+        $this->try_status = '';
         $this->try_base_url = '';
     }
 
@@ -144,7 +144,7 @@ abstract class TryLib_JenkinsRunner {
     function executeCallback($callback) {
         $callback = str_replace(
             array('${status}', '${url}'),
-            array($this->overall_result, $this->try_base_url),
+            array($this->try_status, $this->try_base_url),
             $callback
         );
         $this->cmd_runner->run($callback, false, true);

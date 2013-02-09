@@ -98,12 +98,12 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
             if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
                 echo PHP_EOL . $this->try_base_url . PHP_EOL;
-                $this->overall_result = $matches[0];
+                $this->try_status = $matches[0];
                 if (!$pretty) {
                     $this->printJobResults($try_log, $pretty);
                 }
-                echo PHP_EOL . $this->overall_result . PHP_EOL;
-                $this->overall_result = str_replace("Finished: ", "", $this->overall_result);
+                echo PHP_EOL . $this->try_status . PHP_EOL;
+                $this->try_status = str_replace("Finished: ", "", $this->try_status);
                 break;
             }
             if ($pretty) {
