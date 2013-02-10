@@ -188,4 +188,74 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertFalse($jenkins_runner->printJobResults("random line", false));
 	}
+	
+	function testProcessLogOutputNotFinishedPretty() {
+		$prev_text = '
+			......... try-replication-tests (pending)
+			......... try-hphp (pending)
+			......... try-integration-tests (pending)
+			......... try-js-phantom-tests (pending)
+			......... try-validate-css (pending)
+			......... try-php-code-sniffer (pending)';
+		
+		$new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
+		
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getJobOutput', 'printJobResults'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->at(0))
+					   ->method('getJobOutput')
+					   ->will($this->returnValue($new_text));
+
+		$jenkins_runner->expects($this->at(1))
+					   ->method('printJobResults')
+					   ->will($this->returnValue(true));		
+		
+		$this->mock_cmd_runner->expects($this->at(0))
+							  ->method('info')
+							  ->with(PHP_EOL . '......... waiting for job to finish ..');
+
+		
+		$this->mock_cmd_runner->expects($this->at(1))
+							  ->method('info')
+							  ->with('.', false);
+
+		$actual = $jenkins_runner->processLogOuput($prev_text, true);
+		$this->assertEquals($new_text, $actual);
+	}
+	
+	function testProcessLogOutputNotFinishedNotPretty() {
+		$prev_text = '
+			......... try-replication-tests (pending)
+			......... try-hphp (pending)
+			......... try-integration-tests (pending)
+			......... try-js-phantom-tests (pending)
+			......... try-validate-css (pending)
+			......... try-php-code-sniffer (pending)';
+		
+		$new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
+		
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getJobOutput', 'printJobResults'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->once())
+					   ->method('getJobOutput')
+					   ->will($this->returnValue($new_text));
+
+		$jenkins_runner->expects($this->never())
+					   ->method('printJobResults');
+
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('info')
+							  ->with('......... waiting for job to finish');
+
+		$actual = $jenkins_runner->processLogOuput($prev_text, false);
+		$this->assertEquals($new_text, $actual);
+	}
 }
