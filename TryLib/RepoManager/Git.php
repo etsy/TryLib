@@ -110,7 +110,9 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
         $ret = $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch, false, true);
         if ($ret) {
-            $this->cmd_runner->terminate( "An error was encountered generating the diff - run 'git fetch' and try again"); 
+            $this->cmd_runner->terminate( 
+				'An error was encountered generating the diff - run \'git fetch\' and try again'
+			); 
         }
 
         return $patch;
