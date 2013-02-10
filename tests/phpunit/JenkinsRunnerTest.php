@@ -29,6 +29,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 	const JENKINS_JOB = 'test-try';
 
     private $jenkins_runner;
+	private $mock_cmd_runner;
 
     function setUp() {
         parent::setUp();
