@@ -4,12 +4,14 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     protected $colors;
     private $jobs;
     private $excluded_jobs;
+    private $polling_time;
 
     public function __construct(
         $jenkins_url,
         $jenkins_cli,
         $try_job_name,
-        $cmd_runner
+        $cmd_runner,
+		$polling_time = 30
     ) {
         parent::__construct(
             $jenkins_url,
@@ -21,6 +23,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $this->jobs = array();
         $this->excluded_jobs = array();
         $this->colors = null;
+		$this->polling_time = $polling_time;
     }
 
     public function getColors() {
@@ -81,22 +84,21 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $try_output = $this->cmd_runner->getOutput();
 
         // Find job URL
-        $matches = array();
         if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
             $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
-        }
-
-        $this->try_base_url = $matches[0];
-
-        $prev_text = '';
-        // Poll job URL for completion
-        while (true) {
-			$prev_text = $this->processLogOuput($prev_text, $pretty);
-			if (is_null($prev_text)) {
-				break;
-			}
-            sleep(30);
-        }
+        } else {
+	        $this->try_base_url = $matches[0];
+			
+	        $prev_text = '';
+	        // Poll job URL for completion
+	        while (true) {
+				$prev_text = $this->processLogOuput($prev_text, $pretty);
+				if (is_null($prev_text)) {
+					break;
+				}
+	            sleep($this->polling_time);
+	        }
+		}
     }
 
 	public function processLogOuput($prev_text, $pretty) {

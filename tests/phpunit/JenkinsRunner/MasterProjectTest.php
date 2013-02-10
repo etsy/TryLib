@@ -369,4 +369,75 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 		$this->assertNull( $jenkins_runner->processLogOuput($prev_text, false));
 		$this->assertEquals('SUCCESS', $jenkins_runner->try_status);
 	}
+	
+	function testPollForCompletionJobUrlNotFound() {
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('getOutput')
+							  ->will($this->returnValue('no url in here'));
+
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('terminate')
+							  ->with('Could not find ' .self::JENKINS_JOB . 'URL' . PHP_EOL);
+
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('processLogOuput'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->pollForCompletion(true);
+		
+		$this->assertEquals('', $jenkins_runner->try_base_url);
+	}
+	
+	function testPollForCompletionJobFinished() {
+		$expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('getOutput')
+							  ->will($this->returnValue($expected_job_url));
+
+
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('processLogOuput'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->once())
+					   ->method('processLogOuput')
+					   ->with('', true)
+					   ->will($this->returnValue(null));
+		
+		$jenkins_runner->pollForCompletion(true);
+		
+		$this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
+	}
+	
+	function testPollForCompletionJobPollsAndFinishes() {
+		$expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('getOutput')
+							  ->will($this->returnValue($expected_job_url));
+
+
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('processLogOuput'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner, 0)
+		);
+		
+		$jenkins_runner->expects($this->at(0))
+					   ->method('processLogOuput')
+					   ->with('', false)
+					   ->will($this->returnValue(false));
+
+		$jenkins_runner->expects($this->at(1))
+					   ->method('processLogOuput')
+					   ->with('', false)
+					   ->will($this->returnValue(null));
+		
+		$jenkins_runner->pollForCompletion(false);
+		
+		$this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
+	}
 }
