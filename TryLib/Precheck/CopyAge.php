@@ -53,8 +53,8 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
                 $msg .= 'Please run `git pull` and try again' . PHP_EOL . PHP_EOL;
                 $cmd_runner->terminate($msg);
             } elseif ($wc_age >= $this->max_age_warning) {
-                echo 'WARNING - you working copy is ' . self::formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
-                echo 'You may want to run `git fetch` to avoid merging conflicts in the try job.' . PHP_EOL . PHP_EOL;
+                $cmd_runner->warn('Your working copy is ' . self::formatTimeDiff($wc_age) . ' old.');
+                $cmd_runner->warn('You may want to run `git fetch` to avoid merging conflicts in the try job.' . PHP_EOL);
             }
         }
     }
