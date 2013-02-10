@@ -72,17 +72,19 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         $local_branch = $this->getLocalBranch();
         $this->remote_branch = $this->getConfig("branch.$local_branch.merge");
 
-        if ($this->remote_branch === "") {
+        if (is_null($this->remote_branch)) {
             // try to see if a remote branch exists with the same name as the local branch
             $remote_url = $this->getConfig('remote.origin.url');
             $cmd = 'git ls-remote --exit-code ' . $remote_url . ' refs/heads/' . $local_branch;
             $ret = $this->cmd_runner->run($cmd, true, true);
             if ($ret === 0) {
-                echo "A remote branch with the same name than your local branch was found - using it for the diff" . PHP_EOL;
+                $this->cmd_runner->info(
+					'A remote branch with the same name than your local branch was found - using it for the diff'
+				);
                 $this->remote_branch = $local_branch;
             } elseif (!is_null($default)) {
-                echo "It appears that your local branch $local_branch is not tracked remotely". PHP_EOL;
-                echo "The default remote ($default) will be used to generate the diff." . PHP_EOL;
+                $this->cmd_runner->info("It appears that your local branch '$local_branch' is not tracked remotely");
+                $this->cmd_runner->info("The default remote ('$default') will be used to generate the diff.");
                 return $default;
             }
         }
