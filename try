@@ -4,7 +4,6 @@
 require_once "TryLib/Autoload.php";
 
 $jenkins_server = 'try.etsycorp.com';
-$jenkins_server = 'ci-dev.etsycorp.com';
 $jenkins_cli_jar = '/usr/etsy/jenkins-cli.jar';
 $jenkins_master_job = 'try';
 
