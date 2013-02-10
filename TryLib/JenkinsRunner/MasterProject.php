@@ -91,8 +91,8 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $prev_text = '';
         // Poll job URL for completion
         while (true) {
-			$prev_text = $this->processLogOuput($prev_text);
-			if (is_null($prev_text, $pretty)) {
+			$prev_text = $this->processLogOuput($prev_text, $pretty);
+			if (is_null($prev_text)) {
 				break;
 			}
             sleep(30);
