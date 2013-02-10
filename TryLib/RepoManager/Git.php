@@ -16,19 +16,22 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
     }
 
     function cleanRef($ref) {
-        return rtrim(str_replace("refs/heads/", "", $ref));
+        return rtrim(str_replace('refs/heads/', '', $ref));
     } 
 
+	function parseLocalBranch() {
+		$this->cmd_runner->chdir($this->repo_path);
+        $ret = $this->cmd_runner->run('git symbolic-ref HEAD', true, true);
+        if ($ret) {
+            return '';
+        } else {
+            return $this->cleanRef($this->cmd_runner->getOutput());
+        }
+	}
 
     function getLocalBranch() {
         if (is_null($this->branch)) {
-            $this->cmd_runner->chdir($this->repo_path);
-            $ret = $this->cmd_runner->run("git symbolic-ref HEAD", true, true);
-            if ($ret) {
-                $this->branch = "";
-            } else {
-                $this->branch = $this->cleanRef($this->cmd_runner->getOutput());
-            }
+			$this->branch = $this->parseLocalBranch();
         }
         return $this->branch;
     }
@@ -37,7 +40,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         $this->cmd_runner->chdir($this->repo_path);
         $ret = $this->cmd_runner->run("git config '$prop'", true, true);
         if ($ret) {
-            return "";
+            return null;
         } else {
             return $this->cleanRef($this->cmd_runner->getOutput());
         }
@@ -49,7 +52,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
             $this->remote = $this->getConfig("branch.$branch.remote");
         }
 
-        if ($this->remote === "" && !is_null($default)) {
+        if (is_null($this->remote) && !is_null($default)) {
             $this->remote = $default;
         }
 

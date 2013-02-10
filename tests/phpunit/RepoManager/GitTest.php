@@ -80,4 +80,103 @@ class GitTest extends PHPUnit_Framework_TestCase {
 
 		$repo_manager->generateDiff(false);
 	}
+	
+	
+	function testParseLocalBranchSuccess() {
+		$repo_manager = new TryLib_RepoManager_Git(
+            self::REPO_PATH, $this->mock_cmd_runner
+        );
+		
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('chdir')
+							  ->with(self::REPO_PATH);
+		
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('run')
+							  ->with('git symbolic-ref HEAD', true, true)
+							  ->will($this->returnValue(0));
+
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('getOutput')
+							  ->will($this->returnValue('refs/heads/master '));
+		
+		$this->assertEquals('master', $repo_manager->parseLocalBranch());
+	}
+
+	function testParseLocalBranchFailure() {
+		$repo_manager = new TryLib_RepoManager_Git(
+            self::REPO_PATH, $this->mock_cmd_runner
+        );
+		
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('chdir')
+							  ->with(self::REPO_PATH);
+		
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('run')
+							  ->with('git symbolic-ref HEAD', true, true)
+							  ->will($this->returnValue(1));
+
+		$this->mock_cmd_runner->expects($this->never())
+							  ->method('getOutput');
+		
+		$this->assertEquals('', $repo_manager->parseLocalBranch());
+	}
+	
+	function testGetRemoteSuccess() {
+		$repo_manager = $this->getMock(
+				'TryLib_RepoManager_Git',
+				array('getLocalBranch', 'getConfig'),
+				array(self::REPO_PATH, $this->mock_cmd_runner)
+		);
+		
+		$repo_manager->expects($this->once())
+					 ->method('getLocalBranch')
+					 ->will($this->returnValue('master'));
+
+		$repo_manager->expects($this->once())
+					 ->method('getConfig')
+					 ->with('branch.master.remote')
+					 ->will($this->returnValue('origin'));
+
+		$this->assertEquals('origin', $repo_manager->getRemote('default'));
+	}
+	
+	function testGetRemoteFailWithDefault() {
+		$repo_manager = $this->getMock(
+				'TryLib_RepoManager_Git',
+				array('getLocalBranch', 'getConfig'),
+				array(self::REPO_PATH, $this->mock_cmd_runner)
+		);
+		
+		$repo_manager->expects($this->once())
+					 ->method('getLocalBranch')
+					 ->will($this->returnValue('master'));
+
+		$repo_manager->expects($this->once())
+					 ->method('getConfig')
+					 ->with('branch.master.remote')
+					 ->will($this->returnValue(null));
+
+		$this->assertEquals('default', $repo_manager->getRemote('default'));
+	}
+	
+	function testGetRemoteFailNoDefault() {
+		$repo_manager = $this->getMock(
+				'TryLib_RepoManager_Git',
+				array('getLocalBranch', 'getConfig'),
+				array(self::REPO_PATH, $this->mock_cmd_runner)
+		);
+		
+		$repo_manager->expects($this->once())
+					 ->method('getLocalBranch')
+					 ->will($this->returnValue('master'));
+
+		$repo_manager->expects($this->once())
+					 ->method('getConfig')
+					 ->with('branch.master.remote')
+					 ->will($this->returnValue(null));
+
+		$this->assertNull($repo_manager->getRemote());
+	}
 }
