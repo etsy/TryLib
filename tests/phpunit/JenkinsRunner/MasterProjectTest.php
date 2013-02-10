@@ -226,6 +226,39 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 		$actual = $jenkins_runner->processLogOuput($prev_text, true);
 		$this->assertEquals($new_text, $actual);
 	}
+
+	function testProcessLogOutputSubjobNotFinishedPretty() {
+		$prev_text = '
+			......... try-replication-tests (pending)
+			......... try-hphp (pending)
+			......... try-integration-tests (pending)
+			......... try-js-phantom-tests (pending)
+			......... try-validate-css (pending)
+			......... try-php-code-sniffer (pending)';
+		
+		$new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
+		
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getJobOutput', 'printJobResults'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->once())
+					   ->method('getJobOutput')
+					   ->will($this->returnValue($new_text));
+
+		$jenkins_runner->expects($this->once())
+					   ->method('printJobResults')
+					   ->will($this->returnValue(false));		
+
+		$this->mock_cmd_runner->expects($this->once())
+							  ->method('info')
+							  ->with('.', false);
+
+		$actual = $jenkins_runner->processLogOuput($prev_text, true);
+		$this->assertEquals($new_text, $actual);
+	}
 	
 	function testProcessLogOutputNotFinishedNotPretty() {
 		$prev_text = '
@@ -257,5 +290,83 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 
 		$actual = $jenkins_runner->processLogOuput($prev_text, false);
 		$this->assertEquals($new_text, $actual);
+	}
+	
+	function testProcessLogOutputFinishedPretty() {
+		$prev_text = '
+			......... try-replication-tests (pending)
+			......... try-hphp (pending)
+			......... try-integration-tests (pending)
+			......... try-js-phantom-tests (pending)
+			......... try-validate-css (pending)
+			......... try-php-code-sniffer (pending)';
+		
+		$new_text = $prev_text . PHP_EOL . 'Finished: FAILURE';
+		
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getJobOutput', 'printJobResults'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->once())
+					   ->method('getJobOutput')
+					   ->will($this->returnValue($new_text));
+
+		$jenkins_runner->expects($this->once())
+					   ->method('printJobResults')
+					   ->will($this->returnValue(false));
+
+		$jenkins_runner->try_base_url = 'http://link/to/job/';
+
+		$this->mock_cmd_runner->expects($this->at(0))
+							  ->method('info')
+							  ->with(PHP_EOL . 'http://link/to/job/');
+
+		$this->mock_cmd_runner->expects($this->at(1))
+							  ->method('info')
+							  ->with(PHP_EOL . 'Finished: FAILURE');
+
+		$this->assertNull( $jenkins_runner->processLogOuput($prev_text, true));
+		$this->assertEquals('FAILURE', $jenkins_runner->try_status);
+	}
+
+	function testProcessLogOutputFinishedNotPretty() {
+		$prev_text = '
+			......... try-replication-tests (pending)
+			......... try-hphp (pending)
+			......... try-integration-tests (pending)
+			......... try-js-phantom-tests (pending)
+			......... try-validate-css (pending)
+			......... try-php-code-sniffer (pending)';
+		
+		$new_text = $prev_text . PHP_EOL . 'Finished: SUCCESS';
+		
+		$jenkins_runner = $this->getMock(
+				'TryLib_JenkinsRunner_MasterProject',
+				array('getJobOutput', 'printJobResults'),
+				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+		);
+		
+		$jenkins_runner->expects($this->once())
+					   ->method('getJobOutput')
+					   ->will($this->returnValue($new_text));
+
+		$jenkins_runner->expects($this->once())
+					   ->method('printJobResults')
+					   ->with($new_text, false);
+
+		$jenkins_runner->try_base_url = 'http://link/to/job/';
+
+		$this->mock_cmd_runner->expects($this->at(0))
+							  ->method('info')
+							  ->with(PHP_EOL . 'http://link/to/job/');
+
+		$this->mock_cmd_runner->expects($this->at(1))
+							  ->method('info')
+							  ->with(PHP_EOL . 'Finished: SUCCESS');
+
+		$this->assertNull( $jenkins_runner->processLogOuput($prev_text, false));
+		$this->assertEquals('SUCCESS', $jenkins_runner->try_status);
 	}
 }
