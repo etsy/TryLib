@@ -142,10 +142,6 @@ OPTIONS:
 
     -b|--branch=<remote branch> Name of the remote branch to diff and try against
 
-    -e|--exclude=<job>          Subjob to exclude from the try run.
-                                Use multiple -e|--exclude to exclude more than 1 job
-                                Example: -e validate-css --exclude=unit-tests
-
     -P --show-progress          Print subtasks progressively as they complete (implies c)
 
     -s --staged                 Use staged changes only to generate the diff
