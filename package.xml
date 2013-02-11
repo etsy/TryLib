@@ -21,10 +21,10 @@
   <email>>github@elblinkin.info</email>
   <active>no</active>
  </lead>
- <date>2013-02-04</date>
+ <date>2013-02-11</date>
  <version>
-  <release>0.0.3</release>
-  <api>0.0.3</api>
+  <release>1.0.0</release>
+  <api>1.0.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -39,6 +39,10 @@
         <file name="Autoload.php" role="php" />
         <file name="CommandRunner.php" role="php" />
         <file name="JenkinsRunner.php" role="php" />
+        <dir name="JenkinsRunner">
+            <file name="FreeStyleProject.php" role="php" />
+            <file name="MasterProject.php" role="php" />
+        </dir>
         <file name="Cli.php" role="php" />
         <file name="RepoManager.php" role="php" />
         <dir name="RepoManager">
