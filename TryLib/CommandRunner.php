@@ -20,7 +20,7 @@ class TryLib_CommandRunner {
 
         $this->stdout = $stdout;
 
-        $this->out = array();
+        $this->out = '';
     }
 
     public function getOutput() {
