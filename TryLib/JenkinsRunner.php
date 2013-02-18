@@ -82,8 +82,6 @@ abstract class TryLib_JenkinsRunner {
     public function setSshKey($ssh_key_path) {
         if (file_exists($ssh_key_path)) {
             $this->ssh_key_path = $ssh_key_path;
-        } else {
-           $this->cmd_runner->warn("SSH key file not found (${ssh_key_path})");
         }
     }
 
