@@ -6,10 +6,10 @@ class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
         return 'build';
     }
 
-    public function getBuildExtraArguments($poll_for_completion) {
+    public function getBuildExtraArguments($show_results) {
         $args = array();
 
-        if ($poll_for_completion) {
+        if ($show_results) {
             $args[] = '-s';
         }
 
@@ -19,7 +19,7 @@ class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
     /**
      * Retrieve build number and status from the output
      */
-    public function pollForCompletion($pretty) {
+    public function pollForCompletion($show_progress) {
         $out = $this->cmd_runner->getOutput();
 
         if (preg_match('|Completed ' . $this->try_job_name . ' #(\d+) : (.*)|m', $out, $matches)) {
