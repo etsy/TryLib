@@ -11,7 +11,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $jenkins_cli,
         $try_job_name,
         $cmd_runner,
-		$polling_time = 1
+		$polling_time = 20
     ) {
         parent::__construct(
             $jenkins_url,
