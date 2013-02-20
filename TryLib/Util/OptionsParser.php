@@ -158,7 +158,7 @@ OPTIONS:
 
     -C|--callback <string>      Callback string to execute at the end of the try run.
                                 Use \${status} and \${url} as placeholders for the try build status and url
-                                Example: -c 'echo "**Try status : [\${status}](\${url})**"'
+                                Example: --callback='echo "**Try status : [\${status}](\${url})**"'
 eof
         ;
         print PHP_EOL . PHP_EOL;
