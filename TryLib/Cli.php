@@ -66,13 +66,10 @@ class TryLib_CLI {
 
         $jenkins_runner->setPatch(realpath($patch));
 
-        $ssh_keys = '/home/' . $this->user . '/.ssh/';
-        if (file_exists($ssh_keys . 'try_id_rsa')) {
-            $jenkins_runner->setSshKey( $ssh_keys . 'try_id_rsa');
-        } else {
-            $jenkins_runner->setSshKey( $ssh_keys . 'id_rsa');
+        $optional_ssh_key = '/home/' . $this->user . '/.ssh/try_id_rsa';
+        if (file_exists($optional_ssh_key)) {
+            $jenkins_runner->setSshKey( $optional_ssh_key );
         }
-
         $jenkins_runner->setParam('branch', $remote_branch);
         $jenkins_runner->setParam('guid', $this->user . time());
         $jenkins_runner->setSubJobs($this->options['jobs']);
