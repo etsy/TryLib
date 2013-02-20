@@ -41,6 +41,7 @@ class TryLib_Util_OptionsParser {
             'branch' => null,
             'staged' => false,
             'showprogress' => false,
+            'showresults' => false,
             'callbacks' => array()
             );
 
@@ -51,7 +52,8 @@ class TryLib_Util_OptionsParser {
             'e:' => 'exclude:',
             'b:' => 'branch:',
             'p:' => 'patch:',
-            'c:' => 'callback:',
+            'C:' => 'callback:',
+            'c' => 'show-results',
             'P' => 'show-progress',
             's' => 'staged'
         );
@@ -89,9 +91,15 @@ class TryLib_Util_OptionsParser {
                     $options['branch'] = $v;
                     break;
 
+                case 'c':
+                case 'show-results':
+                    $options['showresults'] = true;
+                    break;
+
                 case 'P':
                 case 'show-progress':
                     $options['showprogress'] = true;
+                    $options['showresults'] = true;
                     break;
 
                 case 's':
@@ -99,7 +107,7 @@ class TryLib_Util_OptionsParser {
                     $options['staged'] = true;
                     break;
 
-                case 'c':
+                case 'C':
                 case 'callback':
                     if (is_array($v)) {
                         $options['callbacks'] = $v;
@@ -142,11 +150,13 @@ OPTIONS:
 
     -b|--branch=<remote branch> Name of the remote branch to diff and try against
 
+    -c --show-results           Show final try job results
+
     -P --show-progress          Print subtasks progressively as they complete (implies c)
 
     -s --staged                 Use staged changes only to generate the diff
 
-    -c|--callback <string>      Callback string to execute at the end of the try run.
+    -C|--callback <string>      Callback string to execute at the end of the try run.
                                 Use \${status} and \${url} as placeholders for the try build status and url
                                 Example: -c 'echo "**Try status : [\${status}](\${url})**"'
 eof

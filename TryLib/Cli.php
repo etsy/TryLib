@@ -80,6 +80,6 @@ class TryLib_CLI {
         foreach ($this->options['callbacks'] as $cb) {
             $jenkins_runner->addCallback($cb);
         }
-        $jenkins_runner->startJenkinsJob($this->options['showprogress']);
+        $jenkins_runner->startJenkinsJob($this->options['showresults'], $this->options['showprogress']);
     }
 }
