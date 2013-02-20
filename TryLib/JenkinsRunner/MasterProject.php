@@ -11,7 +11,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $jenkins_cli,
         $try_job_name,
         $cmd_runner,
-		$polling_time = 30
+		$polling_time = 1
     ) {
         parent::__construct(
             $jenkins_url,
@@ -66,7 +66,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
 
     /** For a master project, the extra arguments are a list of subjobs */
-    public function getBuildExtraArguments($poll_for_completion) {
+    public function getBuildExtraArguments($show_results) {
         return $this->getJobsList();
     }
 
@@ -80,7 +80,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     /**
      * Poll for completion of try job and print results
      */
-    public function pollForCompletion($pretty) {
+    public function pollForCompletion($show_progress) {
         $try_output = $this->cmd_runner->getOutput();
 
         // Find job URL
@@ -92,7 +92,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 	        $prev_text = '';
 	        // Poll job URL for completion
 	        while (true) {
-				$prev_text = $this->processLogOuput($prev_text, $pretty);
+				$prev_text = $this->processLogOuput($prev_text, $show_progress);
 				if (is_null($prev_text)) {
 					break;
 				}
@@ -101,37 +101,50 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 		}
     }
 
-	public function processLogOuput($prev_text, $pretty) {
+	public function processLogOuput($prev_text, $show_progress) {
 		$try_log = $this->getJobOutput();
 
         $new_text = str_replace($prev_text, '', $try_log);
         $prev_text = $try_log;
 
-        if ($pretty) {
-            if ($this->printJobResults($new_text, $pretty)) {
-                $this->cmd_runner->info(PHP_EOL . '......... waiting for job to finish ..');
-            }
+        if ($show_progress) {
+            $this->printJobResults($new_text);
         }
 
         if (preg_match('|^Finished: .*$|m', $try_log, $matches)) {
-            $this->cmd_runner->info(PHP_EOL . $this->try_base_url);
             $this->try_status = $matches[0];
-            if (!$pretty) {
-                $this->printJobResults($try_log, $pretty);
-            }
-            $this->cmd_runner->info(PHP_EOL . $this->try_status);
             $this->try_status = str_replace("Finished: ", "", $this->try_status);
+
+            $this->cmd_runner->info(
+                PHP_EOL .
+                sprintf('Try Status : %s (%s)',
+                        $this->colorStatus($this->try_status),
+                        $this->try_base_url
+                        ) .
+                PHP_EOL
+            );
             return null;
         }
 
-        if ($pretty) {
-            $this->cmd_runner->info('.', false);
-        } else {
+        if (!$show_progress) {
             $this->cmd_runner->info('......... waiting for job to finish');
         }
 		return $prev_text;	
 	}
 
+    public function colorStatus($status) {
+        $colors = $this->getColors();
+        if ($colors) {
+            if ($status == 'SUCCESS') {
+                $status = $colors->green($status);
+            } else if ($status == 'UNSTABLE') {
+                $status = $colors->yellow($status);
+            } else {
+                $status = $colors->red($status);
+            }
+        }
+        return $status;
+    }
 
     /**
      * Given a string of the try logs, print the results from any individual
@@ -141,27 +154,17 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
      * @access public
      * @return boolean Returns true if any job results were printed, false otherwise
      */
-    public function printJobResults($log, $pretty) {
-        $colors = $this->getColors();
+    public function printJobResults($log) {
 
         if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_name . '[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             $this->cmd_runner->info(PHP_EOL);
             foreach ($matches[0] as $k => $_) {
-                $success = $matches[1][$k];
-                if ($pretty && $colors) {
-                    if ($success == 'SUCCESS') {
-                        $success = $colors->green($success);
-                    } else if ($success == 'UNSTABLE') {
-                        $success = $colors->yellow($success);
-                    } else {
-                        $success = $colors->red($success);
-                    }
-                }
+                $job_status = $matches[1][$k];
 
 	            $status = sprintf(
                     "% 32s % -10s %s",
                     $matches[2][$k],
-                    $success,
+                    $this->colorStatus($job_status),
                     $matches[1][$k] !== 'SUCCESS' ? $matches[3][$k] : ''
                 );
 				$this->cmd_runner->info($status);
