@@ -86,9 +86,6 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 	}
 
 	function testSetSshKeyFileDoesNotExists() {
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('warn')
-							  ->with($this->equalTo('SSH key file not found (~/foo)'));
 		$this->jenkins_runner->setSshKey('~/foo');
 		$this->assertNull($this->jenkins_runner->getSsKey());
 	}
