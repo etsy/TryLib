@@ -174,10 +174,24 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $actual);
 	}
 
-	function testStartJenkinsJobNoPollingNoCallback() {
+    function provideStartJenkinsJobParam() {
+        return array(
+            array(false, false, false, $this->never()),
+            array(true, false, false, $this->any()),
+            array(false, true, false, $this->any()),
+            array(false, false, true, $this->any()),
+            array(true, true, true, $this->any()),
+            array(false, true, true, $this->any()),
+            array(true, true, false, $this->any()),
+            array(true, false, true, $this->any()) 
+        );
+    }
+
+    /** @dataProvider provideStartJenkinsJobParam */
+	function testStartJenkinsJob($show_results, $show_progress, $has_callbacks, $expected_call_count) {
 		$jenkins_runner = $this->getMock(
 				'TestRunner',
-				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
+				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'getCallbacks', 'executeCallbacks'),
 				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
 		);
 
@@ -187,81 +201,23 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 
 		$jenkins_runner->expects($this->at(1))
 		     ->method('buildCLICommand')
-			 ->with($this->equalTo(false))
+			 ->with($this->equalTo($show_results))
 			 ->will($this->returnValue('cmd'));
 
 		$jenkins_runner->expects($this->at(2))
 		     ->method('runJenkinsCommand')
 			 ->with($this->equalTo('cmd'));
 
-		$jenkins_runner->expects($this->never())
+		$jenkins_runner->expects($this->any())
+		     ->method('getCallbacks')
+			 ->will($this->returnValue($has_callbacks));
+
+		$jenkins_runner->expects($expected_call_count)
 		               ->method('pollForCompletion');
 
-		$jenkins_runner->expects($this->never())
+		$jenkins_runner->expects($expected_call_count)
 		               ->method('executeCallbacks');
 
-		$jenkins_runner->startJenkinsJob(false);
-	}
-
-	function testStartJenkinsJobPollingNoCallback() {
-		$jenkins_runner = $this->getMock(
-				'TestRunner',
-				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
-		);
-
-		$jenkins_runner->expects($this->at(0))
-		     ->method('runJenkinsCommand')
-			 ->with($this->equalTo('logout'));
-
-		$jenkins_runner->expects($this->at(1))
-		     ->method('buildCLICommand')
-			 ->with($this->equalTo(true))
-			 ->will($this->returnValue('cmd'));
-
-		$jenkins_runner->expects($this->at(2))
-		     ->method('runJenkinsCommand')
-			 ->with($this->equalTo('cmd'));
-
-		$jenkins_runner->expects($this->once())
-		               ->method('pollForCompletion')
-					   ->with($this->equalTo(true));
-
-		$jenkins_runner->expects($this->once())
-		               ->method('executeCallbacks');
-
-		$jenkins_runner->startJenkinsJob(true);
-	}
-
-	function testStartJenkinsJobNoPollingCallback() {
-		$jenkins_runner = $this->getMock(
-				'TestRunner',
-				array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'executeCallbacks'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
-		);
-
-		$jenkins_runner->expects($this->at(0))
-		     ->method('runJenkinsCommand')
-			 ->with($this->equalTo('logout'));
-
-		$jenkins_runner->expects($this->at(1))
-		     ->method('buildCLICommand')
-			 ->with($this->equalTo(false))
-			 ->will($this->returnValue('cmd'));
-
-		$jenkins_runner->expects($this->at(2))
-		     ->method('runJenkinsCommand')
-			 ->with($this->equalTo('cmd'));
-
-		$jenkins_runner->expects($this->once())
-		               ->method('pollForCompletion')
-					   ->with($this->equalTo(false));
-
-		$jenkins_runner->expects($this->once())
-		               ->method('executeCallbacks');
-
-		$jenkins_runner->addCallback('echo "hello world!"');
-
-		$jenkins_runner->startJenkinsJob(false);
+		$jenkins_runner->startJenkinsJob($show_results, $show_progress);
 	}
 }

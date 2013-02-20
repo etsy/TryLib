@@ -52,18 +52,18 @@ abstract class TryLib_JenkinsRunner {
     /**
      * Logout, and Start the Jenkins job
      */
-    public function startJenkinsJob($poll_for_completion = false) {
+    public function startJenkinsJob($show_results=false, $show_progress = false) {
         // Explicitly log out user to force re-authentication over SSH
         $this->runJenkinsCommand("logout");
 
         // Build up the jenkins command incrementally
-        $cli_command = $this->buildCLICommand($poll_for_completion);
+        $cli_command = $this->buildCLICommand($show_results);
 
         // Run the job
         $this->runJenkinsCommand($cli_command);
 
-        if ($poll_for_completion || $this->getCallbacks()) {
-            $this->pollForCompletion($poll_for_completion);
+        if ($show_results || $show_progress || $this->getCallbacks()) {
+            $this->pollForCompletion($show_progress);
             $this->executeCallbacks();
         }
     }
@@ -116,7 +116,7 @@ abstract class TryLib_JenkinsRunner {
     /**
      * Build the Jenkins CLI command, based on all options
      */
-    function buildCLICommand($poll_for_completion) {
+    function buildCLICommand($show_results) {
         $command = array();
 
         if (!is_null($this->getSsKey())) {
@@ -127,7 +127,7 @@ abstract class TryLib_JenkinsRunner {
 
         $command[] = $this->try_job_name;
 
-        $extra_args = $this->getBuildExtraArguments($poll_for_completion);
+        $extra_args = $this->getBuildExtraArguments($show_results);
 
 		$options = $this->getOptions();
 
