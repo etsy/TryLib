@@ -21,10 +21,10 @@
   <email>>github@elblinkin.info</email>
   <active>no</active>
  </lead>
- <date>2013-02-20</date>
+ <date>2013-02-21</date>
  <version>
-  <release>1.0.2</release>
-  <api>1.0.2</api>
+  <release>1.0.3</release>
+  <api>1.0.3</api>
  </version>
  <stability>
   <release>stable</release>
@@ -35,6 +35,7 @@
  <contents>
    <dir name="/">
      <file name="try" role="script" />
+     <file name="try54" role="script" />
      <dir name="TryLib">
         <file name="Autoload.php" role="php" />
         <file name="CommandRunner.php" role="php" />
