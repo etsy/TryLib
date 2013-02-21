@@ -122,3 +122,17 @@ Try will work with your branches! The below scenarios are supported:
 	* If the remote has a branch with the same name, it will be used to generate the diff and try against it
 	* If the remote does not have a branch with the same name, it will use the default remote : **master**
 	* You want to diff and try against a specific remote branch --> run ***try --branch=my_branch_ [options] [subjobs]**
+
+## Release process
+
+* Once the code is ready and the tests are passing, update the package.xml:
+    * date
+    * version/release
+    * version/api
+* Commit and push the changes
+* Tag the release : git tag -a 1.0.3 -m "1.0.3 release"
+* Push the tag : git push --tags
+* Build the package : pear package
+* Add it to the pear etsycorp channel (from prodking03.ny4.etsy.com) : sudo pirum add /var/www/html/pear/ TryLib-1.0.3.tgz
+* Update the 'trylib_version' in the php::trylib recipe in chef
+* Test and chef out the change
