@@ -1,0 +1,16 @@
+#!/usr/bin/php
+Run Try for php 54
+<?php
+
+require_once "TryLib/Autoload.php";
+
+$jenkins_server = 'try.etsycorp.com';
+$jenkins_cli_jar = '/usr/etsy/jenkins-cli.jar';
+$jenkins_master_job = 'try54';
+
+list($user, $repo_path) = TryLib_Util_EtsyUtil::getUserAndRepoPath();
+
+$cli = new TryLib_Cli($jenkins_server, $jenkins_cli_jar, $jenkins_master_job);
+$cli->setOptions(TryLib_Util_OptionsParser::getOptions());
+$cli->setUserAndRepoPath($user, $repo_path);
+$cli->run();
