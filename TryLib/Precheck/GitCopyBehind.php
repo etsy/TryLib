@@ -41,8 +41,7 @@ class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
 			$cmd_runner->run('git rev-list HEAD..origin');
 			$output = $cmd_runner->getOutput();
 			if (!empty($output)) {
-				$msg = 'ERROR - you ran git fetch in your repository ';
-				$msg .= 'without merging the ' . count($output) . ' new commits' . PHP_EOL;
+				$msg = 'ERROR - you ran git fetch in your repository without merging the new commits' . PHP_EOL;
 				$msg .= 'If you submit a `try` job as is, you will not be testing your diff against the ';
 				$msg .= 'latest version of the repository.' . PHP_EOL . PHP_EOL;
                 $msg .= 'Please merge your changes or run `git rpull` first.' . PHP_EOL;
