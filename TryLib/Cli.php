@@ -41,7 +41,8 @@ class TryLib_CLI {
 
         $this->pre_checks = array(
             new TryLib_Precheck_ScriptRunner($this->repo_path . '/bin/check_file_size'),
-            new TryLib_Precheck_GitCopyAge(48, 96, $remote_branch),
+            new TryLib_Precheck_GitCopyBehind(array('master')),
+            new TryLib_Precheck_GitCopyAge(48, 96, $remote_branch)
         );
 
         $this->repo_manager->runPrechecks($this->pre_checks);
