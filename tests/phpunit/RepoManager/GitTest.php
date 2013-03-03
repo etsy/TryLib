@@ -70,13 +70,9 @@ class GitTest extends PHPUnit_Framework_TestCase {
 							  ->method('run')
 							  ->with($expected_cmd, false, true)
 							  ->will($this->returnValue(1));
-
-		$expected_error = 'An error was encountered generating the diff '
-						. '- run \'git fetch\' and try again';
 		
 		$this->mock_cmd_runner->expects($this->once())
-							  ->method('terminate')
-							  ->with($expected_error);
+							  ->method('terminate');
 
 		$repo_manager->generateDiff(false);
 	}
@@ -228,11 +224,6 @@ class GitTest extends PHPUnit_Framework_TestCase {
 							  ->with($cmd, true, true)
 							  ->will($this->returnValue(0));
 
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('info')
-							  ->with( 'A remote branch with the same name than '
-									. 'your local branch was found - using it for the diff');
-
 		$this->assertEquals('local_branch', $repo_manager->getRemoteBranch());
 	}
 	
@@ -259,19 +250,10 @@ class GitTest extends PHPUnit_Framework_TestCase {
 
 		$cmd = 'git ls-remote --exit-code git@github.com:Etsy/try.git refs/heads/local_branch';
 		
-		$this->mock_cmd_runner->expects($this->at(0))
+		$this->mock_cmd_runner->expects($this->once())
 							  ->method('run')
 							  ->with($cmd, true, true)
 							  ->will($this->returnValue(1));
-
-		$this->mock_cmd_runner->expects($this->at(1))
-							  ->method('info')
-							  ->with('It appears that your local branch '
-									. '\'local_branch\' is not tracked remotely');
-
-		$this->mock_cmd_runner->expects($this->at(2))
-							  ->method('info')
-							  ->with( 'The default remote (\'default\') will be used to generate the diff.');
 
 		$this->assertEquals('default', $repo_manager->getRemoteBranch('default'));
 	}
