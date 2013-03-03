@@ -14,7 +14,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 	function testGetLastFetchDateWithoutRemoteBranchSuccess() {
 		$last_fetch = 'Sun Feb 10 10:00:00 2013';
 
-		$script_runner = new TryLib_Precheck_CopyAge();
+		$script_runner = new TryLib_Precheck_GitCopyAge();
         
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('run')
@@ -34,7 +34,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 	function testGetLastFetchDateWithRemoteBranchFailure() {
 		$last_fetch = 'Sun Feb 10 10:00:00 2013';
 
-		$script_runner = new TryLib_Precheck_CopyAge(24, 48, 'branch');
+		$script_runner = new TryLib_Precheck_GitCopyAge(24, 48, 'branch');
         
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('run')
@@ -52,7 +52,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 		$last_fetch = 'Sun Feb 10 10:00:00 2013';
 		
 		$script_runner = $this->getMock(
-				'TryLib_Precheck_CopyAge',
+				'TryLib_Precheck_GitCopyAge',
 				array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
 				array(12, 72, 'branch')
 		);
@@ -85,7 +85,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 		$last_fetch = 'Sun Feb 10 10:00:00 2013';
 		
 		$script_runner = $this->getMock(
-				'TryLib_Precheck_CopyAge',
+				'TryLib_Precheck_GitCopyAge',
 				array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
 				array(12, 72, 'branch')
 		);
@@ -121,7 +121,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 		$last_fetch = 'Sun Feb 10 10:00:00 2013';
 		
 		$script_runner = $this->getMock(
-				'TryLib_Precheck_CopyAge',
+				'TryLib_Precheck_GitCopyAge',
 				array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
 				array(12, 72, 'branch')
 		);

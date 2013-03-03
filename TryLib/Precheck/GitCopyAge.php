@@ -1,6 +1,6 @@
 <?php
 
-class TryLib_Precheck_CopyAge implements TryLib_Precheck {
+class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
     protected $max_age_warning;
     protected $max_age_blocking;
     protected $remote_branch;

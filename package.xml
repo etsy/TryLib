@@ -52,7 +52,7 @@
         <file name="Precheck.php" role="php" />
         <dir name="Precheck">
           <file name="ScriptRunner.php" role="php" />
-          <file name="CopyAge.php" role="php" />
+          <file name="GitCopyAge.php" role="php" />
         </dir>
         <dir name="Util">
           <file name="EtsyUtil.php" role="php"/>
