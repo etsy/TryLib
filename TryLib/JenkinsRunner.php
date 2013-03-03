@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Abstract class for interfacing with Jenkins projects
+ * Every Jenkins project should be invokable via CLI using a
+ * "build" command. By default, the FreeStyle project's command is
+ * build. Any project can potentially take command line arguments.
+ * Finally, upon calling the "build" command via the CLI, the output
+ * from the CLI should be parseable to provide the results of the build.
+ */
 abstract class TryLib_JenkinsRunner {
     protected $jenkins_url;
     protected $jenkins_cli;

@@ -6,8 +6,8 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
     protected $remote_branch;
 
     function __construct(
-        $max_age_warning = 24,
-        $max_age_blocking = 48,
+        $max_age_warning = 48,
+        $max_age_blocking = 100,
         $remote_branch = null
     ) {
         $this->max_age_warning = $max_age_warning * 60 * 60;
@@ -59,12 +59,12 @@ class TryLib_Precheck_CopyAge implements TryLib_Precheck {
             $wc_age = $this->getTimeDelta($last_fetch);
             if ($wc_age >= $this->max_age_blocking) {
                 $msg = 'ERROR - you working copy is ' . $this->formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
-                $msg .= 'The code you want to `try` does not reflect the state of the repository' . PHP_EOL;
-                $msg .= 'Please run `git pull` and try again';
+                $msg .= 'The code you want to `try` will most probably have issues patching' . PHP_EOL;
+                $msg .= 'Please run `git rpull` and try again';
                 $cmd_runner->terminate($msg);
             } elseif ($wc_age >= $this->max_age_warning) {
 				$msg ='Your working copy is ' . $this->formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
-				$msg .= 'You may want to run `git fetch` to avoid merging conflicts in the try job.';
+				$msg .= 'You may want to run `git rpull` to avoid merging conflicts in the try job.';
                 $cmd_runner->warn($msg);
             }
         }
