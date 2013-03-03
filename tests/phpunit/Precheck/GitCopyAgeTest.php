@@ -74,9 +74,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 
 		$this->mock_cmd_runner->expects($this->once())
 							  ->method('terminate')
-							  ->with('ERROR - you working copy is 100 hours old.' . PHP_EOL
-								   . 'The code you want to `try` will most probably have issues patching' . PHP_EOL
-								   . 'Please run `git rpull` and try again');
+							  ->with($this->stringContains('you working copy is 100 hours old.'));
 		
 		$script_runner->check($this->mock_cmd_runner, 'path');
 	}
@@ -109,9 +107,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
 							  ->method('terminate');
 
 		$this->mock_cmd_runner->expects($this->once())
-							  ->method('warn')
-							  ->with('Your working copy is 24 hours old.' . PHP_EOL
-								   . 'You may want to run `git rpull` to avoid merging conflicts in the try job.');
+							  ->method('warn');
 		
 		$script_runner->check($this->mock_cmd_runner, 'path');
 	}
