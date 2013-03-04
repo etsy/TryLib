@@ -45,7 +45,7 @@ class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
 				$msg .= 'If you submit a `try` job as is, you will not be testing your diff against the ';
 				$msg .= 'latest version of the repository.' . PHP_EOL . PHP_EOL;
                 $msg .= 'Please merge your changes or run `git rpull` first.' . PHP_EOL;
-				$cmd_runner->terminate($msg);
+				$cmd_runner->warn($msg);
 			}	
 		}
     }
