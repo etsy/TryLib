@@ -4,58 +4,31 @@ Try is a simple php library that helps you generate a diff of your working copy 
 your CI server (Jenkins only at the moment) to run the test suite. You can read more about try
 on Etsy technical blog [Code As Craft](http://codeascraft.etsy.com/2011/10/11/did-you-try-it-before-you-committed/).
 
-## try script
-
-An example try script can look like:
-
-    #!/usr/bin/php
-    <?php
-    
-    require_once "Try/Autoload.php";
-    
-    $jenkins_server = 'your.jenkins.server:8080';
-    $jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
-    $jenkins_master_job = 'try'; //This is the name of your master-project in jenkins
-    $option_parser = new Try_Util_OptionsParser();
-    
-    $cli = new Try_Cli($jenkins_server, $jenkins_cli_jar, $jenkins_master_job);
-    $cli->setOptions($option_parser->getOptions());
-    $cli->setUserAndRepoPath(getenv('USER'), '/path/to/your/repo');
-    $cli->run();
-
 ## Example usage:
 
 ### Show help
 
 	try -h
-	USAGE: try [options] [subjobs ...]
+	usage: try [options...] [subjob] [subjob] ...
 
-	OPTIONS:
-	    -h --help                   Show help
+	    -h, --help            Show help
+	    -n, --diff-only       Create diff, but do not send to Hudson
+	    -v, --verbose         Verbose (show shell commands as they're run)
+	    -p, --patch ...       Path to patch file to use instead of generating a diff
+	    -b, --branch ...      Name of the remote branch to diff and try against
+	    -c, --show-results    Show final try job results
+	    -P, --show-progress   Print subtasks progressively as they complete
+	    -s, --staged          Use staged changes only to generate the diff
+	    -C, --callback ...    Callback string to execute at the end of the try run.
 
-	    -n --diff-only              Create diff, but do not send to Hudson
-
-	    -v --verbose                Verbose (show shell commands as they're run)
-
-	    -p|--patch=</path/to/diff>  Don't generate diffs; use custom patch file instead
-
-	    -b|--branch=<remote branch> Name of the remote branch to diff and try against
-
-	    -c --show-results           Show final try job results
-
-	    -P --show-progress          Print subtasks progressively as they complete (implies c)
-
-	    -s --staged                 Use staged changes only to generate the diff
-
-	    -C|--callback <string>      Callback string to execute at the end of the try run.
-	                                Use ${status} and ${url} as placeholders for the try build status and url
-	                                Example: --callback='echo "**Try status : [${status}](${url})**"'
-
+	Use ${status} and ${url} as placeholders for the try build status and url
+	Example: --callback 'echo "**Try status : [${status}](${url})**"'
+	X
 ### Run the unit-tests and orm-tests only and show status
 	try --show-progress unit-tests orm-tests
 
 ### Run try and post the results to a github issue
-	try --callback="curl -s --user <login>:<password> --request POST --data '{\"body\":\"Try status : [${status}](${url})\"}'" https://github.com/api/v3/repos/etsy/try/issues/1/comments"
+	try --callback "curl -s --user <login>:<password> --request POST --data '{\"body\":\"Try status : [${status}](${url})\"}'" https://github.com/api/v3/repos/etsy/try/issues/1/comments"
 
 
 ## Jenkins setup
