@@ -32,14 +32,24 @@ An example try script can look like:
 
 	OPTIONS:
 	    -h --help                   Show help
+
 	    -n --diff-only              Create diff, but do not send to Hudson
+
 	    -v --verbose                Verbose (show shell commands as they're run)
+
 	    -p|--patch=</path/to/diff>  Don't generate diffs; use custom patch file instead
+
+	    -b|--branch=<remote branch> Name of the remote branch to diff and try against
+
+	    -c --show-results           Show final try job results
+
 	    -P --show-progress          Print subtasks progressively as they complete (implies c)
+
 	    -s --staged                 Use staged changes only to generate the diff
-	    -c|--callback <string>      Callback string to execute at the end of the try run.
+
+	    -C|--callback <string>      Callback string to execute at the end of the try run.
 	                                Use ${status} and ${url} as placeholders for the try build status and url
-	                                Example: -C 'echo "**Try status : [${status}](${url})**"'
+	                                Example: --callback='echo "**Try status : [${status}](${url})**"'
 
 ### Run the unit-tests and orm-tests only and show status
 	try --show-progress unit-tests orm-tests
