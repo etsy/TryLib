@@ -53,11 +53,16 @@
         <dir name="Precheck">
           <file name="ScriptRunner.php" role="php" />
           <file name="GitCopyAge.php" role="php" />
+          <file name="GitCopyBehind.php" role="php" />
         </dir>
         <dir name="Util">
           <file name="EtsyUtil.php" role="php"/>
-          <file name="OptionsParser.php" role="php" />
           <file name="AnsiColor.php" role="php" />
+          <dir name="php-options">
+            <file name="options.php" role="php" />
+            <file name="LICENSE.MIT" role="doc" />
+            <file name="LICENSE.python" role="doc" />
+          </dir>
         </dir>
       </dir>
    </dir>
