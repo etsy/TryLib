@@ -35,7 +35,6 @@
  <contents>
    <dir name="/">
      <file name="try" role="script" />
-     <file name="try54" role="script" />
      <dir name="TryLib">
         <file name="Autoload.php" role="php" />
         <file name="CommandRunner.php" role="php" />
