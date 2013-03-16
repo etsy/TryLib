@@ -4,9 +4,20 @@
 require_once "TryLib/Util/php-options/options.php";
 require_once "TryLib/Autoload.php";
 
-$jenkins_server = 'try.etsycorp.com';
-$jenkins_cli_jar = '/usr/etsy/jenkins-cli.jar';
+# url to your jenkins server - ex. localhost:8000
+$jenkins_server = 'localhost:8000';
+
+# path to the jenkins cli.jar
+$jenkins_cli_jar = '/path/to/jenkins-cli.jar';
+
+# Jenkins job name
 $jenkins_master_job = 'try';
+
+# Working Copy path
+$repo_path = '/path/to/local/working/copy';
+
+# Define the usage spec
+# See TryLib/Util/php-otions/README.md for more details
 
 $usage_spec = "
 try [options...] [subjob] [subjob] ...
@@ -15,7 +26,7 @@ h,help              Show help
 n,diff-only         Create diff, but do not send to Hudson
 v,verbose           Verbose (show shell commands as they're run)
 p,patch=            Path to patch file to use instead of generating a diff
-b,branch=           Name of the remote branch to diff and try against
+b,branch=           Name of the remote branch to diff and try against [master]
 c,show-results      Show final try job results
 P,show-progress     Print subtasks progressively as they complete
 s,staged            Use staged changes only to generate the diff
@@ -24,16 +35,60 @@ C,callback=         Callback string to execute at the end of the try run.
                     Example: --callback 'echo \"**Try status : [\${status}](\${url})**\"'
 ";
 
+# Parse options
 $parser = new Options($usage_spec);
 list($options, $flags, $extra) = $parser->parse($argv);
 
+# [Jenkins MasterProject only] - Get the subjobs list
 $subjobs = array_slice($extra, 1);
 
-list($user, $repo_path) = TryLib_Util_EtsyUtil::getUserAndRepoPath();
 
-$cli = new TryLib_Cli($jenkins_server, $jenkins_cli_jar, $jenkins_master_job);
-$cli->setOptions($options);
-$cli->setSubJobs($subjobs);
-$cli->setUserAndRepoPath($user, $repo_path);
-$cli->run();
+$cmd_runner = new TryLib_CommandRunner($options->verbose);
+
+$repo_manager = new TryLib_RepoManager_Git($repo_path, $cmd_runner);
+
+# [Jenkins MasterProject only]
+$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+    $jenkins_server,
+    $jenkins_cli_jar,
+    $jenkins_master_job,
+    $cmd_runner
+);
+
+# [Jenkins Freestyle project]
+#$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
+#    $jenkins_server,
+#    $jenkins_cli_jar,
+#    $jenkins_master_job,
+#    $cmd_runner
+#);
+
+$pre_checks = array(
+    new TryLib_Precheck_GitCopyBehind(array('master')),
+);
+
+$repo_manager->runPrechecks($pre_checks);
+$repo_manager->setRemoteBranch($options->branch);
+
+$patch = $options->patch;
+if (is_null($patch)) {
+    $patch = $repo_manager->generateDiff($options->staged);
+}
+
+if ($options->diff_only) {
+    print 'Not sending job to Jenkins (-n) diff is here:' . $patch . PHP_EOL;
+    exit(0);
+}
+
+$jenkins_runner->setPatch(realpath($patch));
+$jenkins_runner->setSshKey( '~/.ssh/try_id_rsa');
+$jenkins_runner->setParam('branch', $options->branch);
+$jenkins_runner->setParam('guid', time());
+$jenkins_runner->addCallback($options->callback);
+
+# [Jenkins MasterProject only] Set the subjobs - 
+$jenkins_runner->setSubJobs($subjobs);
+
+
+$jenkins_runner->startJenkinsJob($options->show_results, $options->show_progress);
 
