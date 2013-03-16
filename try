@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 
-require_once "TryLib/Util/php-options/options.php";
 require_once "TryLib/Autoload.php";
 
 # url to your jenkins server - ex. localhost:8000
@@ -36,7 +35,7 @@ C,callback=         Callback string to execute at the end of the try run.
 ";
 
 # Parse options
-$parser = new Options($usage_spec);
+$parser = new Trylib_Util_PHPOptions_Options($usage_spec);
 list($options, $flags, $extra) = $parser->parse($argv);
 
 # [Jenkins MasterProject only] - Get the subjobs list

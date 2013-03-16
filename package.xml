@@ -21,7 +21,7 @@
   <email>>github@elblinkin.info</email>
   <active>no</active>
  </lead>
- <date>2013-03-05</date>
+ <date>2013-03-19</date>
  <version>
   <release>1.0.4</release>
   <api>1.0.4</api>
@@ -43,7 +43,6 @@
             <file name="FreeStyleProject.php" role="php" />
             <file name="MasterProject.php" role="php" />
         </dir>
-        <file name="Cli.php" role="php" />
         <file name="RepoManager.php" role="php" />
         <dir name="RepoManager">
           <file name="Git.php" role="php"/>
@@ -55,13 +54,14 @@
           <file name="GitCopyBehind.php" role="php" />
         </dir>
         <dir name="Util">
-          <file name="EtsyUtil.php" role="php"/>
           <file name="AnsiColor.php" role="php" />
-          <dir name="php-options">
-            <file name="options.php" role="php" />
-            <file name="LICENSE.MIT" role="doc" />
-            <file name="LICENSE.python" role="doc" />
-          </dir>
+		  <dir name="PHPOptions">
+		    <file name="options.php" role="php"/>
+		    <file name="test.php" role="php" />
+		    <file name="LICENSE.MIT" role="doc"/>
+		    <file name="LICENSE.python" role="doc" />
+		    <file name="README.md" role="doc" />
+		  </dir>
         </dir>
       </dir>
    </dir>
