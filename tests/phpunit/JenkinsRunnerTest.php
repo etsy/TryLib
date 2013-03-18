@@ -10,12 +10,8 @@ class TestRunner extends TryLib_JenkinsRunner{
         return 'test';
     }
 
-    public function getBuildExtraArguments($poll_for_completion) {
-		if ($poll_for_completion){
-			return array('-s');
-		} else {
-			return array();
-		}
+    public function getBuildExtraArguments($show_results, $show_progress) {
+        return array();
     }
 
     public function pollForCompletion($pretty) {
@@ -153,8 +149,8 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->setParam('foo', 'bar');
 		$this->jenkins_runner->setParam('foo', 'baz');
 
-		$expected = 'test test-try -s -p foo=bar -p foo=baz';
-		$actual = $this->jenkins_runner->buildCLICommand(true);
+		$expected = 'test test-try -p foo=bar -p foo=baz';
+		$actual = $this->jenkins_runner->buildCLICommand(true, true);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -167,7 +163,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 		$this->jenkins_runner->setSshKey(vfsStream::url($ssh_key));
 
 		$expected = '-i vfs://testDir/try_id_rsa test test-try -p foo=bar';
-		$actual = $this->jenkins_runner->buildCLICommand(false);
+		$actual = $this->jenkins_runner->buildCLICommand(false, false);
 		$this->assertEquals($expected, $actual);
 	}
 

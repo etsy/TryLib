@@ -44,7 +44,7 @@ abstract class TryLib_JenkinsRunner {
 
     abstract protected function getBuildCommand();
 
-    abstract protected function getBuildExtraArguments($poll_for_completion);
+    abstract protected function getBuildExtraArguments($show_results, $show_progress);
 
     public function runJenkinsCommand($command) {
         $cmd = sprintf(
@@ -64,7 +64,7 @@ abstract class TryLib_JenkinsRunner {
         $this->runJenkinsCommand("logout");
 
         // Build up the jenkins command incrementally
-        $cli_command = $this->buildCLICommand($show_results);
+        $cli_command = $this->buildCLICommand($show_results, $show_progress);
 
         // Run the job
         $this->runJenkinsCommand($cli_command);
@@ -121,7 +121,7 @@ abstract class TryLib_JenkinsRunner {
     /**
      * Build the Jenkins CLI command, based on all options
      */
-    function buildCLICommand($show_results) {
+    function buildCLICommand($show_results, $show_progress) {
         $command = array();
 
         if (!is_null($this->getSsKey())) {
@@ -132,7 +132,7 @@ abstract class TryLib_JenkinsRunner {
 
         $command[] = $this->try_job_name;
 
-        $extra_args = $this->getBuildExtraArguments($show_results);
+        $extra_args = $this->getBuildExtraArguments($show_results, $show_progress);
 
 		$options = $this->getOptions();
 

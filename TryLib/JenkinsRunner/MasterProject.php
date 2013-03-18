@@ -66,7 +66,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
 
     /** For a master project, the extra arguments are a list of subjobs */
-    public function getBuildExtraArguments($show_results) {
+    public function getBuildExtraArguments($show_results, $show_progress) {
         return $this->getJobsList();
     }
 
