@@ -3,21 +3,22 @@
 
 require_once "TryLib/Autoload.php";
 
-# url to your jenkins server - ex. localhost:8000
-$jenkins_server = 'localhost:8000';
+# URL to your jenkins server (without http)
+$jenkins_server = 'localhost:8080';
 
-# path to the jenkins cli.jar
-$jenkins_cli_jar = '/path/to/jenkins-cli.jar';
+# Path to the jenkins cli.jar - download it from http://your.jenkins.instance/cli
+$jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
 
 # Jenkins job name
 $jenkins_master_job = 'try';
 
-# Working Copy path
-$repo_path = '/path/to/local/working/copy';
+# Working copy path (path to your local git repository)
+$repo_path = '.';
+
+#################################################################################################
 
 # Define the usage spec
 # See TryLib/Util/php-otions/README.md for more details
-
 $usage_spec = "
 try [options...] [subjob] [subjob] ...
 --
@@ -25,7 +26,7 @@ h,help              Show help
 n,diff-only         Create diff, but do not send to Hudson
 v,verbose           Verbose (show shell commands as they're run)
 p,patch=            Path to patch file to use instead of generating a diff
-b,branch=           Name of the remote branch to diff and try against [master]
+b,branch=           Name of the remote branch to diff and try against
 c,show-results      Show final try job results
 P,show-progress     Print subtasks progressively as they complete
 s,staged            Use staged changes only to generate the diff
@@ -46,16 +47,16 @@ $cmd_runner = new TryLib_CommandRunner($options->verbose);
 
 $repo_manager = new TryLib_RepoManager_Git($repo_path, $cmd_runner);
 
-# [Jenkins MasterProject only]
-$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+# [Jenkins Freestyle project]
+$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
     $jenkins_server,
     $jenkins_cli_jar,
     $jenkins_master_job,
     $cmd_runner
 );
 
-# [Jenkins Freestyle project]
-#$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
+# [Jenkins MasterProject only]
+#$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
 #    $jenkins_server,
 #    $jenkins_cli_jar,
 #    $jenkins_master_job,
@@ -86,8 +87,7 @@ $jenkins_runner->setParam('guid', time());
 $jenkins_runner->addCallback($options->callback);
 
 # [Jenkins MasterProject only] Set the subjobs - 
-$jenkins_runner->setSubJobs($subjobs);
-
+#$jenkins_runner->setSubJobs($subjobs);
 
 $jenkins_runner->startJenkinsJob($options->show_results, $options->show_progress);
 
