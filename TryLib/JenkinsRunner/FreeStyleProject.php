@@ -6,11 +6,15 @@ class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
         return 'build';
     }
 
-    public function getBuildExtraArguments($show_results) {
+    public function getBuildExtraArguments($show_results, $show_progress) {
         $args = array();
 
-        if ($show_results) {
+        if ($show_results || $show_progress) {
             $args[] = '-s';
+        }
+
+        if ($show_progress) {
+            $args[] = '-v';
         }
 
         return $args;

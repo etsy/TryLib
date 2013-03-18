@@ -27,12 +27,21 @@ class FreeStyleProjectTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('build', $this->jenkins_runner->getBuildCommand());
 	}
 
-    function testGetBuildExtraArgumentsNoPolling() {
-		$this->assertEquals(array(), $this->jenkins_runner->getBuildExtraArguments(false));
-	}
+    function provideDataForBuildExtraArgs() {
+        return array(
+            array(false, false, array()),
+            array(false, true, array('-s', '-v')),
+            array(true, false, array('-s')),
+            array(true, true, array('-s', '-v')),
+        );
+    }
 
-	function testGetBuildExtraArgumentsWithPolling() {
-		$this->assertEquals(array('-s'), $this->jenkins_runner->getBuildExtraArguments(true));
+    /**
+      * @dataProvider provideDataForBuildExtraArgs
+      */
+    function testGetBuildExtraArguments($show_results, $show_progress, $expected_args) {
+        $actual_args = $this->jenkins_runner->getBuildExtraArguments($show_results, $show_progress);
+		$this->assertEquals($expected_args, $actual_args);
 	}
 
 	function providePollForCompletionData() {
