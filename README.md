@@ -10,13 +10,40 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
 ## Example usage:
 
 ### try --help output
-![try help output](doc/try-help.png)
+	$ try -h
+	usage: try [options...] [subjob] [subjob] ...
+
+	    -h, --help            Show help
+	    -n, --diff-only       Create diff, but do not send to Hudson
+	    -v, --verbose         Verbose (show shell commands as they're run)
+	    -p, --patch ...       Path to patch file to use instead of generating a diff
+	    -b, --branch ...      Name of the remote branch to diff and try against [master]
+	    -c, --show-results    Show final try job results
+	    -P, --show-progress   Print subtasks progressively as they complete
+	    -s, --staged          Use staged changes only to generate the diff
+	    -C, --callback ...    Callback string to execute at the end of the try run.
+
+	Use ${status} and ${url} as placeholders for the try build status and url
+	Example: --callback 'echo "**Try status : [${status}](${url})**"'
 
 ### Run try on FreeStyle project and show the results in the console.
-![try freestyle project](doc/try-freestyle-project.png)
+	$ try --show-results
+	Started try-unit-tests #25
+	Completed try-unit-tests #25 : SUCCESS
 
 ### Run the unit-tests and integration-tests only (MasterProject setup) and show the sub-jobs status as they complete
-![try master project](doc/try-master-project.png)
+	$ try --show-progress
+	Executing DEFAULT sub-jobs: try-functional-tests try-integration-tests try-unit-tests
+	......... try ( pending )
+	......... try ( pending )
+	......... try ( http://etsyny-l523.local:8080/job/try/13/console )
+
+
+	                  try-unit-tests SUCCESS 
+	            try-functional-tests SUCCESS 
+	           try-integration-tests SUCCESS 
+
+	Try Status : SUCCESS (http://etsyny-l523.local:8080/job/try/13)
 
 ### Run try and post the results to a github issue
 	try --callback "curl -s --user <login>:<password> --request POST --data '{\"body\":\"Try status : [${status}](${url})\"}'" https://github.com/api/v3/repos/etsy/try/issues/1/comments"
