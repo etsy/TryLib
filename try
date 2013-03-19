@@ -26,7 +26,7 @@ h,help              Show help
 n,diff-only         Create diff, but do not send to Hudson
 v,verbose           Verbose (show shell commands as they're run)
 p,patch=            Path to patch file to use instead of generating a diff
-b,branch=           Name of the remote branch to diff and try against
+b,branch=           Name of the remote branch to diff and try against [master]
 c,show-results      Show final try job results
 P,show-progress     Print subtasks progressively as they complete
 s,staged            Use staged changes only to generate the diff
