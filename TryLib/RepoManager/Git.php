@@ -6,8 +6,8 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
     protected $branch;
     protected $remote;
     private $remote_branch;
-    
-    public function __construct($repo_path, $cmd_runner) {    
+
+    public function __construct($repo_path, $cmd_runner) {
         $this->repo_path = $repo_path;
         $this->cmd_runner = $cmd_runner;
         $this->branch = null;
@@ -17,7 +17,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
     function cleanRef($ref) {
         return rtrim(str_replace('refs/heads/', '', $ref));
-    } 
+    }
 
 	function parseLocalBranch() {
 		$this->cmd_runner->chdir($this->repo_path);
@@ -97,7 +97,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         return $remote . "/" . $remote_branch;
     }
 
-    function generateDiff($staged_only=false) {    
+    function generateDiff($staged_only=false) {
         $patch = $this->repo_path . "/patch.diff";
 
         $args = array(
@@ -110,14 +110,14 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         if ($staged_only) {
             $args[] = "--staged";
         }
-        
+
         $this->cmd_runner->chdir($this->repo_path);
 
         $ret = $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch, false, true);
         if ($ret) {
-            $this->cmd_runner->terminate( 
+            $this->cmd_runner->terminate(
 				'An error was encountered generating the diff - run \'git fetch\' and try again'
-			); 
+			);
         }
 
         return $patch;

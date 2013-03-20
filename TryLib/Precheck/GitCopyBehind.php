@@ -3,9 +3,9 @@
 /** Check to prevent generating a diff when the local work copy
   * has been fetched but not merged. When it's the case, the diff
   * generated via "git diff origin/branch" will "undo" the un-merged commits.
-  * As a result, the code 'tried' on the jenkins server will no longer be 
+  * As a result, the code 'tried' on the jenkins server will no longer be
   * the latest copy of the code with the local changes, but instead the exact same code
-  * than the local working copy. 
+  * than the local working copy.
   */
 class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
     protected $branches_to_check;
@@ -46,7 +46,7 @@ class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
 				$msg .= 'latest version of the repository.' . PHP_EOL . PHP_EOL;
                 $msg .= 'Please merge your changes or run `git rpull` first.' . PHP_EOL;
 				$cmd_runner->warn($msg);
-			}	
+			}
 		}
     }
 }
