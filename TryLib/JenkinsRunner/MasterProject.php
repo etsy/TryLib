@@ -88,7 +88,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
             $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
         } else {
 	        $this->try_base_url = $matches[0];
-			
+
 	        $prev_text = '';
 	        // Poll job URL for completion
 	        while (true) {
@@ -129,7 +129,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         if (!$show_progress) {
             $this->cmd_runner->info('......... waiting for job to finish');
         }
-		return $prev_text;	
+		return $prev_text;
 	}
 
     public function colorStatus($status) {

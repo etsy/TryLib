@@ -12,7 +12,7 @@ abstract class TryLib_JenkinsRunner {
     protected $jenkins_cli;
     protected $try_job_name;
     protected $cmd_runner;
-    
+
 	public $try_status;
     public $try_base_url;
 
