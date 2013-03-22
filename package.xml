@@ -56,7 +56,7 @@
         <dir name="Util">
           <file name="AnsiColor.php" role="php" />
 		  <dir name="PHPOptions">
-		    <file name="options.php" role="php"/>
+		    <file name="Options.php" role="php"/>
 		    <file name="test.php" role="php" />
 		    <file name="LICENSE.MIT" role="doc"/>
 		    <file name="LICENSE.python" role="doc" />
