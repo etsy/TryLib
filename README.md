@@ -17,14 +17,19 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
 	    -n, --diff-only       Create diff, but do not send to Hudson
 	    -v, --verbose         Verbose (show shell commands as they're run)
 	    -p, --patch ...       Path to patch file to use instead of generating a diff
-	    -b, --branch ...      Name of the remote branch to diff and try against [master]
+	    -s, --staged          Use staged changes only to generate the diff
+	    -b, --branch ...      Remote branch to diff and try against [master]
+
 	    -c, --show-results    Show final try job results
 	    -P, --show-progress   Print subtasks progressively as they complete
-	    -s, --staged          Use staged changes only to generate the diff
 	    -C, --callback ...    Callback string to execute at the end of the try run.
 
 	Use ${status} and ${url} as placeholders for the try build status and url
 	Example: --callback 'echo "**Try status : [${status}](${url})**"'
+
+	    --jenkinsjob ...      Master Job Name in Jenkins  [try]
+	    --jenkinsserver ...   URL to the jenkins server   [localhost:8080]
+	    --wcpath ...          Working Copy Path           [.]
 
 ### Run try on FreeStyle project and show the results in the console.
 	$ try --show-results
