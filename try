@@ -10,10 +10,13 @@ $jenkins_server = 'localhost:8080';
 $jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
 
 # Jenkins job name
-$jenkins_master_job = 'try';
+$default_jenkins_job = 'try';
+
+# Retrieve user
+$user = getenv("USER");
 
 # Working copy path (path to your local git repository)
-$repo_path = '.';
+$default_wc_path = '.';
 
 #################################################################################################
 
@@ -26,49 +29,57 @@ h,help              Show help
 n,diff-only         Create diff, but do not send to Hudson
 v,verbose           Verbose (show shell commands as they're run)
 p,patch=            Path to patch file to use instead of generating a diff
-b,branch=           Name of the remote branch to diff and try against [master]
+s,staged            Use staged changes only to generate the diff
+b,branch=           Remote branch to diff and try against [master]
+
 c,show-results      Show final try job results
 P,show-progress     Print subtasks progressively as they complete
-s,staged            Use staged changes only to generate the diff
 C,callback=         Callback string to execute at the end of the try run.
                     Use \${status} and \${url} as placeholders for the try build status and url
                     Example: --callback 'echo \"**Try status : [\${status}](\${url})**\"'
+
+jenkinsjob=         Master Job Name in Jenkins  [$default_jenkins_job]
+jenkinsserver=      URL to the jenkins server   [$jenkins_server]
+wcpath=             Working Copy Path           [$default_wc_path]
 ";
 
 # Parse options
 $parser = new TryLib_Util_PHPOptions_Options($usage_spec);
+
 list($options, $flags, $extra) = $parser->parse($argv);
 
 # [Jenkins MasterProject only] - Get the subjobs list
 $subjobs = array_slice($extra, 1);
 
-
 $cmd_runner = new TryLib_CommandRunner($options->verbose);
 
-$repo_manager = new TryLib_RepoManager_Git($repo_path, $cmd_runner);
+$repo_manager = new TryLib_RepoManager_Git($options->wcpath, $cmd_runner);
+
+$remote_branch = $options->branch;
+
+$repo_manager->setRemoteBranch($remote_branch);
 
 # [Jenkins Freestyle project]
-$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
-    $jenkins_server,
-    $jenkins_cli_jar,
-    $jenkins_master_job,
-    $cmd_runner
-);
-
-# [Jenkins MasterProject only]
-#$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
-#    $jenkins_server,
+#$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
+#    $options->jenkinsserver,
 #    $jenkins_cli_jar,
-#    $jenkins_master_job,
+#    $options->jenkinsjob,
 #    $cmd_runner
 #);
+
+# [Jenkins MasterProject only]
+$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+    $options->jenkinsserver,
+    $jenkins_cli_jar,
+    $options->jenkinsjob,
+    $cmd_runner
+);
 
 $pre_checks = array(
     new TryLib_Precheck_GitCopyBehind(array('master')),
 );
 
 $repo_manager->runPrechecks($pre_checks);
-$repo_manager->setRemoteBranch($options->branch);
 
 $patch = $options->patch;
 if (is_null($patch)) {
@@ -82,12 +93,12 @@ if ($options->diff_only) {
 
 $jenkins_runner->setPatch(realpath($patch));
 $jenkins_runner->setSshKey( '~/.ssh/try_id_rsa');
-$jenkins_runner->setParam('branch', $options->branch);
-$jenkins_runner->setParam('guid', time());
+$jenkins_runner->setParam('branch', $remote_branch);
+$jenkins_runner->setParam('guid', $user . time());
 $jenkins_runner->addCallback($options->callback);
 
 # [Jenkins MasterProject only] Set the subjobs - 
-#$jenkins_runner->setSubJobs($subjobs);
+$jenkins_runner->setSubJobs($subjobs);
 
 $jenkins_runner->startJenkinsJob($options->show_results, $options->show_progress);
 
