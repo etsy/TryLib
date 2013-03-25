@@ -1,5 +1,5 @@
 <?php
-include('options.php');
+include('Options.php');
 
 // First line is the summary
 // one separator '--'
