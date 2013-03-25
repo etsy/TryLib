@@ -18,7 +18,7 @@ $repo_path = '.';
 #################################################################################################
 
 # Define the usage spec
-# See TryLib/Util/php-otions/README.md for more details
+# See TryLib/Util/PHPOptions/README.md for more details
 $usage_spec = "
 try [options...] [subjob] [subjob] ...
 --
