@@ -60,7 +60,7 @@ Option flags must be at the begining of the line and multiple flags are
 separated by commas. Usually, options have a short, one character flag, and a
 longer one, but the short one can be omitted.
 
-Long option flags are used as the option's key for the OptDict produced when
+Long option flags are used as the option's key for the  TryLib_Util_PHPOptions_OptDict produced when
 parsing options.
 
 When the flag definition is ended with an equal sign, the option takes
@@ -171,7 +171,7 @@ function _gnu_getopt($args, $shortopts, $longopts=array()) {
     return array($opts, $prog_args);
 }
 
-class GetoptError extends Exception { }
+class TryLib_Util_PHPOptions_GetoptError extends Exception { }
 
 function _getopt_do_longs($opts, $opt, $longopts, $args) {
     $i = strpos($opt,'=');
@@ -186,12 +186,12 @@ function _getopt_do_longs($opts, $opt, $longopts, $args) {
     if ($has_arg) {
         if ($optarg === Null) {
             if (! count($args))
-                throw new GetoptError("option --$opt requires argument");
+                throw new TryLib_Util_PHPOptions_GetoptError("option --$opt requires argument");
             $optarg = $args[0];
             array_shift($args);
         }
     } elseif ($optarg !== Null) {
-        throw new GetoptError("option --$opt must not have an argument");
+        throw new TryLib_Util_PHPOptions_GetoptError("option --$opt must not have an argument");
     }
     array_push($opts,array('--' . $opt, $optarg ? $optarg : ''));
     return array($opts, $args);
@@ -203,7 +203,7 @@ function _getopt_long_has_args($opt, $longopts) {
         if (_startswith($o,$opt))
             array_push($possibilities,$o);
     if (! count($possibilities))
-        throw new GetoptError("option --$opt not recognized");
+        throw new TryLib_Util_PHPOptions_GetoptError("option --$opt not recognized");
     // Is there an exact match?
     if (in_array($opt, $possibilities))
         return array(False, $opt);
@@ -211,7 +211,7 @@ function _getopt_long_has_args($opt, $longopts) {
         return array(True, $opt);
     // No exact match, so better be unique.
     if (count($possibilities) > 1)
-        throw new GetoptError("option --$opt not a unique prefix");
+        throw new TryLib_Util_PHPOptions_GetoptError("option --$opt not a unique prefix");
     assert('count($possibilities) == 1');
     $unique_match = $possibilities[0];
     $has_arg = _endswith($unique_match,'=');
@@ -227,7 +227,7 @@ function _getopt_do_shorts($opts, $optstring, $shortopts, $args) {
         if (_getopt_short_has_arg($opt, $shortopts)) {
             if ($optstring == '') {
                 if (! count($args))
-                    throw new GetoptError("option -$opt requires argument");
+                    throw new TryLib_Util_PHPOptions_GetoptError("option -$opt requires argument");
                 $optstring = $args[0];
                 array_shift($args);
             }
@@ -247,7 +247,7 @@ function _getopt_short_has_arg($opt, $shortopts) {
         if ($opt == $shortopts_a[$i] && $opt != ':')
             return _startswith($shortopts,':',$i+1);
     }
-    throw new GetoptError("option -$opt not recognized");
+    throw new TryLib_Util_PHPOptions_GetoptError("option -$opt not recognized");
 }
 
 
@@ -256,7 +256,7 @@ function _getopt_short_has_arg($opt, $shortopts) {
 Keys can be set or accessed with a "no-" or "no_" prefix to negate the
 value.
 **/
-class OptDict extends ArrayObject {
+class TryLib_Util_PHPOptions_OptDict extends ArrayObject {
     private $_opts;
     private $_aliases;
 
@@ -335,7 +335,7 @@ alternative behaviour on abort (after having output the usage string).
 By default, the parser function is a tweaked version of getopt(), and the abort
 behaviour is to exit the program.
 **/
-class Options {
+class TryLib_Util_PHPOptions_Options {
     public $optspec;
     public $optfunc;
     private $_onabort;
@@ -458,7 +458,7 @@ class Options {
 
     /**Parse a list of arguments and return (options, flags, extra).
 
-    In the returned tuple, "options" is an OptDict with known options,
+    In the returned tuple, "options" is an  TryLib_Util_PHPOptions_OptDict with known options,
     "flags" is a list of option flags that were used on the command-line,
     and "extra" is a list of positional arguments.
     **/
@@ -472,7 +472,7 @@ class Options {
             $this->fatal($e->getMessage());
         }
 
-        $opt = new OptDict($this->_aliases);
+        $opt = new  TryLib_Util_PHPOptions_OptDict($this->_aliases);
 
         foreach ($this->_defaults as $k => $v)
             $opt[$k] = $v;

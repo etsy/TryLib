@@ -1,5 +1,5 @@
 <?php
-include('options.php');
+include('Options.php');
 
 // First line is the summary
 // one separator '--'
@@ -31,7 +31,7 @@ graft=     a graft point *old_path*=*new_path* (can be used more than once)
 #,compress=  set compression level to # (0-9, 9 is highest) [1]
 ";
 
-$o = new Options($s);
+$o = new TryLib_Util_PHPOptions_Options($s);
 
 // give it any arbitrary list of arguments, the first one will be ignored
 // (program name).
