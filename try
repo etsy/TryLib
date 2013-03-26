@@ -92,7 +92,7 @@ if ($options->diff_only) {
 }
 
 $jenkins_runner->setPatch(realpath($patch));
-$jenkins_runner->setSshKey( '~/.ssh/try_id_rsa');
+$jenkins_runner->setSshKey( getenv('HOME') . '/.ssh/try_id_rsa');
 $jenkins_runner->setParam('branch', $remote_branch);
 $jenkins_runner->setParam('guid', $user . time());
 $jenkins_runner->addCallback($options->callback);
