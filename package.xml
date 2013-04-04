@@ -55,6 +55,7 @@
         </dir>
         <dir name="Util">
           <file name="AnsiColor.php" role="php" />
+          <file name="OptionsUtil.php" role="php" />
 		  <dir name="PHPOptions">
 		    <file name="Options.php" role="php"/>
 		    <file name="LICENSE.MIT" role="doc"/>
