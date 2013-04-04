@@ -476,7 +476,6 @@ class TryLib_Util_PHPOptions_Options {
 
         foreach ($this->_defaults as $k => $v)
             $opt[$k] = $v;
-
         foreach ($flags as $f) {
             $k = ltrim($f[0],'-');
             $v = $f[1];
@@ -497,7 +496,18 @@ class TryLib_Util_PHPOptions_Options {
                 else
                     $v = _intify($v);
             }
-            $opt[$k] = _invert($v, $invert);
+            # if the option is already set with a value different than the default value,
+            # add the new value as an array instead of overriding the previous value
+            $val = _invert($v, $invert);
+            if ( $opt[$k] != $this->_defaults[$k]) {
+                if (! is_array($opt[$k])) {
+                    $opt[$k] = array($opt[$k], $val);
+                } else {
+                    $opt[$k][] = $val;
+                }
+            } else {
+                $opt[$k] = $val;
+            }
         }
         return array($opt,$flags,$extra);
     }

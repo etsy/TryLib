@@ -34,6 +34,7 @@ b,branch=           Remote branch to diff and try against [master]
 
 c,show-results      Show final try job results
 P,show-progress     Print subtasks progressively as they complete
+extra-param=        Extra parameters to send to jenkins - format key=value
 C,callback=         Callback string to execute at the end of the try run.
                     Use \${status} and \${url} as placeholders for the try build status and url
                     Example: --callback 'echo \"**Try status : [\${status}](\${url})**\"'
@@ -95,6 +96,12 @@ $jenkins_runner->setPatch(realpath($patch));
 $jenkins_runner->setSshKey( getenv('HOME') . '/.ssh/try_id_rsa');
 $jenkins_runner->setParam('branch', $remote_branch);
 $jenkins_runner->setParam('guid', $user . time());
+
+$extra_params = TryLib_Util_OptionsUtil::parseExtraParameters($options->extra_param);
+foreach($extra_params as $param) {
+    $jenkins_runner->setParam($param[0], $param[1]);
+}
+
 $jenkins_runner->addCallback($options->callback);
 
 # [Jenkins MasterProject only] Set the subjobs - 
