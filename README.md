@@ -22,6 +22,7 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
 
 	    -c, --show-results    Show final try job results
 	    -P, --show-progress   Print subtasks progressively as they complete
+        --extra-param ...     Extra parameters to send to jenkins - format key=value
 	    -C, --callback ...    Callback string to execute at the end of the try run.
 
 	Use ${status} and ${url} as placeholders for the try build status and url
@@ -52,6 +53,9 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
 
 ### Run try and post the results to a github issue
 	try --callback "curl -s --user <login>:<password> --request POST --data '{\"body\":\"Try status : [${status}](${url})\"}'" https://github.com/api/v3/repos/etsy/try/issues/1/comments"
+
+### Run try with custom parameters defined in your jenkins job
+	try --extra-param foo=bar --extra-param baz=boo
 
 ## Try script configuration
 
