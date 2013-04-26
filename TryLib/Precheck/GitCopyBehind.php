@@ -20,33 +20,33 @@ class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
      * @param CommandRunner $cmd_runner  cmd runner object
      * @return boolean true if we should run the GitCopyBehind check
      **/
-	public function shouldRunCheck($cmd_runner) {
-		$cmd_runner->run('git rev-parse --abbrev-ref HEAD');
-		$local_branch = $cmd_runner->getOutput();
-		return in_array($local_branch, $this->branches_to_check);
-	}
+    public function shouldRunCheck($cmd_runner) {
+        $cmd_runner->run('git rev-parse --abbrev-ref HEAD');
+        $local_branch = $cmd_runner->getOutput();
+        return in_array($local_branch, $this->branches_to_check);
+    }
 
     /**
      * Check if the local branch is behind by X commits
      * If it's the case, then the diff that will get generated will "undo"
-	 * the latest changes from the server and as a result, the code that will
-	 * get tried will be the exact same code than where the diff is generated
-	 * and NOT the latest copy of the repository with only the local changes applied
+     * the latest changes from the server and as a result, the code that will
+     * get tried will be the exact same code than where the diff is generated
+     * and NOT the latest copy of the repository with only the local changes applied
      *
      * @param CommandRunner $cmd_runner  cmd runner object
-     * @param string $repo_path          location of the git repo
+     * @param string        $repo_path          location of the git repo
      **/
     function check($cmd_runner, $repo_path) {
-		if ($this->shouldRunCheck($cmd_runner)) {
-			$cmd_runner->run('git rev-list HEAD..origin');
-			$output = $cmd_runner->getOutput();
-			if (!empty($output)) {
-				$msg = 'ERROR - you ran git fetch in your repository without merging the new commits' . PHP_EOL;
-				$msg .= 'If you submit a `try` job as is, you will not be testing your diff against the ';
-				$msg .= 'latest version of the repository.' . PHP_EOL . PHP_EOL;
+        if ($this->shouldRunCheck($cmd_runner)) {
+            $cmd_runner->run('git rev-list HEAD..origin');
+            $output = $cmd_runner->getOutput();
+            if (!empty($output)) {
+                $msg = 'ERROR - you ran git fetch in your repository without merging the new commits' . PHP_EOL;
+                $msg .= 'If you submit a `try` job as is, you will not be testing your diff against the ';
+                $msg .= 'latest version of the repository.' . PHP_EOL . PHP_EOL;
                 $msg .= 'Please merge your changes or run `git rpull` first.' . PHP_EOL;
-				$cmd_runner->warn($msg);
-			}
-		}
+                $cmd_runner->warn($msg);
+            }
+        }
     }
 }

@@ -24,9 +24,9 @@ class TryLib_Util_OptionsUtil {
         if (is_string($extra_param_option)) {
             $params[] = Trylib_Util_OptionsUtil::parseParam($extra_param_option);
         } elseif (is_array($extra_param_option)) {
-           foreach($extra_param_option as $param) {
-               $params[] = Trylib_Util_OptionsUtil::parseParam($param);
-           }
+            foreach ($extra_param_option as $param) {
+                $params[] = Trylib_Util_OptionsUtil::parseParam($param);
+            }
         }
         return $params;
     }

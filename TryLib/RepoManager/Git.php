@@ -19,19 +19,19 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         return rtrim(str_replace('refs/heads/', '', $ref));
     }
 
-	function parseLocalBranch() {
-		$this->cmd_runner->chdir($this->repo_path);
+    function parseLocalBranch() {
+        $this->cmd_runner->chdir($this->repo_path);
         $ret = $this->cmd_runner->run('git symbolic-ref HEAD', true, true);
         if ($ret) {
             return '';
         } else {
             return $this->cleanRef($this->cmd_runner->getOutput());
         }
-	}
+    }
 
     function getLocalBranch() {
         if (is_null($this->branch)) {
-			$this->branch = $this->parseLocalBranch();
+            $this->branch = $this->parseLocalBranch();
         }
         return $this->branch;
     }
@@ -79,8 +79,8 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
             $ret = $this->cmd_runner->run($cmd, true, true);
             if ($ret === 0) {
                 $this->cmd_runner->info(
-					'A remote branch with the same name than your local branch was found - using it for the diff'
-				);
+                    'A remote branch with the same name than your local branch was found - using it for the diff'
+                );
                 $this->remote_branch = $local_branch;
             } elseif (!is_null($default)) {
                 $this->cmd_runner->info("It appears that your local branch '$local_branch' is not tracked remotely");
@@ -116,8 +116,8 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         $ret = $this->cmd_runner->run('git diff ' . implode(' ', $args) . ' > ' . $patch, false, true);
         if ($ret) {
             $this->cmd_runner->terminate(
-				'An error was encountered generating the diff - run \'git fetch\' and try again'
-			);
+                'An error was encountered generating the diff - run \'git fetch\' and try again'
+            );
         }
 
         return $patch;

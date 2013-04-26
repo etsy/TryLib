@@ -11,7 +11,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $jenkins_cli,
         $try_job_name,
         $cmd_runner,
-		$polling_time = 20
+        $polling_time = 20
     ) {
         parent::__construct(
             $jenkins_url,
@@ -23,7 +23,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $this->jobs = array();
         $this->excluded_jobs = array();
         $this->colors = null;
-		$this->polling_time = $polling_time;
+        $this->polling_time = $polling_time;
     }
 
     public function getColors() {
@@ -70,12 +70,12 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         return $this->getJobsList();
     }
 
-	public function getJobOutput() {
-		if (is_string($this->try_base_url)) {
-			return file_get_contents($this->try_base_url . '/consoleText');
-		}
-		return null;
-	}
+    public function getJobOutput() {
+        if (is_string($this->try_base_url)) {
+            return file_get_contents($this->try_base_url . '/consoleText');
+        }
+        return null;
+    }
 
     /**
      * Poll for completion of try job and print results
@@ -87,22 +87,22 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
             $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
         } else {
-	        $this->try_base_url = $matches[0];
+            $this->try_base_url = $matches[0];
 
-	        $prev_text = '';
-	        // Poll job URL for completion
-	        while (true) {
-				$prev_text = $this->processLogOuput($prev_text, $show_progress);
-				if (is_null($prev_text)) {
-					break;
-				}
-	            sleep($this->polling_time);
-	        }
-		}
+            $prev_text = '';
+            // Poll job URL for completion
+            while (true) {
+                $prev_text = $this->processLogOuput($prev_text, $show_progress);
+                if (is_null($prev_text)) {
+                    break;
+                }
+                sleep($this->polling_time);
+            }
+        }
     }
 
-	public function processLogOuput($prev_text, $show_progress) {
-		$try_log = $this->getJobOutput();
+    public function processLogOuput($prev_text, $show_progress) {
+        $try_log = $this->getJobOutput();
 
         $new_text = str_replace($prev_text, '', $try_log);
         $prev_text = $try_log;
@@ -129,8 +129,8 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         if (!$show_progress) {
             $this->cmd_runner->info('......... waiting for job to finish');
         }
-		return $prev_text;
-	}
+        return $prev_text;
+    }
 
     public function colorStatus($status) {
         $colors = $this->getColors();
@@ -161,13 +161,13 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
             foreach ($matches[0] as $k => $_) {
                 $job_status = $matches[1][$k];
 
-	            $status = sprintf(
+                $status = sprintf(
                     "% 32s % -10s %s",
                     $matches[2][$k],
                     $this->colorStatus($job_status),
                     $matches[1][$k] !== 'SUCCESS' ? $matches[3][$k] : ''
                 );
-				$this->cmd_runner->info($status);
+                $this->cmd_runner->info($status);
             }
             return true;
         }

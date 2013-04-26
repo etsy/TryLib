@@ -13,7 +13,7 @@ abstract class TryLib_JenkinsRunner {
     protected $try_job_name;
     protected $cmd_runner;
 
-	public $try_status;
+    public $try_status;
     public $try_base_url;
 
     private $branch;
@@ -75,9 +75,9 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
-	public function getOptions() {
-		return $this->options;
-	}
+    public function getOptions() {
+        return $this->options;
+    }
 
     public function setParam($key, $value) {
         $param = sprintf('-p %s=%s', $key, $value);
@@ -92,9 +92,9 @@ abstract class TryLib_JenkinsRunner {
         }
     }
 
-	public function getSsKey() {
-		return $this->ssh_key_path;
-	}
+    public function getSsKey() {
+        return $this->ssh_key_path;
+    }
 
     public function setPatch($patch) {
         if (file_exists($patch)) {
@@ -115,8 +115,8 @@ abstract class TryLib_JenkinsRunner {
     }
 
     public function getCallbacks() {
-		return $this->callbacks;
-	}
+        return $this->callbacks;
+    }
 
     /**
      * Build the Jenkins CLI command, based on all options
@@ -134,7 +134,7 @@ abstract class TryLib_JenkinsRunner {
 
         $extra_args = $this->getBuildExtraArguments($show_results, $show_progress);
 
-		$options = $this->getOptions();
+        $options = $this->getOptions();
 
         return implode(' ', array_merge($command, $extra_args, $options));
     }

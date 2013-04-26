@@ -28,23 +28,23 @@ class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
         return $dv->format("%m month, %d days, %h hours, %m minutes and %s seconds");
     }
 
-	public function getTimeDelta($since) {
-		return time() - strtotime($since);
-	}
+    public function getTimeDelta($since) {
+        return time() - strtotime($since);
+    }
 
-	public function getLastFetchDate($cmd_runner) {
-		$cmd = 'git log -1 --format=\'%cd\' --date=local';
+    public function getLastFetchDate($cmd_runner) {
+        $cmd = 'git log -1 --format=\'%cd\' --date=local';
         if (!is_null($this->remote_branch)) {
             $cmd .= ' origin/' . $this->remote_branch;
         }
 
         $ret = $cmd_runner->run($cmd);
         if ($ret) {
-			return null;
-		} else {
-			return $cmd_runner->getOutput();
-		}
-	}
+            return null;
+        } else {
+            return $cmd_runner->getOutput();
+        }
+    }
 
     /**
      * Check the age of the working copy and warn user if
@@ -54,7 +54,7 @@ class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
      * @param string $repo_path          location of the git repo
      **/
     function check($cmd_runner, $repo_path) {
-		$last_fetch = $this->getLastFetchDate($cmd_runner);
+        $last_fetch = $this->getLastFetchDate($cmd_runner);
         if ( !is_null($last_fetch)) {
             $wc_age = $this->getTimeDelta($last_fetch);
             if ($wc_age >= $this->max_age_blocking) {
@@ -63,8 +63,8 @@ class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
                 $msg .= 'Please run `git rpull` and try again';
                 $cmd_runner->terminate($msg);
             } elseif ($wc_age >= $this->max_age_warning) {
-				$msg ='Your working copy is ' . $this->formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
-				$msg .= 'You may want to run `git rpull` to avoid merging conflicts in the try job.';
+                $msg ='Your working copy is ' . $this->formatTimeDiff($wc_age) . ' old.' . PHP_EOL;
+                $msg .= 'You may want to run `git rpull` to avoid merging conflicts in the try job.';
                 $cmd_runner->warn($msg);
             }
         }

@@ -3,22 +3,22 @@
 require_once "TryLib/Autoload.php";
 
 class MasterProjectTest extends PHPUnit_Framework_TestCase {
-	const JENKINS_URL = 'url.to.jenkins.com:8080';
-	const JENKINS_CLI = '/path/to/cli.jar';
-	const JENKINS_JOB = 'test-try';
+    const JENKINS_URL = 'url.to.jenkins.com:8080';
+    const JENKINS_CLI = '/path/to/cli.jar';
+    const JENKINS_JOB = 'test-try';
 
     private $jenkins_runner;
-	private $mock_cmd_runner;
+    private $mock_cmd_runner;
 
     function setUp() {
         parent::setUp();
 
-		$this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
 
         $this->jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
-			self::JENKINS_URL,
-			self::JENKINS_CLI,
-			self::JENKINS_JOB,
+            self::JENKINS_URL,
+            self::JENKINS_CLI,
+            self::JENKINS_JOB,
             $this->mock_cmd_runner
         );
     }
@@ -67,280 +67,280 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
     }
 
 
-	function provideShowProgressJobResultsData() {
-		return array(
-			array(
-				'[SUCCESS] test-try-validate-css (http://link/to/job/testReport)',
-				'SUCCESS',
-				'           test-try-validate-css \e[color SUCCESS\[0m ',
-			),
-			array(
-				'[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)',
-				'UNSTABLE',
-				'           test-try-validate-css \e[color UNSTABLE\[0m (http://link/to/job/testReport)',
-			),
-			array(
-				'[FAILURE] test-try-validate-css (http://link/to/job/testReport)',
-				'FAILURE',
-				'           test-try-validate-css \e[color FAILURE\[0m (http://link/to/job/testReport)',
-			)
+    function provideShowProgressJobResultsData() {
+        return array(
+            array(
+                '[SUCCESS] test-try-validate-css (http://link/to/job/testReport)',
+                'SUCCESS',
+                '           test-try-validate-css \e[color SUCCESS\[0m ',
+            ),
+            array(
+                '[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)',
+                'UNSTABLE',
+                '           test-try-validate-css \e[color UNSTABLE\[0m (http://link/to/job/testReport)',
+            ),
+            array(
+                '[FAILURE] test-try-validate-css (http://link/to/job/testReport)',
+                'FAILURE',
+                '           test-try-validate-css \e[color FAILURE\[0m (http://link/to/job/testReport)',
+            )
 
 
-		);
-	}
+        );
+    }
 
-	/** @dataProvider provideShowProgressJobResultsData */
-	function testPrintJobResultSuccessAndShowProgress($log_line, $status, $expected_output) {
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('colorStatus'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
+    /** @dataProvider provideShowProgressJobResultsData */
+    function testPrintJobResultSuccessAndShowProgress($log_line, $status, $expected_output) {
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('colorStatus'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
 
-		$jenkins_runner->expects($this->once())
-					   ->method('colorStatus')
+        $jenkins_runner->expects($this->once())
+                       ->method('colorStatus')
                        ->with($status)
-					   ->will($this->returnValue('\e[color '. $status . '\[0m'));
+                       ->will($this->returnValue('\e[color '. $status . '\[0m'));
 
-		$this->mock_cmd_runner->expects($this->at(0))
-							  ->method('info')
-							  ->with($this->equalTo(PHP_EOL));
+        $this->mock_cmd_runner->expects($this->at(0))
+                              ->method('info')
+                              ->with($this->equalTo(PHP_EOL));
 
-		$this->mock_cmd_runner->expects($this->at(1))
-							  ->method('info')
-							  ->with($this->equalTo($expected_output));
+        $this->mock_cmd_runner->expects($this->at(1))
+                              ->method('info')
+                              ->with($this->equalTo($expected_output));
 
-		$this->assertTrue($jenkins_runner->printJobResults($log_line));
-	}
-	
-	function testPrintJobResultNoMatch() {
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('colorStatus'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
+        $this->assertTrue($jenkins_runner->printJobResults($log_line));
+    }
+    
+    function testPrintJobResultNoMatch() {
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('colorStatus'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
 
-		$jenkins_runner->expects($this->never())
-					   ->method('colorStatus')
-					   ->will($this->returnValue(null));
+        $jenkins_runner->expects($this->never())
+                       ->method('colorStatus')
+                       ->will($this->returnValue(null));
 
-		$this->mock_cmd_runner->expects($this->never())
-							  ->method('info');
+        $this->mock_cmd_runner->expects($this->never())
+                              ->method('info');
 
-		$this->assertFalse($jenkins_runner->printJobResults("random line"));
-	}
-	
-	function testProcessLogOutputNotFinishedShowProgress() {
-		$prev_text = '
-			......... try-replication-tests (pending)
-			......... try-hphp (pending)
-			......... try-integration-tests (pending)
-			......... try-js-phantom-tests (pending)
-			......... try-validate-css (pending)
-			......... try-php-code-sniffer (pending)';
-		
-		$new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
-		
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('getJobOutput', 'printJobResults'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->expects($this->at(0))
-					   ->method('getJobOutput')
-					   ->will($this->returnValue($new_text));
+        $this->assertFalse($jenkins_runner->printJobResults("random line"));
+    }
+    
+    function testProcessLogOutputNotFinishedShowProgress() {
+        $prev_text = '
+            ......... try-replication-tests (pending)
+            ......... try-hphp (pending)
+            ......... try-integration-tests (pending)
+            ......... try-js-phantom-tests (pending)
+            ......... try-validate-css (pending)
+            ......... try-php-code-sniffer (pending)';
+        
+        $new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
+        
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('getJobOutput', 'printJobResults'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->expects($this->at(0))
+                       ->method('getJobOutput')
+                       ->will($this->returnValue($new_text));
 
-		$jenkins_runner->expects($this->at(1))
-					   ->method('printJobResults')
-					   ->will($this->returnValue(true));		
-		
-		$this->mock_cmd_runner->expects($this->never())
-							  ->method('info');
+        $jenkins_runner->expects($this->at(1))
+                       ->method('printJobResults')
+                       ->will($this->returnValue(true));        
+        
+        $this->mock_cmd_runner->expects($this->never())
+                              ->method('info');
 
-		$actual = $jenkins_runner->processLogOuput($prev_text, true);
-		$this->assertEquals($new_text, $actual);
-	}
+        $actual = $jenkins_runner->processLogOuput($prev_text, true);
+        $this->assertEquals($new_text, $actual);
+    }
 
-	function testProcessLogOutputNotFinishedDoNotShowProgress() {
-		$prev_text = '
-			......... try-replication-tests (pending)
-			......... try-hphp (pending)
-			......... try-integration-tests (pending)
-			......... try-js-phantom-tests (pending)
-			......... try-validate-css (pending)
-			......... try-php-code-sniffer (pending)';
-		
-		$new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
-		
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('getJobOutput', 'printJobResults'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->expects($this->once())
-					   ->method('getJobOutput')
-					   ->will($this->returnValue($new_text));
+    function testProcessLogOutputNotFinishedDoNotShowProgress() {
+        $prev_text = '
+            ......... try-replication-tests (pending)
+            ......... try-hphp (pending)
+            ......... try-integration-tests (pending)
+            ......... try-js-phantom-tests (pending)
+            ......... try-validate-css (pending)
+            ......... try-php-code-sniffer (pending)';
+        
+        $new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
+        
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('getJobOutput', 'printJobResults'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->expects($this->once())
+                       ->method('getJobOutput')
+                       ->will($this->returnValue($new_text));
 
-		$jenkins_runner->expects($this->never())
-					   ->method('printJobResults');
+        $jenkins_runner->expects($this->never())
+                       ->method('printJobResults');
 
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('info')
-							  ->with('......... waiting for job to finish');
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('info')
+                              ->with('......... waiting for job to finish');
 
-		$actual = $jenkins_runner->processLogOuput($prev_text, false);
-		$this->assertEquals($new_text, $actual);
-	}
-	
-	function testProcessLogOutputFinishedShowProgress() {
-		$prev_text = '
-			......... try-replication-tests (pending)
-			......... try-hphp (pending)
-			......... try-integration-tests (pending)
-			......... try-js-phantom-tests (pending)
-			......... try-validate-css (pending)
-			......... try-php-code-sniffer (pending)';
-		
-		$new_text = $prev_text . PHP_EOL . 'Finished: FAILURE';
-		
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('getJobOutput', 'printJobResults', 'colorStatus'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->expects($this->once())
-					   ->method('getJobOutput')
-					   ->will($this->returnValue($new_text));
+        $actual = $jenkins_runner->processLogOuput($prev_text, false);
+        $this->assertEquals($new_text, $actual);
+    }
+    
+    function testProcessLogOutputFinishedShowProgress() {
+        $prev_text = '
+            ......... try-replication-tests (pending)
+            ......... try-hphp (pending)
+            ......... try-integration-tests (pending)
+            ......... try-js-phantom-tests (pending)
+            ......... try-validate-css (pending)
+            ......... try-php-code-sniffer (pending)';
+        
+        $new_text = $prev_text . PHP_EOL . 'Finished: FAILURE';
+        
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('getJobOutput', 'printJobResults', 'colorStatus'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->expects($this->once())
+                       ->method('getJobOutput')
+                       ->will($this->returnValue($new_text));
 
-		$jenkins_runner->expects($this->once())
-					   ->method('colorStatus')
+        $jenkins_runner->expects($this->once())
+                       ->method('colorStatus')
                        ->with('FAILURE')
-					   ->will($this->returnValue('\e[red FAILURE \]0m'));
+                       ->will($this->returnValue('\e[red FAILURE \]0m'));
 
-		$jenkins_runner->expects($this->once())
-					   ->method('printJobResults')
-					   ->will($this->returnValue(false));
+        $jenkins_runner->expects($this->once())
+                       ->method('printJobResults')
+                       ->will($this->returnValue(false));
 
-		$jenkins_runner->try_base_url = 'http://link/to/job/';
+        $jenkins_runner->try_base_url = 'http://link/to/job/';
 
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('info')
-							  ->with(PHP_EOL . 'Try Status : \e[red FAILURE \]0m (http://link/to/job/)' . PHP_EOL);
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('info')
+                              ->with(PHP_EOL . 'Try Status : \e[red FAILURE \]0m (http://link/to/job/)' . PHP_EOL);
 
-		$this->assertNull( $jenkins_runner->processLogOuput($prev_text, true));
-		$this->assertEquals('FAILURE', $jenkins_runner->try_status);
-	}
+        $this->assertNull( $jenkins_runner->processLogOuput($prev_text, true));
+        $this->assertEquals('FAILURE', $jenkins_runner->try_status);
+    }
 
-	function testProcessLogOutputFinishedDoNotShowProgress() {
-		$prev_text = '
-			......... try-replication-tests (pending)
-			......... try-hphp (pending)
-			......... try-integration-tests (pending)
-			......... try-js-phantom-tests (pending)
-			......... try-validate-css (pending)
-			......... try-php-code-sniffer (pending)';
-		
-		$new_text = $prev_text . PHP_EOL . 'Finished: SUCCESS';
-		
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('getJobOutput', 'printJobResults', 'colorStatus'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->expects($this->once())
-					   ->method('getJobOutput')
-					   ->will($this->returnValue($new_text));
+    function testProcessLogOutputFinishedDoNotShowProgress() {
+        $prev_text = '
+            ......... try-replication-tests (pending)
+            ......... try-hphp (pending)
+            ......... try-integration-tests (pending)
+            ......... try-js-phantom-tests (pending)
+            ......... try-validate-css (pending)
+            ......... try-php-code-sniffer (pending)';
+        
+        $new_text = $prev_text . PHP_EOL . 'Finished: SUCCESS';
+        
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('getJobOutput', 'printJobResults', 'colorStatus'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->expects($this->once())
+                       ->method('getJobOutput')
+                       ->will($this->returnValue($new_text));
 
-		$jenkins_runner->expects($this->never())
-					   ->method('printJobResults');
+        $jenkins_runner->expects($this->never())
+                       ->method('printJobResults');
 
-		$jenkins_runner->expects($this->once())
-					   ->method('colorStatus')
+        $jenkins_runner->expects($this->once())
+                       ->method('colorStatus')
                        ->with('SUCCESS')
-					   ->will($this->returnValue('\e[green SUCCESS \]0m'));
+                       ->will($this->returnValue('\e[green SUCCESS \]0m'));
 
-		$jenkins_runner->try_base_url = 'http://link/to/job/';
+        $jenkins_runner->try_base_url = 'http://link/to/job/';
 
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('info')
-							  ->with(PHP_EOL . 'Try Status : \e[green SUCCESS \]0m (http://link/to/job/)' . PHP_EOL);
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('info')
+                              ->with(PHP_EOL . 'Try Status : \e[green SUCCESS \]0m (http://link/to/job/)' . PHP_EOL);
 
-		$this->assertNull( $jenkins_runner->processLogOuput($prev_text, false));
-		$this->assertEquals('SUCCESS', $jenkins_runner->try_status);
-	}
-	
-	function testPollForCompletionJobUrlNotFound() {
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('getOutput')
-							  ->will($this->returnValue('no url in here'));
+        $this->assertNull( $jenkins_runner->processLogOuput($prev_text, false));
+        $this->assertEquals('SUCCESS', $jenkins_runner->try_status);
+    }
+    
+    function testPollForCompletionJobUrlNotFound() {
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('getOutput')
+                              ->will($this->returnValue('no url in here'));
 
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('terminate')
-							  ->with('Could not find ' .self::JENKINS_JOB . 'URL' . PHP_EOL);
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('terminate')
+                              ->with('Could not find ' .self::JENKINS_JOB . 'URL' . PHP_EOL);
 
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('processLogOuput'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->pollForCompletion(true);
-		
-		$this->assertEquals('', $jenkins_runner->try_base_url);
-	}
-	
-	function testPollForCompletionJobFinished() {
-		$expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('getOutput')
-							  ->will($this->returnValue($expected_job_url));
-
-
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('processLogOuput'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-		);
-		
-		$jenkins_runner->expects($this->once())
-					   ->method('processLogOuput')
-					   ->with('', true)
-					   ->will($this->returnValue(null));
-		
-		$jenkins_runner->pollForCompletion(true);
-		
-		$this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
-	}
-	
-	function testPollForCompletionJobPollsAndFinishes() {
-		$expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
-		$this->mock_cmd_runner->expects($this->once())
-							  ->method('getOutput')
-							  ->will($this->returnValue($expected_job_url));
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('processLogOuput'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->pollForCompletion(true);
+        
+        $this->assertEquals('', $jenkins_runner->try_base_url);
+    }
+    
+    function testPollForCompletionJobFinished() {
+        $expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('getOutput')
+                              ->will($this->returnValue($expected_job_url));
 
 
-		$jenkins_runner = $this->getMock(
-				'TryLib_JenkinsRunner_MasterProject',
-				array('processLogOuput'),
-				array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner, 0)
-		);
-		
-		$jenkins_runner->expects($this->at(0))
-					   ->method('processLogOuput')
-					   ->with('', false)
-					   ->will($this->returnValue(false));
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('processLogOuput'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
+        );
+        
+        $jenkins_runner->expects($this->once())
+                       ->method('processLogOuput')
+                       ->with('', true)
+                       ->will($this->returnValue(null));
+        
+        $jenkins_runner->pollForCompletion(true);
+        
+        $this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
+    }
+    
+    function testPollForCompletionJobPollsAndFinishes() {
+        $expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('getOutput')
+                              ->will($this->returnValue($expected_job_url));
 
-		$jenkins_runner->expects($this->at(1))
-					   ->method('processLogOuput')
-					   ->with('', false)
-					   ->will($this->returnValue(null));
-		
-		$jenkins_runner->pollForCompletion(false);
-		
-		$this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
-	}
+
+        $jenkins_runner = $this->getMock(
+                'TryLib_JenkinsRunner_MasterProject',
+                array('processLogOuput'),
+                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner, 0)
+        );
+        
+        $jenkins_runner->expects($this->at(0))
+                       ->method('processLogOuput')
+                       ->with('', false)
+                       ->will($this->returnValue(false));
+
+        $jenkins_runner->expects($this->at(1))
+                       ->method('processLogOuput')
+                       ->with('', false)
+                       ->will($this->returnValue(null));
+        
+        $jenkins_runner->pollForCompletion(false);
+        
+        $this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
+    }
 }
