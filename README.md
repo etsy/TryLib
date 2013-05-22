@@ -170,9 +170,10 @@ Try will work with your branches! The below scenarios are supported:
 Prior to generate the diff, you can configure try to run a list of pre-checks.
 
 	$pre_checks = array(
-	    new TryLib_Precheck_ScriptRunner('/path/to/some/script'),
-	    new TryLib_Precheck_GitCopyBehind(array('master')),
-	    new TryLib_Precheck_GitCopyAge(48, 96, $remote_branch)
+        new TryLib_Precheck_ScriptRunner('/path/to/some/script'),
+        new TryLib_Precheck_GitCopyBehind(array('master')),
+        new TryLib_Precheck_GitCopyAge(48, 96, $remote_branch)
+        new TryLib_Precheck_GitReportUntracked(),
 	);
 
 	$repo_manager->runPrechecks($pre_checks);
