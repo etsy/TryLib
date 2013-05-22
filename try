@@ -78,6 +78,7 @@ $jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
 
 $pre_checks = array(
     new TryLib_Precheck_GitCopyBehind(array('master')),
+    new TryLib_Precheck_GitReportUntracked(),
 );
 
 $repo_manager->runPrechecks($pre_checks);
