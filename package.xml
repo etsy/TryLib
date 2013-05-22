@@ -52,6 +52,7 @@
           <file name="ScriptRunner.php" role="php" />
           <file name="GitCopyAge.php" role="php" />
           <file name="GitCopyBehind.php" role="php" />
+          <file name="GitReportUntracked.php" role="php" />
         </dir>
         <dir name="Util">
           <file name="AnsiColor.php" role="php" />
