@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://etsy.github.com/TryLib</id>
+    <updated>2013-05-23T15:58:55-04:00</updated>
+    <title>TryLib PEAR Channel Latest Releases</title>
+    <link href="http://etsy.github.com/TryLib/feed.xml" rel="self" />
+    <author>
+        <name>http://etsy.github.com/TryLib</name>
+    </author>
+
+
+</feed>
