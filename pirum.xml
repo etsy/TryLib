@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<server>
+  <name>etsy.github.com/TryLib</name>
+  <summary>TryLib PEAR Channel</summary>
+  <alias>TryLib</alias>
+  <url>http://etsy.github.com/TryLib/</url>
+</server>
+
