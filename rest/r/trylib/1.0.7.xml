@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<r xmlns="http://pear.php.net/dtd/rest.release" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://pear.php.net/dtd/rest.release http://pear.php.net/dtd/rest.release.xsd">
+    <p xlink:href="/rest/p/trylib">TryLib</p>
+    <c>etsy.github.com/TryLib</c>
+    <v>1.0.7</v>
+    <st>stable</st>
+    <l>MIT</l>
+    <m>nkammah</m>
+    <s>Try lib : send your diffs to your CI cluster.</s>
+    <d>Try provides you the tool to submit a diff between your working copy and the upstream repo to your CI server.</d>
+    <da>2013-05-24 14:13:34</da>
+    <n>
+-
+ </n>
+    <f>26327</f>
+    <g>http://etsy.github.com/TryLib/get/TryLib-1.0.7</g>
+    <x xlink:href="package.1.0.7.xml"/>
+</r>

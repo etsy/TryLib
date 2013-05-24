@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd">
+ <name>TryLib</name>
+ <channel>etsy.github.com/TryLib</channel>
+ <summary>Try lib : send your diffs to your CI cluster.</summary>
+ <description>Try provides you the tool to submit a diff between your working copy and the upstream repo to your CI server.</description>
+ <lead>
+  <name>Nassim Kammah</name>
+  <user>nkammah</user>
+  <email>nkammah@etsy.com</email>
+  <active>yes</active>
+ </lead>
+ <lead>
+  <name>Laura Beth Lincoln Denker</name>
+  <user>llincoln</user>
+  <email>&gt;github@elblinkin.info</email>
+  <active>no</active>
+ </lead>
+ <date>2013-05-24</date>
+ <time>14:13:34</time>
+ <version>
+  <release>1.0.7</release>
+  <api>1.0.7</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/mit-license.php">MIT</license>
+ <notes>
+-
+ </notes>
+ <contents>
+  <dir name="/">
+   <file md5sum="4b224fcaee6254c35ffffc5b50c610d4" name="TryLib/JenkinsRunner/FreeStyleProject.php" role="php" />
+   <file md5sum="d0d65d31619d65a693d33cb92dae8a21" name="TryLib/JenkinsRunner/MasterProject.php" role="php" />
+   <file md5sum="44c90c5a9e5a36cae20593ac86726554" name="TryLib/RepoManager/Git.php" role="php" />
+   <file md5sum="69426a499d871adb0c7e4bb2f98c4073" name="TryLib/Precheck/ScriptRunner.php" role="php" />
+   <file md5sum="616c59d24385b5259ee0f7b8475cab4a" name="TryLib/Precheck/GitCopyAge.php" role="php" />
+   <file md5sum="f5d213b6211525aa696227f11b368af7" name="TryLib/Precheck/GitCopyBehind.php" role="php" />
+   <file md5sum="53a3f8e11034b85dbdcd564f3f697189" name="TryLib/Precheck/GitReportUntracked.php" role="php" />
+   <file md5sum="7b461a90d267aeaf9a6e2ceccc25e9f2" name="TryLib/Util/PHPOptions/Options.php" role="php" />
+   <file md5sum="dd34f8fd9cf24119a0719f087989e2be" name="TryLib/Util/PHPOptions/LICENSE.MIT" role="doc" />
+   <file md5sum="4d89e2ed89c4dd8d6d6da1cba66557f9" name="TryLib/Util/PHPOptions/LICENSE.python" role="doc" />
+   <file md5sum="b2dc8272556b08f0b9d844230993d1b2" name="TryLib/Util/PHPOptions/README.md" role="doc" />
+   <file md5sum="61d918256ead112154319e930479320a" name="TryLib/Util/AnsiColor.php" role="php" />
+   <file md5sum="b55e6e7d45fb81ee4d1fc46673737970" name="TryLib/Util/OptionsUtil.php" role="php" />
+   <file md5sum="28b233852502798239b7938d4e9402ca" name="TryLib/Autoload.php" role="php" />
+   <file md5sum="6ca04a5c7c921c883e6560f4cffa3229" name="TryLib/CommandRunner.php" role="php" />
+   <file md5sum="6f7c967c9915b117daf29a5e11d9b6eb" name="TryLib/JenkinsRunner.php" role="php" />
+   <file md5sum="8b49ad48d5ed5ce33c61ce00dedcbea1" name="TryLib/RepoManager.php" role="php" />
+   <file md5sum="669ed030b233dfd53202ad3ddd9427f7" name="TryLib/Precheck.php" role="php" />
+   <file md5sum="f2eec55a0557e52e87aefe399a7679ed" name="try" role="script" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.3.10</min>
+   </php>
+   <pearinstaller>
+    <min>1.9.1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <phprelease />
+</package>

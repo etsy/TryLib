@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<p xmlns="http://pear.php.net/dtd/rest.package" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://pear.php.net/dtd/rest.package    http://pear.php.net/dtd/rest.package.xsd">
+<n>TryLib</n>
+<c>etsy.github.com/TryLib</c>
+<ca xlink:href="/rest/c/Default">Default</ca>
+<l>MIT</l>
+<s>Try lib : send your diffs to your CI cluster.</s>
+<d>Try provides you the tool to submit a diff between your working copy and the upstream repo to your CI server.</d>
+<r xlink:href="/rest/r/trylib" />
+</p>
