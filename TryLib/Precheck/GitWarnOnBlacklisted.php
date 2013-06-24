@@ -5,10 +5,12 @@
   */
 class TryLib_Precheck_GitWarnOnBlacklisted implements TryLib_Precheck {
     protected $blacklist;
+    protected $whitelist;
     protected $staged;
 
-    function __construct(array $blacklist, $staged = false) {
+    function __construct(array $blacklist, $whitelist = null, $staged = false) {
         $this->blacklist = $blacklist;
+        $this->whitelist = $whitelist;
         $this->staged = $staged;
     }
 
@@ -24,6 +26,10 @@ class TryLib_Precheck_GitWarnOnBlacklisted implements TryLib_Precheck {
 
         if ($this->staged) {
             $cmd .= ' --staged';
+        }
+
+        if (is_array($this->whitelist)) {
+            $cmd .= ' ' . implode(' ', $this->whitelist);
         }
 
         $cmd_runner->run($cmd);
