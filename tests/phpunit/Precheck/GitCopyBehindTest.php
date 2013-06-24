@@ -77,7 +77,7 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(true));
 
-        $script_runner->check($mock_cmd_runner, 'path');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
     }
 
     function testCheckWorkingCopyNotBehind() {
@@ -105,7 +105,7 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(true));
 
-        $script_runner->check($mock_cmd_runner, 'path');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
     }
 
     function testCheckShouldNotRun() {
@@ -131,6 +131,6 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(false));
 
-        $script_runner->check($mock_cmd_runner, 'path');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
     }
 }

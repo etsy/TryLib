@@ -24,7 +24,7 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('terminate');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
     }
     
     function testScriptExistsAndSucceeds() {
@@ -41,7 +41,7 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('terminate');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
     }
     
     function testScriptExistsAndFails() {
@@ -59,6 +59,6 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
                               ->method('terminate')
                               ->with('Failed running pre-check script vfs://testDir/script');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
     }
 }

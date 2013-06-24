@@ -9,16 +9,16 @@ class TryLib_Precheck_GitReportUntracked implements TryLib_Precheck {
      *
      * @param CommandRunner $cmd_runner  cmd runner object
      * @param string        $repo_path          location of the git repo
+     * @param string        $upstream           upstream branch name
      **/
-    function check($cmd_runner, $repo_path) {
+    function check($cmd_runner, $repo_path, $upstream) {
         $cmd_runner->run('git ls-files --exclude-standard --others');
         $output = $cmd_runner->getOutput();
-        if (!empty($output)) {
-            $msg = PHP_EOL;
-            $msg = 'You have untracked files in your working copy' . PHP_EOL;
-            $msg .= 'The below files will NOT be part of the diff: ' . PHP_EOL;
-            $msg .= "   - " . implode(PHP_EOL . "   - ", explode(PHP_EOL, $output));
-            $msg .= PHP_EOL . PHP_EOL;
+        $untracked_files = explode(PHP_EOL, $output);
+        if (!empty($untracked_files)) {
+            $msg = 'You have ';
+            $msg .= count($untracked_files);
+            $msg .= ' untracked files in your working copy' . PHP_EOL;
             $cmd_runner->warn($msg);
         }
     }

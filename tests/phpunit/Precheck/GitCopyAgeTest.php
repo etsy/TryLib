@@ -76,7 +76,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
                               ->method('terminate')
                               ->with($this->stringContains('you working copy is 100 hours old.'));
         
-        $script_runner->check($this->mock_cmd_runner, 'path');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
     }
 
     function testWorkingCopyPastMaxWarningAge() {
@@ -109,7 +109,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
         $this->mock_cmd_runner->expects($this->once())
                               ->method('warn');
         
-        $script_runner->check($this->mock_cmd_runner, 'path');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
     }
 
 
@@ -141,6 +141,6 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('warn');
         
-        $script_runner->check($this->mock_cmd_runner, 'path');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
     }
 }

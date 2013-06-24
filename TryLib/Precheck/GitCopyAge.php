@@ -52,8 +52,9 @@ class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
      *
      * @param CommandRunner $cmd_runner  cmd runner object
      * @param string $repo_path          location of the git repo
+     * @param string $upstream           upstream branch name
      **/
-    function check($cmd_runner, $repo_path) {
+    function check($cmd_runner, $repo_path, $upstream) {
         $last_fetch = $this->getLastFetchDate($cmd_runner);
         if ( !is_null($last_fetch)) {
             $wc_age = $this->getTimeDelta($last_fetch);
