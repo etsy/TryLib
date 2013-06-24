@@ -11,7 +11,7 @@ class TryLib_Precheck_ScriptRunner implements TryLib_Precheck {
     /**
      * Checks to see if you are committing large binary files to the repo (which will fail on CI).
      **/
-    function check($cmd_runner, $repo_path) {
+    function check($cmd_runner, $repo_path, $upstream) {
         if (file_exists($this->script_path)) {
             $return = $cmd_runner->run($this->script_path, false, true);
             if ($return) {

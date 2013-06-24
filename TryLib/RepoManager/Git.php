@@ -124,9 +124,10 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
     }
 
     function runPreChecks(array $pre_checks) {
+        $upstream = $this->getUpstream();
         foreach ($pre_checks as $c) {
             $this->cmd_runner->chdir($this->repo_path);
-            $c->check($this->cmd_runner, $this->repo_path);
+            $c->check($this->cmd_runner, $this->repo_path, $upstream);
         }
     }
 }

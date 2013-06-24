@@ -35,8 +35,9 @@ class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
      *
      * @param CommandRunner $cmd_runner  cmd runner object
      * @param string        $repo_path          location of the git repo
+     * @param string        $upstream           upstream branch name
      **/
-    function check($cmd_runner, $repo_path) {
+    function check($cmd_runner, $repo_path, $upstream) {
         if ($this->shouldRunCheck($cmd_runner)) {
             $cmd_runner->run('git rev-list HEAD..origin');
             $output = $cmd_runner->getOutput();
