@@ -4,6 +4,7 @@ class TryLib_CommandRunner {
     protected $verbose;
     protected $stderr;
     protected $out;
+    protected $colors;
 
     public function __construct($verbose = false, $stdout = null, $stderr = null) {
         $this->verbose = $verbose;
@@ -21,6 +22,12 @@ class TryLib_CommandRunner {
         $this->stdout = $stdout;
 
         $this->out = '';
+
+        try {
+            $this->colors = new TryLib_Util_AnsiColor();
+        } catch (TryLib_Util_DisplayException $e) {
+            $this->colors = false;
+        }
     }
 
     public function getOutput() {
@@ -58,7 +65,14 @@ class TryLib_CommandRunner {
     }
 
     public function warn($about) {
-        fputs($this->stderr, PHP_EOL . 'WARNING : ' . $about . PHP_EOL);
+        $msg = PHP_EOL;
+        if ($this->colors) {
+            $msg .= $this->colors->red('WARNING ');
+        } else {
+            $msg .= 'WARNING ';
+        }
+        $msg .= $about . PHP_EOL;
+        fputs($this->stderr, $msg);
     }
 
     public function chdir($wd) {
