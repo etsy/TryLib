@@ -97,7 +97,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         return $remote . "/" . $remote_branch;
     }
 
-    function generateDiff($staged_only=false) {
+    function generateDiff($staged_only = false, $whitelist = null) {
         $patch = $this->repo_path . "/patch.diff";
 
         $args = array(
@@ -109,6 +109,10 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
         if ($staged_only) {
             $args[] = "--staged";
+        }
+
+        if (is_array($whitelist)) {
+            $args[] = implode(' ', $whitelist);
         }
 
         $this->cmd_runner->chdir($this->repo_path);
