@@ -28,6 +28,12 @@
  *
  */
 class TryLib_Util_AnsiColor {
+    public function __construct() {
+        if (!(defined('STDERR') && posix_isatty(STDERR))) {
+            throw new TryLib_Util_DisplayException('Colored output not supported');
+        }
+    }
+
     private $color_opts = array(
         'black'   => '30',
         'red'     => '31',
@@ -93,3 +99,5 @@ class TryLib_Util_AnsiColor {
         return $seq;
     }
 }
+
+class TryLib_Util_DisplayException extends Exception {};

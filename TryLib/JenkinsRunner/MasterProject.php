@@ -22,19 +22,14 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
 
         $this->jobs = array();
         $this->excluded_jobs = array();
-        $this->colors = null;
-        $this->polling_time = $polling_time;
-    }
 
-    public function getColors() {
-        if (is_null($this->colors)) {
-            if (defined("STDERR") && posix_isatty(STDERR)) {
-                $this->colors = new TryLib_Util_AnsiColor();
-            } else {
-                $this->colors = false;
-            }
+        try {
+            $this->colors = new TryLib_Util_AnsiColor();
+        } catch (TryLib_Util_DisplayException $e) {
+            $this->colors = false;
         }
-        return $this->colors;
+
+        $this->polling_time = $polling_time;
     }
 
     public function getBuildCommand() {
@@ -133,14 +128,13 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     }
 
     public function colorStatus($status) {
-        $colors = $this->getColors();
-        if ($colors) {
+        if ($this->colors) {
             if ($status == 'SUCCESS') {
-                $status = $colors->green($status);
+                $status = $this->colors->green($status);
             } else if ($status == 'UNSTABLE') {
-                $status = $colors->yellow($status);
+                $status = $this->colors->yellow($status);
             } else {
-                $status = $colors->red($status);
+                $status = $this->colors->red($status);
             }
         }
         return $status;
