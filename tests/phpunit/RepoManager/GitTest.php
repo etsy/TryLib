@@ -89,7 +89,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
-                              ->with('git symbolic-ref HEAD', true, true)
+                              ->with('git rev-parse --abbrev-ref HEAD', true, true)
                               ->will($this->returnValue(0));
 
         $this->mock_cmd_runner->expects($this->once())
@@ -110,11 +110,12 @@ class GitTest extends PHPUnit_Framework_TestCase {
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
-                              ->with('git symbolic-ref HEAD', true, true)
-                              ->will($this->returnValue(1));
+                              ->with('git rev-parse --abbrev-ref HEAD', true, true)
+                              ->will($this->returnValue(0));
 
-        $this->mock_cmd_runner->expects($this->never())
-                              ->method('getOutput');
+        $this->mock_cmd_runner->expects($this->once())
+                              ->method('getOutput')
+                              ->will($this->returnValue("HEAD"));
         
         $this->assertEquals('', $repo_manager->parseLocalBranch());
     }

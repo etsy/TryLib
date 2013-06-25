@@ -21,11 +21,12 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
     function parseLocalBranch() {
         $this->cmd_runner->chdir($this->repo_path);
-        $ret = $this->cmd_runner->run('git symbolic-ref HEAD', true, true);
-        if ($ret) {
+        $ret = $this->cmd_runner->run('git rev-parse --abbrev-ref HEAD', true, true);
+        $output = $this->cmd_runner->getOutput();
+        if ($ret || $output === 'HEAD') {
             return '';
         } else {
-            return $this->cleanRef($this->cmd_runner->getOutput());
+            return $this->cleanRef($output);
         }
     }
 
