@@ -14,7 +14,7 @@ class TryLib_Precheck_GitReportUntracked implements TryLib_Precheck {
     function check($cmd_runner, $repo_path, $upstream) {
         $cmd_runner->run('git ls-files --exclude-standard --others');
         $output = $cmd_runner->getOutput();
-        $untracked_files = explode(PHP_EOL, $output);
+        $untracked_files = array_filter(explode(PHP_EOL, $output));
         if (!empty($untracked_files)) {
             $msg = 'You have ';
             $msg .= count($untracked_files);
