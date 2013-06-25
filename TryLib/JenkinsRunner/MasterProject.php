@@ -5,12 +5,14 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     private $jobs;
     private $excluded_jobs;
     private $polling_time;
+    private $try_job_prefix;
 
     public function __construct(
         $jenkins_url,
         $jenkins_cli,
         $try_job_name,
         $cmd_runner,
+        $try_job_prefix = null,
         $polling_time = 20
     ) {
         parent::__construct(
@@ -30,6 +32,11 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         }
 
         $this->polling_time = $polling_time;
+
+        if (is_null($try_job_prefix)) {
+            $try_job_prefix = $try_job_name;
+        }
+        $this->try_job_prefix = $try_job_prefix;
     }
 
     public function getBuildCommand() {
@@ -48,12 +55,12 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $tryjobs = array();
         foreach ($this->jobs as $job) {
             if ( !in_array($job, $this->excluded_jobs)) {
-                $tryjobs[] = $this->try_job_name . '-' . $job;
+                $tryjobs[] = $this->try_job_prefix . '-' . $job;
             }
         }
 
         foreach ($this->excluded_jobs as $job) {
-            $tryjobs[] = '-' . $this->try_job_name . '-' . $job;
+            $tryjobs[] = '-' . $this->try_job_prefix . '-' . $job;
         }
         return $tryjobs;
     }
@@ -77,10 +84,9 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
      */
     public function pollForCompletion($show_progress) {
         $try_output = $this->cmd_runner->getOutput();
-
         // Find job URL
         if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
-            $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . 'URL' . PHP_EOL);
+            $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . ' URL' . PHP_EOL);
         } else {
             $this->try_base_url = $matches[0];
 
@@ -150,7 +156,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
      */
     public function printJobResults($log) {
 
-        if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_name . '[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
+        if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_prefix . '[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
             $this->cmd_runner->info(PHP_EOL);
             foreach ($matches[0] as $k => $_) {
                 $job_status = $matches[1][$k];
