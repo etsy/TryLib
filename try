@@ -11,6 +11,7 @@ $jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
 
 # Jenkins job name
 $default_jenkins_job = 'try';
+$default_jenkins_job_prefix = $default_jenkins_job;
 
 # Retrieve user
 $user = getenv("USER");
@@ -30,6 +31,7 @@ n,diff-only         Create diff, but do not send to Hudson
 v,verbose           Verbose (show shell commands as they're run)
 p,patch=            Path to patch file to use instead of generating a diff
 s,staged            Use staged changes only to generate the diff
+w,whitelist=        Generate the patch for only the whitelisted files
 b,branch=           Remote branch to diff and try against [master]
 
 c,show-results      Show final try job results
@@ -40,6 +42,7 @@ C,callback=         Callback string to execute at the end of the try run.
                     Example: --callback 'echo \"**Try status : [\${status}](\${url})**\"'
 
 jenkinsjob=         Master Job Name in Jenkins  [$default_jenkins_job]
+jenkinsjobprefix=   Subjobs prefix              [$default_jenkins_job_prefix]
 jenkinsserver=      URL to the jenkins server   [$jenkins_server]
 wcpath=             Working Copy Path           [$default_wc_path]
 ";
@@ -73,8 +76,14 @@ $jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
     $options->jenkinsserver,
     $jenkins_cli_jar,
     $options->jenkinsjob,
-    $cmd_runner
+    $cmd_runner,
+    $options->jenkinsjobprefix
 );
+
+$whitelist = $options->whitelist;
+if (is_string($whitelist)) {
+    $whitelist = array($whitelist);
+}
 
 $pre_checks = array(
     new TryLib_Precheck_GitCopyBehind(array('master')),
@@ -85,7 +94,7 @@ $repo_manager->runPrechecks($pre_checks);
 
 $patch = $options->patch;
 if (is_null($patch)) {
-    $patch = $repo_manager->generateDiff($options->staged);
+    $patch = $repo_manager->generateDiff($options->staged, $whitelist);
 }
 
 if ($options->diff_only) {
