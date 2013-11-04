@@ -102,6 +102,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         $patch = $this->repo_path . "/patch.diff";
 
         $args = array(
+            "--binary",
             "--src-prefix=''",
             "--dst-prefix=''",
             "--no-color",
