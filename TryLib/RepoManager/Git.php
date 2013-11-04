@@ -103,8 +103,6 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
         $args = array(
             "--binary",
-            "--src-prefix=''",
-            "--dst-prefix=''",
             "--no-color",
             $this->getUpstream(),
         );
