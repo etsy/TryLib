@@ -187,3 +187,9 @@ Prior to generate the diff, you can configure try to run a list of pre-checks.
     $repo_manager->runPrechecks($pre_checks);
 
 Some pre-checks will just emit a warning, some can block the try execution.
+
+## Running the tests
+
+You can run the unit test suite with:
+
+    phpunit tests
