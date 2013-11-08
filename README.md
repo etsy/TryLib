@@ -1,4 +1,4 @@
-# TryLib [![Build Status](https://travis-ci.org/etsy/TryLib.png?branch=master)](https://travis-ci.org/etsy/trylib)
+# TryLib [![Build Status](https://travis-ci.org/etsy/TryLib.png?branch=master)](https://travis-ci.org/etsy/TryLib)
 ## "try" your changes on your CI server before committing them to the repository!
 
 TryLib is a simple php library that helps you generate a diff of your working copy and send it to
