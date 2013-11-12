@@ -102,7 +102,7 @@ Depending on your setup (FreeStyle project or master-project), you may have to c
 * Enter the following shell command to apply the patch
 
         echo "Patch..."
-        patch --verbose -p0 -f -i patch.diff
+        git apply --verbose patch.diff
         git add .
         # your command to launch your unit tests
 
