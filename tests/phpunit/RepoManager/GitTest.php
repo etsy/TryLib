@@ -29,7 +29,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
                               ->with(self::REPO_PATH);
 
         $expected_patch = self::REPO_PATH . '/patch.diff';
-        $expected_cmd = 'git diff --binary '
+        $expected_cmd = 'git -c diff.noprefix=false diff --binary '
                       . '--no-color origin/master '
                       . '--staged > '
                       . $expected_patch;          
@@ -62,7 +62,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
                               ->with(self::REPO_PATH);
 
         $expected_patch = self::REPO_PATH . '/patch.diff';
-        $expected_cmd = 'git diff --binary '
+        $expected_cmd = 'git -c diff.noprefix=false diff --binary '
                       . '--no-color origin/master > '
                       . $expected_patch;          
 
