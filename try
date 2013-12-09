@@ -119,3 +119,5 @@ $jenkins_runner->setSubJobs($subjobs);
 
 $jenkins_runner->startJenkinsJob($options->show_results, $options->show_progress);
 
+# [Jenkins MasterProject only] - exit with the appropriate exit code - used only when tracking-progress or showing results
+#($jenkins_runner->try_status === 'FAILURE')? exit(1) : exit(0);
