@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+require_once "TryLib/Autoload.php";
+
+/**
+ * A sample Try script that demonstrates using a TryRunner instance to run your job.
+ */
+
+$options_tuple = TryLib_TryRunner_Options::parse(
+    $argv,
+    "localhost:8080",  # URL to your jenkins server (without http)
+    "try",             # Jenkins job name
+    "try",             # (Optional) Prefix of subjob names for your master project
+    "."                # (Optional) Working copy path (path to your local git repository)
+);
+
+$try_runner = TryLib_TryRunner_Builder::masterProject()
+    ->optionsTuple($options_tuple)
+    ->jenkinsCliJarPath("/usr/etsy/jenkins-cli.jar")
+    ->prechecks([
+        new TryLib_Precheck_GitCopyBehind(array('master')),
+        new TryLib_Precheck_GitReportUntracked(),
+    ])
+    ->build();
+
+exit($try_runner->run());
