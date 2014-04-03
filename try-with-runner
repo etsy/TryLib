@@ -18,10 +18,10 @@ $options_tuple = TryLib_TryRunner_Options::parse(
 $try_runner = TryLib_TryRunner_Builder::masterProject()
     ->optionsTuple($options_tuple)
     ->jenkinsCliJarPath("/usr/etsy/jenkins-cli.jar")
-    ->prechecks([
+    ->prechecks(array(
         new TryLib_Precheck_GitCopyBehind(array('master')),
         new TryLib_Precheck_GitReportUntracked(),
-    ])
+    ))
     ->build();
 
 exit($try_runner->run());

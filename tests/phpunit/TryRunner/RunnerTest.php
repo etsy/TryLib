@@ -11,7 +11,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
 
     public function testSimple() {
         $options_tuple = TryLib_TryRunner_Options::parse(
-            ["--branch", "testbranch"],
+            array("--branch", "testbranch"),
             "jenkins_job",
             "jenkins_job_prefix",
             "jenkins_server",
