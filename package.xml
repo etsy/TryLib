@@ -21,10 +21,10 @@
   <email>>github@elblinkin.info</email>
   <active>no</active>
  </lead>
- <date>2013-11-25</date>
+ <date>2014-04-03</date>
  <version>
-  <release>1.0.11</release>
-  <api>1.0.11</api>
+  <release>1.0.12</release>
+  <api>1.0.12</api>
  </version>
  <stability>
   <release>stable</release>
@@ -54,6 +54,11 @@
           <file name="GitCopyBehind.php" role="php" />
           <file name="GitReportUntracked.php" role="php" />
           <file name="GitWarnOnBlacklisted.php" role="php" />
+        </dir>
+        <dir name="TryRunner">
+          <file name="Builder.php" role="php" />
+          <file name="Options.php" role="php" />
+          <file name="Runner.php" role="php" />
         </dir>
         <dir name="Util">
           <file name="AnsiColor.php" role="php" />
