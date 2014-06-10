@@ -116,12 +116,12 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
                               ->method('getOutput')
                               ->will($this->returnValue('my/foo.php' . PHP_EOL . 'my/bar.php'));
 
-        $this->mock_cmd_runner->expects($this->once())
+        $this->mock_cmd_runner->expects($this->never())
                               ->method('warn');
 
         $script_runner->check($this->mock_cmd_runner, 'repoPath', 'some/origin');
-
     }
+
     function testStagedOnly() {
         $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
             array('my/foo.php', 'my/bar.php'),
