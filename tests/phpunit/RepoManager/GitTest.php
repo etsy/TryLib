@@ -178,7 +178,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
     }
     
     
-    function testGetRemoteBranchSuccess() {
+    function testGetRemoteBranchFromTrackingConfig() {
         $repo_manager = $this->getMock(
                 'TryLib_RepoManager_Git',
                 array('getLocalBranch', 'getConfig'),
@@ -228,7 +228,9 @@ class GitTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('local_branch', $repo_manager->getRemoteBranch());
     }
     
-    function testGetRemoteBranchNoTrackingnoRemoteWithDefault() {
+    function testGetRemoteBranchNoTrackingNoRemote() {
+        $this->setExpectedException('RuntimeException', 'No remote branch was found');
+
         $repo_manager = $this->getMock(
                 'TryLib_RepoManager_Git',
                 array('getLocalBranch', 'getConfig'),
@@ -256,37 +258,6 @@ class GitTest extends PHPUnit_Framework_TestCase {
                               ->with($cmd, true, true)
                               ->will($this->returnValue(1));
 
-        $this->assertEquals('default', $repo_manager->getRemoteBranch('default'));
-    }
-    
-    function testGetRemoteBranchNoTrackingnoRemoteNoDefault() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
-        
-        $repo_manager->expects($this->at(0))
-                     ->method('getLocalBranch')
-                     ->will($this->returnValue('local_branch'));
-
-        $repo_manager->expects($this->at(1))
-                     ->method('getConfig')
-                     ->with('branch.local_branch.merge')
-                     ->will($this->returnValue(null));
-        
-        $repo_manager->expects($this->at(2))
-                     ->method('getConfig')
-                     ->with('remote.origin.url')
-                     ->will($this->returnValue('git@github.com:Etsy/try.git'));
-
-        $cmd = 'git ls-remote --exit-code git@github.com:Etsy/try.git refs/heads/local_branch';
-        
-        $this->mock_cmd_runner->expects($this->once())
-                              ->method('run')
-                              ->with($cmd, true, true)
-                              ->will($this->returnValue(1));
-
-        $this->assertNull($repo_manager->getRemoteBranch());
+        $repo_manager->getRemoteBranch();
     }
 }

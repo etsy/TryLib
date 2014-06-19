@@ -40,9 +40,9 @@ final class TryLib_TryRunner_Runner {
     public function run() {
         list($options, $flags, $extra) = $this->options_tuple;
 
-        $remote_branch = $options->branch;
-
-        $this->repo_manager->setRemoteBranch($remote_branch);
+        $this->repo_manager->setRemoteBranch($options->branch);
+        // Resolve the given remote branch value to a real ref.
+        $remote_branch = $this->repo_manager->getRemoteBranch();
 
         if ($options->whitelist) {
             $whitelist = $options->whitelist;

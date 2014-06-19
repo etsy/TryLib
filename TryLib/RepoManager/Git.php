@@ -65,7 +65,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         $this->remote_branch = $remote_branch;
     }
 
-    function getRemoteBranch($default=null) {
+    function getRemoteBranch() {
         if (!is_null($this->remote_branch)) {
             return $this->remote_branch;
         }
@@ -79,22 +79,21 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
             $cmd = 'git ls-remote --exit-code ' . $remote_url . ' refs/heads/' . $local_branch;
             $ret = $this->cmd_runner->run($cmd, true, true);
             if ($ret === 0) {
-                $this->cmd_runner->info(
-                    'A remote branch with the same name than your local branch was found - using it for the diff'
-                );
                 $this->remote_branch = $local_branch;
-            } elseif (!is_null($default)) {
-                $this->cmd_runner->info("It appears that your local branch '$local_branch' is not tracked remotely");
-                $this->cmd_runner->info("The default remote ('$default') will be used to generate the diff.");
-                return $default;
+            } else {
+                throw new RuntimeException(
+                    "No remote branch was found corresponding to the local branch $local_branch!"
+                    . " You may want to specify a remote branch from the command line with --branch.");
             }
         }
+
+        $this->cmd_runner->info("Diffing against remote branch {$this->remote_branch}.");
         return $this->remote_branch;
     }
 
     function getUpstream() {
         $remote = $this->getRemote("origin");
-        $remote_branch = $this->getRemoteBranch("master");
+        $remote_branch = $this->getRemoteBranch();
         return $remote . "/" . $remote_branch;
     }
 

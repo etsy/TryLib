@@ -14,7 +14,7 @@ v,verbose          Verbose (show shell commands as they're run)
 p,patch=           Path to patch file to use instead of generating a diff
 s,staged           Use staged changes only to generate the diff
 w,whitelist=       Generate the patch for only the whitelisted files
-b,branch=          Remote branch to diff and try against [master]
+b,branch=          Remote branch to diff and try against [\$default_remote_branch]
 
 c,show-results     Show final try job results
 P,show-progress    Print subtasks progressively as they complete
@@ -36,7 +36,8 @@ wcpath=            Working Copy Path           [\$default_wc_path]
             $jenkins_server,
             $default_jenkins_job,
             $default_jenkins_job_prefix = null,
-            $default_wc_path = null) {
+            $default_wc_path = null,
+            $default_remote_branch = "master") {
 
         $default_jenkins_job_prefix = $default_jenkins_job_prefix ?: $default_jenkins_job;
         $default_wc_path = $default_wc_path ?: ".";
@@ -46,6 +47,14 @@ wcpath=            Working Copy Path           [\$default_wc_path]
         $formattedUsageSpec = str_replace("\$default_jenkins_job", $default_jenkins_job, $formattedUsageSpec);
         $formattedUsageSpec = str_replace("\$jenkins_server", $jenkins_server, $formattedUsageSpec);
         $formattedUsageSpec = str_replace("\$default_wc_path", $default_wc_path, $formattedUsageSpec);
+
+        // In the case of $default_remote_branch, we want to optionally remove the default
+        // altogether.
+        if (is_null($default_remote_branch)) {
+            $formattedUsageSpec = str_replace(" [\$default_remote_branch]", "", $formattedUsageSpec);
+        } else {
+            $formattedUsageSpec = str_replace("\$default_remote_branch", $default_remote_branch, $formattedUsageSpec);
+        }
 
         $parser = new TryLib_Util_PHPOptions_Options($formattedUsageSpec);
 

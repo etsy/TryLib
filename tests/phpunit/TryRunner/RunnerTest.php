@@ -38,6 +38,45 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
         $this->assertContains("some CLI command", $jenkins_runner->commands_run);
         $this->assertEquals("/test/ssh/key/path", $jenkins_runner->ssh_key_path);
     }
+
+    /**
+     * Tests that the JenkinsRunner gets passed the remote branch auto-detected by the RepoManager.
+     *
+     * In other words, if the RepoManager is given a null default remote and magically decides
+     * to use the remote 'autodetected_branch', then make sure the JenkinsRunner gets passed
+     * 'autodetected_branch' as the branch to use.
+     */
+    public function testHonorRemoteBranch() {
+        $options_tuple = TryLib_TryRunner_Options::parse(
+            array(),
+            "jenkins_job",
+            "jenkins_job_prefix",
+            "jenkins_server",
+            "/path/to/working/copy",
+            null  /* Set no default remote, to enable branch auto-detection. */);
+
+        $repo_manager = new TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch();
+        $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
+
+        $try_runner = new TryLib_TryRunner_Runner(
+            $repo_manager,
+            $jenkins_runner,
+            "test_cli_jar_path",
+            array(),
+            "test_user",
+            array(),
+            $options_tuple,
+            "/test/ssh/key/path"
+        );
+        $result = $try_runner->run();
+
+        $this->assertEquals(0, $result);
+        $this->assertEquals("autodetected_branch", $repo_manager->getRemoteBranch());
+        $this->assertTrue($repo_manager->ran_prechecks);
+        $this->assertContains("some CLI command", $jenkins_runner->commands_run);
+        $this->assertEquals("/test/ssh/key/path", $jenkins_runner->ssh_key_path);
+
+    }
 }
 
 
@@ -65,6 +104,20 @@ class TryRunner_RunnerTest__TestRepoManager implements TryLib_RepoManager {
     }
 }
 
+class TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch
+    extends TryRunner_RunnerTest__TestRepoManager {
+
+    public function setRemoteBranch($remote_branch) {
+        if (!is_null($remote_branch)) {
+            throw new RuntimeException('Null default remote branch expected');
+        }
+        $this->remote_branch = $remote_branch;
+    }
+
+    public function getRemoteBranch() {
+        return "autodetected_branch";
+    }
+}
 
 class TryRunner_RunnerTest__TestJenkinsRunner extends TryLib_JenkinsRunner {
 
