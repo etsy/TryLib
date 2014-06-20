@@ -258,6 +258,6 @@ class GitTest extends PHPUnit_Framework_TestCase {
                               ->with($cmd, true, true)
                               ->will($this->returnValue(1));
 
-        $this->assertEquals('default', $repo_manager->getRemoteBranch());
+        $repo_manager->getRemoteBranch();
     }
 }
