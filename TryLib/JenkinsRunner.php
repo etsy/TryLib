@@ -57,12 +57,9 @@ abstract class TryLib_JenkinsRunner {
     }
 
     /**
-     * Logout, and Start the Jenkins job
+     * Start the Jenkins job
      */
     public function startJenkinsJob($show_results=false, $show_progress = false) {
-        // Explicitly log out user to force re-authentication over SSH
-        $this->runJenkinsCommand("logout");
-
         // Build up the jenkins command incrementally
         $cli_command = $this->buildCLICommand($show_results, $show_progress);
 

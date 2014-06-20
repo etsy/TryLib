@@ -189,15 +189,11 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
         );
 
         $jenkins_runner->expects($this->at(0))
-             ->method('runJenkinsCommand')
-             ->with($this->equalTo('logout'));
-
-        $jenkins_runner->expects($this->at(1))
              ->method('buildCLICommand')
              ->with($this->equalTo($show_results))
              ->will($this->returnValue('cmd'));
 
-        $jenkins_runner->expects($this->at(2))
+        $jenkins_runner->expects($this->at(1))
              ->method('runJenkinsCommand')
              ->with($this->equalTo('cmd'));
 
