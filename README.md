@@ -18,6 +18,7 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
         -n, --diff-only         Create diff, but do not send to Hudson
         -v, --verbose           Verbose (show shell commands as they're run)
         -p, --patch ...         Path to patch file to use instead of generating a diff
+        -i, --patch-stdin       Read the patch from STDIN instead of a file
         -s, --staged            Use staged changes only to generate the diff
         -b, --branch ...        Remote branch to diff and try against [master]
         -w, --whitelist ...     Generate the patch for only the whitelisted files

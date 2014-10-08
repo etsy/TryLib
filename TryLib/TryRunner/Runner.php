@@ -56,6 +56,9 @@ final class TryLib_TryRunner_Runner {
         $this->repo_manager->runPrechecks($this->prechecks);
 
         $patch = $options->patch;
+        if ($options->patch_stdin) {
+            $patch = $this->readPatchFromStdin($options->wcpath);
+        }
         if (is_null($patch)) {
             $patch = $this->repo_manager->generateDiff($options->staged, $whitelist);
         }
@@ -80,5 +83,12 @@ final class TryLib_TryRunner_Runner {
 
         $this->jenkins_runner->startJenkinsJob($options->show_results, $options->show_progress);
         return ($this->jenkins_runner->try_status === 'FAILURE') ? 1 : 0;
+    }
+
+    private function readPatchFromStdin($patch_dir) {
+        $patch_file = "$patch_dir/patch.diff";
+        $input = file_get_contents('php://stdin');
+        file_put_contents($patch_file, $input);
+        return $patch_file;
     }
 }

@@ -318,6 +318,11 @@ function _tty_width() {
     if (PHP_OS != "Linux")
         return 80;
 
+    $isatty = defined('STDIN') && posix_isatty(STDIN);
+    if (!$isatty) {
+        return 80;
+    }
+
     $dims = explode(" ", shell_exec("stty size"));
     return intval($dims[1]);
 }
@@ -373,6 +378,7 @@ class TryLib_Util_PHPOptions_Options {
         }
         array_push($out, "\n");
         $last_was_option = False;
+        $tty_width = _tty_width();
         while (count($lines)) {
             $l = array_pop($lines);
             if (_startswith($l, ' ')) {
@@ -425,7 +431,7 @@ class TryLib_Util_PHPOptions_Options {
                 // so the text will wrap to the beginning of the line. We could
                 // implement this to make the usage string look nicer, but it
                 // would probably imply too much code for what it's worth.
-                $argtext = wordwrap($prefix . $extra, _tty_width());
+                $argtext = wordwrap($prefix . $extra, $tty_width);
                 array_push($out, $argtext . "\n");
                 $last_was_option = True;
             } else {
