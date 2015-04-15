@@ -3,7 +3,7 @@
 require_once "TryLib/Autoload.php";
 
 class MasterProjectTest extends PHPUnit_Framework_TestCase {
-    const JENKINS_URL = 'url.to.jenkins.com:8080';
+    const JENKINS_URL = 'http://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
 

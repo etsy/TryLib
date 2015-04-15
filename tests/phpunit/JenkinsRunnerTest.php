@@ -20,7 +20,7 @@ class TestRunner extends TryLib_JenkinsRunner{
 }
 
 class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
-    const JENKINS_URL = 'url.to.jenkins.com:8080';
+    const JENKINS_URL = 'https://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
 
@@ -42,8 +42,21 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
         vfsStream::setup('testDir');
     }
 
+    /**
+     * @expectedException
+     */
+    function testInvalidUrl() {
+            $this->jenkins_runner = new TestRunner(
+                'http://totallyvalid.com/',
+                self::JENKINS_CLI,
+                self::JENKINS_JOB,
+                $this->mock_cmd_runner
+            );
+    }
+
+
     function testRunJenkinsCommand() {
-        $expected_cmd = 'java -jar ' . self::JENKINS_CLI . ' -s http://' . self::JENKINS_URL . '/ dummy-cmd';
+        $expected_cmd = 'java -jar ' . self::JENKINS_CLI . ' -s ' . self::JENKINS_URL . ' dummy-cmd';
 
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
