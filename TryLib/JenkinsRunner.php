@@ -27,7 +27,11 @@ abstract class TryLib_JenkinsRunner {
         $try_job_name,
         $cmd_runner
     ) {
-        $this->jenkins_url = $jenkins_url;
+        if (filter_var($jenkins_url, FILTER_VALIDATE_URL) !== false) {
+            $this->jenkins_url = $jenkins_url;
+        } else {
+            throw new Exception("jenkins url must include protocol, ie http://, and trailing /, $jenkins_url given");
+        }
         $this->jenkins_cli = $jenkins_cli;
         $this->try_job_name = $try_job_name;
         $this->cmd_runner = $cmd_runner;
@@ -47,8 +51,7 @@ abstract class TryLib_JenkinsRunner {
     abstract protected function getBuildExtraArguments($show_results, $show_progress);
 
     public function runJenkinsCommand($command) {
-        $cmd = sprintf(
-            "java -jar %s -s http://%s/ %s",
+        $cmd = sprintf( "java -jar %s -s %s %s",
             $this->jenkins_cli,
             $this->jenkins_url,
             $command
