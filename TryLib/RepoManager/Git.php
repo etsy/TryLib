@@ -97,7 +97,7 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
         return $remote . "/" . $remote_branch;
     }
 
-    function generateDiff($staged_only = false, $whitelist = null) {
+    function generateDiff($staged_only = false, $whitelist = null, $lines_of_context = false) {
         $patch = $this->repo_path . "/patch.diff";
 
         $args = array(
@@ -108,6 +108,11 @@ class TryLib_RepoManager_Git implements TryLib_RepoManager {
 
         if ($staged_only) {
             $args[] = "--staged";
+        }
+
+        # User is requesting additional lines of context around changes.
+        if ($lines_of_context) {
+            $args[] = "-U{$lines_of_context}";
         }
 
         if (is_array($whitelist)) {

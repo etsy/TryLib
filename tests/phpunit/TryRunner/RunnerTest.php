@@ -11,7 +11,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
 
     public function testSimple() {
         $options_tuple = TryLib_TryRunner_Options::parse(
-            array("--branch", "testbranch"),
+            array("--branch", "testbranch", "-U", 10),
             "jenkins_job",
             "jenkins_job_prefix",
             "jenkins_server",
@@ -19,6 +19,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
 
         $repo_manager = new TryRunner_RunnerTest__TestRepoManager();
         $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
+        list($options, $flags, $extra) = $options_tuple;
 
         $try_runner = new TryLib_TryRunner_Runner(
             $repo_manager,
@@ -37,6 +38,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($repo_manager->ran_prechecks);
         $this->assertContains("some CLI command", $jenkins_runner->commands_run);
         $this->assertEquals("/test/ssh/key/path", $jenkins_runner->ssh_key_path);
+        $this->assertEquals(10, $options->lines_of_context);
     }
 
     /**
