@@ -59,8 +59,12 @@ final class TryLib_TryRunner_Runner {
         if ($options->patch_stdin) {
             $patch = $this->readPatchFromStdin($options->wcpath);
         }
+        $lines_of_context = false;
+        if ($options->lines_of_context) {
+            $lines_of_context = $options->lines_of_context;
+        }
         if (is_null($patch)) {
-            $patch = $this->repo_manager->generateDiff($options->staged, $whitelist);
+            $patch = $this->repo_manager->generateDiff($options->staged, $whitelist, $lines_of_context);
         }
 
         if ($options->diff_only) {
