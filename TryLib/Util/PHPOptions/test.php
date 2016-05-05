@@ -52,11 +52,11 @@ else
 // well ... actually, arguments with no trailing '=' can be used multiple times
 // and add 1 to the variable each time. (which will stay True as a boolean)
 // Try using -v multiple times to see.
-print "verbose level: ". $opt->v. "\n";
+echo "verbose level: ", $opt->v, "\n";
 
 // Access arguments both by short and long argument names
-print "short arg file name: ". $opt->f. "\n";
-print "long arg file name: ". $opt->indexfile. "\n";
+echo "short arg file name: ", $opt->f, "\n";
+echo "long arg file name: ", $opt->indexfile, "\n";
 
 // A short argument of '#' means the program expects an argument like -4 or -8
-print "-# should be an integer: ". $opt->compress. "\n";
+echo "-# should be an integer: ", $opt->compress, "\n";
