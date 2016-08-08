@@ -2,14 +2,14 @@
 
 require_once "TryLib/Autoload.php";
 
-class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
+class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     function setUp() {
         parent::setUp();
         $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
     }
 
     function testNoChanges() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array(),
             null,
             false
@@ -31,8 +31,8 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
         $script_runner->check($this->mock_cmd_runner, 'repoPath', 'some/origin');
     }
 
-    function testNoBlackListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+    function testNoBlockListedFiles() {
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array('my/foo.php'),
             false,
             false
@@ -54,8 +54,8 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testWithBlackListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+    function testWithBlockListedFiles() {
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array('my/foo.php', 'my/bar.php'),
             null,
             false
@@ -77,8 +77,8 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testWithWhiteListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+    function testWithSafeListedFiles() {
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array(),
             array('my/foo.php', 'my/bar.php'),
             false
@@ -100,8 +100,8 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testWithWhiteListedAndBlackListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+    function testWithSafeListedAndBlockListedFiles() {
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array('my/bar.php'),
             array('my/foo.php', 'my/bar.php'),
             false
@@ -123,7 +123,7 @@ class GitWarnOnBlacklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testStagedOnly() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlacklisted(
+        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array('my/foo.php', 'my/bar.php'),
             null,
             true

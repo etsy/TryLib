@@ -32,7 +32,7 @@ v,verbose             Verbose (show shell commands as they're run)
 p,patch=              Path to patch file to use instead of generating a diff
 U,lines-of-context=   Generate a diff with n lines of context (like git-diff's -U option)
 s,staged              Use staged changes only to generate the diff
-w,whitelist=          Generate the patch for only the whitelisted files
+w,safelist=           Generate the patch for only the safelisted files
 b,branch=             Remote branch to diff and try against [master]
 
 c,show-results        Show final try job results
@@ -81,9 +81,9 @@ $jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
     $options->jenkinsjobprefix
 );
 
-$whitelist = $options->whitelist;
-if (is_string($whitelist)) {
-    $whitelist = array($whitelist);
+$safelist = $options->safelist;
+if (is_string($safelist)) {
+    $safelist = array($safelist);
 }
 
 $pre_checks = array(
@@ -95,7 +95,7 @@ $repo_manager->runPrechecks($pre_checks);
 
 $patch = $options->patch;
 if (is_null($patch)) {
-    $patch = $repo_manager->generateDiff($options->staged, $whitelist);
+    $patch = $repo_manager->generateDiff($options->staged, $safelist);
 }
 
 if ($options->diff_only) {

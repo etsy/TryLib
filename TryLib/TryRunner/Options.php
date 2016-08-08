@@ -15,7 +15,7 @@ p,patch=              Path to patch file to use instead of generating a diff
 U,lines-of-context=   Generate a diff with n lines of context (like git-diff's -U option)
 i,patch-stdin         Read the patch to use from STDIN instead of a file
 s,staged              Use staged changes only to generate the diff
-w,whitelist=          Generate the patch for only the whitelisted files
+w,whitelist,safelist= Generate the patch for only the safelisted files
 b,branch=             Remote branch to diff and try against [\$default_remote_branch]
 
 c,show-results        Show final try job results
