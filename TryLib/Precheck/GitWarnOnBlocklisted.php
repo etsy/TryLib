@@ -1,21 +1,21 @@
 <?php
 
 /**
-  * Warn a user if there are any blacklisted files in the patch
+  * Warn a user if there are any blocklisted files in the patch
   */
-class TryLib_Precheck_GitWarnOnBlacklisted implements TryLib_Precheck {
-    protected $blacklist;
+class TryLib_Precheck_GitWarnOnBlocklisted implements TryLib_Precheck {
+    protected $blocklist;
     protected $whitelist;
     protected $staged;
 
-    function __construct(array $blacklist, $whitelist = null, $staged = false) {
+    function __construct(array $blocklist, $whitelist = null, $staged = false) {
         $this->whitelist = $whitelist ?: array();
-        $this->blacklist = array_diff($blacklist, $this->whitelist);
+        $this->blocklist = array_diff($blocklist, $this->whitelist);
         $this->staged = $staged;
     }
 
     /**
-     * Warn the user if the changed files contain any blacklisted files
+     * Warn the user if the changed files contain any blocklisted files
      *
      * @param CommandRunner $cmd_runner  cmd runner object
      * @param string        $repo_path          location of the git repo
@@ -36,17 +36,17 @@ class TryLib_Precheck_GitWarnOnBlacklisted implements TryLib_Precheck {
 
         $changed_files = $cmd_runner->getOutput();
 
-        $blacklisted_changed_files = array();
+        $blocklisted_changed_files = array();
 
         foreach (explode(PHP_EOL, $changed_files) as $file) {
-            if (in_array($file, $this->blacklist)) {
-                $blacklisted_changed_files[] = $file;
+            if (in_array($file, $this->blocklist)) {
+                $blocklisted_changed_files[] = $file;
             }
         }
 
-        if (!empty($blacklisted_changed_files)) {
-            $msg = 'The diff you are trying to submit contains the following blacklisted file(s) : ';
-            $msg .= implode(',', $blacklisted_changed_files);
+        if (!empty($blocklisted_changed_files)) {
+            $msg = 'The diff you are trying to submit contains the following blocklisted file(s) : ';
+            $msg .= implode(',', $blocklisted_changed_files);
             $cmd_runner->warn($msg);
         }
     }
