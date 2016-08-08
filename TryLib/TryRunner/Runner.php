@@ -15,7 +15,7 @@ final class TryLib_TryRunner_Runner {
             $repo_manager,
             $jenkins_runner,
             $jenkins_cli_jar_path,
-            $whitelisted_files,
+            $safelisted_files,
             $override_user,
             $prechecks,
             $options_tuple,
@@ -23,7 +23,7 @@ final class TryLib_TryRunner_Runner {
         $this->repo_manager = self::requireArg($repo_manager);
         $this->jenkins_runner = self::requireArg($jenkins_runner);
         $this->jenkins_cli_jar_path = self::requireArg($jenkins_cli_jar_path);
-        $this->whitelisted_files = $whitelisted_files ?: array();
+        $this->safelisted_files = $safelisted_files ?: array();
         $this->override_user = $override_user ?: getenv("USER");
         $this->prechecks = $prechecks ?: array();
         $this->options_tuple = self::requireArg($options_tuple);
@@ -44,13 +44,13 @@ final class TryLib_TryRunner_Runner {
         // Resolve the given remote branch value to a real ref.
         $remote_branch = $this->repo_manager->getRemoteBranch();
 
-        if ($options->whitelist) {
-            $whitelist = $options->whitelist;
-            if (is_string($whitelist)) {
-                $whitelist = array($whitelist);
+        if ($options->safelist) {
+            $safelist = $options->safelist;
+            if (is_string($safelist)) {
+                $safelist = array($safelist);
             }
         } else {
-            $whitelist = $this->whitelisted_files;
+            $safelist = $this->safelisted_files;
         }
 
         $this->repo_manager->runPrechecks($this->prechecks);
@@ -64,7 +64,7 @@ final class TryLib_TryRunner_Runner {
             $lines_of_context = $options->lines_of_context;
         }
         if (is_null($patch)) {
-            $patch = $this->repo_manager->generateDiff($options->staged, $whitelist, $lines_of_context);
+            $patch = $this->repo_manager->generateDiff($options->staged, $safelist, $lines_of_context);
         }
 
         if ($options->diff_only) {

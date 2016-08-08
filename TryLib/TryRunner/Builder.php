@@ -18,7 +18,7 @@ final class TryLib_TryRunner_Builder {
 
     private $project_type = null;
     private $jenkins_cli_jar_path = null;
-    private $whitelisted_files = null;
+    private $safelisted_files = null;
     private $override_user = null;
     private $prechecks = null;
     private $options_tuple = null;
@@ -67,7 +67,7 @@ final class TryLib_TryRunner_Builder {
             $repo_manager,
             $jenkins_runner,
             $this->jenkins_cli_jar_path,
-            $this->whitelisted_files,
+            $this->safelisted_files,
             $this->override_user,
             $this->prechecks,
             $this->options_tuple,
@@ -81,12 +81,12 @@ final class TryLib_TryRunner_Builder {
 
     /**
      * An array of the only paths in your local working copy to include in a diff. Overriden by
-     * the command line option --whitelist.
+     * the command line option --safelist.
      *
      * Defaults to an empty array.
      */
-    public function whitelistedFiles(array $whitelisted_files) {
-        $this->whitelisted_files = $whitelisted_files;
+    public function safelistedFiles(array $safelisted_files) {
+        $this->safelisted_files = $safelisted_files;
         return $this;
     }
 

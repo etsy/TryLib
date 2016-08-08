@@ -77,7 +77,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testWithWhiteListedFiles() {
+    function testWithSafeListedFiles() {
         $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array(),
             array('my/foo.php', 'my/bar.php'),
@@ -100,7 +100,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testWithWhiteListedAndBlockListedFiles() {
+    function testWithSafeListedAndBlockListedFiles() {
         $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
             array('my/bar.php'),
             array('my/foo.php', 'my/bar.php'),

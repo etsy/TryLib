@@ -20,7 +20,7 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
         -p, --patch ...       Path to patch file to use instead of generating a diff
         -U, --lines-of-context ...  Generate a diff with n lines of context (like git-diff's -U option)
         -s, --staged          Use staged changes only to generate the diff
-        -w, --whitelist ...   Generate the patch for only the whitelisted files
+        -w, --safelist ...    Generate the patch for only the safelisted files
         -b, --branch ...      Remote branch to diff and try against [master]
 
         -c, --show-results    Show final try job results

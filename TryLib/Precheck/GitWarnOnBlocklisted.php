@@ -5,12 +5,12 @@
   */
 class TryLib_Precheck_GitWarnOnBlocklisted implements TryLib_Precheck {
     protected $blocklist;
-    protected $whitelist;
+    protected $safelist;
     protected $staged;
 
-    function __construct(array $blocklist, $whitelist = null, $staged = false) {
-        $this->whitelist = $whitelist ?: array();
-        $this->blocklist = array_diff($blocklist, $this->whitelist);
+    function __construct(array $blocklist, $safelist = null, $staged = false) {
+        $this->safelist = $safelist ?: array();
+        $this->blocklist = array_diff($blocklist, $this->safelist);
         $this->staged = $staged;
     }
 
@@ -28,8 +28,8 @@ class TryLib_Precheck_GitWarnOnBlocklisted implements TryLib_Precheck {
             $cmd .= ' --staged';
         }
 
-        if (!empty($this->whitelist)) {
-            $cmd .= ' ' . implode(' ', $this->whitelist);
+        if (!empty($this->safelist)) {
+            $cmd .= ' ' . implode(' ', $this->safelist);
         }
 
         $cmd_runner->run($cmd);
