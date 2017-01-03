@@ -11,6 +11,7 @@ before_script:
   - pear install bovigo/vfsStream-beta
   - phpenv rehash
   - ls /home/travis/.phpenv/versions/5.4.45/lib/php
+  - cat /home/travis/.phpenv/versions/5.4.45/etc/php.ini
 
 script: phpunit tests
 
