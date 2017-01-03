@@ -7,6 +7,7 @@ php:
 before_script:
   - pear channel-discover pear.bovigo.org
   - pear install bovigo/vfsStream-beta
+  - find / -name vfsStream.php
 
 script: phpunit tests
 
