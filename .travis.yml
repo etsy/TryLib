@@ -5,12 +5,9 @@ php:
   - "5.5"
 
 before_script:
-  - pear verbose 3
+  - pear config-show
   - pear channel-discover pear.bovigo.org
   - pear install bovigo/vfsStream-beta
-  - pear config-get php_dir
-  - pear config-get ext_dir
-
 
 script: phpunit tests
 
