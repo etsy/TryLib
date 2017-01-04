@@ -1,6 +1,5 @@
 <?php
 
-echo get_include_path();
 require_once "TryLib/Autoload.php";
 require_once 'vfsStream/vfsStream.php';
 
