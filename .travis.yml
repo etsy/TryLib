@@ -11,6 +11,7 @@ before_script:
   - export PHP_INCLUDE_PATH=`pear config-get php_dir`
   - export PHP_INI_FILE=`pear config-get php_ini`
   - echo 'include_path = ".:${PHP_INCLUDE_PATH}"' >> $PHP_INI_FILE
+  - echo $PHP_INCLUDE_PATH
   - phpenv rehash
 
 script: phpunit tests
