@@ -3,6 +3,7 @@ php:
   - "5.3"
   - "5.4"
   - "5.5"
+  - "7.1"
 
 before_script:
   - pear config-set verbose 3
