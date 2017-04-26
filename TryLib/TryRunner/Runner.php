@@ -28,6 +28,7 @@ final class TryLib_TryRunner_Runner {
         $this->prechecks = $prechecks ?: array();
         $this->options_tuple = self::requireArg($options_tuple);
         $this->ssh_key_path = $ssh_key_path;
+        $this->patch = null;
     }
 
     private static function requireArg($arg) {
@@ -37,40 +38,51 @@ final class TryLib_TryRunner_Runner {
         return $arg;
     }
 
+    public function getPatchLocation() {
+        if (is_null($this->patch)) {
+            list($options, $flags, $extra) = $this->options_tuple;
+
+            $this->repo_manager->setRemoteBranch($options->branch);
+            // Resolve the given remote branch value to a real ref.
+            $remote_branch = $this->repo_manager->getRemoteBranch();
+            // Set the remote branch parameter
+            $this->jenkins_runner->setParam('branch', $remote_branch);
+
+            if ($options->safelist) {
+                $safelist = $options->safelist;
+                if (is_string($safelist)) {
+                    $safelist = array($safelist);
+                }
+            } else {
+                $safelist = $this->safelisted_files;
+            }
+
+            $this->patch = $options->patch;
+            if ($options->patch_stdin) {
+                $this->patch = $this->readPatchFromStdin($options->wcpath);
+            }
+            $lines_of_context = false;
+            if ($options->lines_of_context) {
+                $lines_of_context = $options->lines_of_context;
+            }
+            if (is_null($this->patch)) {
+                $this->patch = $this->repo_manager->generateDiff($options->staged, $safelist, $lines_of_context);
+            }
+
+            if (0 == filesize(realpath($this->patch))) {
+                $this->printWarningSign();
+                print "\nThe patch file is empty! There are no local changes.\n\nContinuing Try...\n\n";
+            }
+        }
+        return $this->patch;
+    }
+
     public function run() {
         list($options, $flags, $extra) = $this->options_tuple;
 
-        $this->repo_manager->setRemoteBranch($options->branch);
-        // Resolve the given remote branch value to a real ref.
-        $remote_branch = $this->repo_manager->getRemoteBranch();
-
-        if ($options->safelist) {
-            $safelist = $options->safelist;
-            if (is_string($safelist)) {
-                $safelist = array($safelist);
-            }
-        } else {
-            $safelist = $this->safelisted_files;
-        }
+        $patch = $this->getPatchLocation();
 
         $this->repo_manager->runPrechecks($this->prechecks);
-
-        $patch = $options->patch;
-        if ($options->patch_stdin) {
-            $patch = $this->readPatchFromStdin($options->wcpath);
-        }
-        $lines_of_context = false;
-        if ($options->lines_of_context) {
-            $lines_of_context = $options->lines_of_context;
-        }
-        if (is_null($patch)) {
-            $patch = $this->repo_manager->generateDiff($options->staged, $safelist, $lines_of_context);
-        }
-
-        if (0 == filesize(realpath($patch))) {
-            $this->printWarningSign();
-            print "\nThe patch file is empty! There are no local changes.\n\nContinuing Try...\n\n";
-        }
 
         if ($options->diff_only) {
             print 'Not sending job to Jenkins (-n) diff is here:' . $patch . PHP_EOL;
@@ -81,7 +93,6 @@ final class TryLib_TryRunner_Runner {
         if ($this->ssh_key_path) {
             $this->jenkins_runner->setSshKey($this->ssh_key_path);
         }
-        $this->jenkins_runner->setParam('branch', $remote_branch);
         $this->jenkins_runner->setParam('guid', $this->override_user . time());
 
         $extra_params = TryLib_Util_OptionsUtil::parseExtraParameters($options->extra_param);
