@@ -2,12 +2,9 @@
 
 namespace tests\phpunit\Util;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_Util_OptionsUtil as OptionsUtil;
+use TryLib\Util\OptionsUtil as OptionsUtil;
 
-require_once "TryLib/Autoload.php";
-
-class OptionsUtilTest extends TestCase {
+class OptionsUtilTest extends \PHPUnit\Framework\TestCase {
 
     function provideExtraParameters() {
         return array(

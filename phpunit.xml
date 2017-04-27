@@ -11,16 +11,7 @@
          syntaxCheck="false">
     <testsuites>
         <testsuite name="TryLib Test Suite">
-           <!-- <directory suffix=".php">./tests/</directory>-->
-           <file>./tests/phpunit/JenkinsRunner/MasterProjectTest.php</file>
-           <file>./tests/phpunit/JenkinsRunner/FreeStyleProjectTest.php</file>
-           <file>./tests/phpunit/JenkinsRunnerTest.php</file>
-           <file>./tests/phpunit/Precheck/GitCopyAgeTest.php</file>
-           <file>./tests/phpunit/Precheck/GitCopyBehindTest.php</file>
-           <file>./tests/phpunit/Precheck/GitWarnOnBlocklistedTest.php</file>
-           <file>./tests/phpunit/Precheck/ScriptRunnerTest.php</file>
-           <file>./tests/phpunit/RepoManager/GitTest.php</file>
-           <file>./tests/phpunit/TryRunner/RunnerTest.php</file>
+           <directory suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>
