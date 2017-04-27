@@ -2,12 +2,9 @@
 
 namespace tests\phpunit\JenkinsRunner;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_JenkinsRunner_MasterProject as MasterProject;
+use TryLib\JenkinsRunner\MasterProject as MasterProject;
 
-require_once "TryLib/Autoload.php";
-
-class MasterProjectTest extends TestCase {
+class MasterProjectTest extends \PHPUnit\Framework\TestCase {
     const JENKINS_URL = 'http://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
@@ -18,7 +15,8 @@ class MasterProjectTest extends TestCase {
     function setUp() {
         parent::setUp();
 
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
 
         $this->jenkins_runner = new MasterProject(
             self::JENKINS_URL,
@@ -96,11 +94,10 @@ class MasterProjectTest extends TestCase {
 
     /** @dataProvider provideShowProgressJobResultsData */
     function testPrintJobResultSuccessAndShowProgress($log_line, $status, $expected_output) {
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('colorStatus'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['colorStatus'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('colorStatus')
@@ -119,11 +116,10 @@ class MasterProjectTest extends TestCase {
     }
 
     function testPrintJobResultNoMatch() {
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('colorStatus'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['colorStatus'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->never())
                        ->method('colorStatus')
@@ -146,11 +142,10 @@ class MasterProjectTest extends TestCase {
 
         $new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('getJobOutput', 'printJobResults'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['getJobOutput', 'printJobResults'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->at(0))
                        ->method('getJobOutput')
@@ -178,11 +173,10 @@ class MasterProjectTest extends TestCase {
 
         $new_text = $prev_text . PHP_EOL . '......... try-file-tests (pending)';
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('getJobOutput', 'printJobResults'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['getJobOutput', 'printJobResults'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('getJobOutput')
@@ -210,11 +204,10 @@ class MasterProjectTest extends TestCase {
 
         $new_text = $prev_text . PHP_EOL . 'Finished: FAILURE';
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('getJobOutput', 'printJobResults', 'colorStatus'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['getJobOutput', 'printJobResults', 'colorStatus'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('getJobOutput')
@@ -250,11 +243,10 @@ class MasterProjectTest extends TestCase {
 
         $new_text = $prev_text . PHP_EOL . 'Finished: SUCCESS';
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('getJobOutput', 'printJobResults', 'colorStatus'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['getJobOutput', 'printJobResults', 'colorStatus'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('getJobOutput')
@@ -289,11 +281,10 @@ class MasterProjectTest extends TestCase {
 
         $new_text = $prev_text . PHP_EOL . 'Finished: SUCCESS';
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('getJobOutput', 'printJobResults', 'colorStatus'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB . '-foo', $this->mock_cmd_runner, 'bar')
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['getJobOutput', 'printJobResults', 'colorStatus'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('getJobOutput')
@@ -326,11 +317,10 @@ class MasterProjectTest extends TestCase {
                               ->method('terminate')
                               ->with('Could not find ' .self::JENKINS_JOB . ' URL' . PHP_EOL);
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('processLogOuput'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['processLogOuput'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->pollForCompletion(true);
 
@@ -344,11 +334,10 @@ class MasterProjectTest extends TestCase {
                               ->will($this->returnValue($expected_job_url));
 
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('processLogOuput'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['processLogOuput'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
+                               ->getMock();
 
         $jenkins_runner->expects($this->once())
                        ->method('processLogOuput')
@@ -367,11 +356,10 @@ class MasterProjectTest extends TestCase {
                               ->will($this->returnValue($expected_job_url));
 
 
-        $jenkins_runner = $this->getMock(
-                'TryLib_JenkinsRunner_MasterProject',
-                array('processLogOuput'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner, null, 0)
-        );
+        $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
+                               ->setMethods(['processLogOuput'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner, null, 0])
+                               ->getMock();
 
         $jenkins_runner->expects($this->at(0))
                        ->method('processLogOuput')
