@@ -18,6 +18,7 @@
            <file>./tests/phpunit/Precheck/GitCopyAgeTest.php</file>
            <file>./tests/phpunit/Precheck/GitCopyBehindTest.php</file>
            <file>./tests/phpunit/Precheck/GitWarnOnBlocklistedTest.php</file>
+           <file>./tests/phpunit/Precheck/ScriptRunnerTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

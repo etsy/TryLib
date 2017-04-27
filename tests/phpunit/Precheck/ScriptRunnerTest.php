@@ -2,21 +2,18 @@
 
 namespace tests\phpunit\Precheck;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use vfsStream;
-use TryLib_Precheck_ScriptRunner as ScriptRunner;
-use vfsStreamWrapper;
+use TryLib\Precheck\ScriptRunner as ScriptRunner;
+use org\bovigo\vfs\vfsStream,
+    org\bovigo\vfs\vfsStreamWrapper;
 
-require_once "TryLib/Autoload.php";
-require_once 'vfsStream/vfsStream.php';
-
-class ScriptRunnerTest extends TestCase {
+class ScriptRunnerTest extends \PHPUnit\Framework\TestCase {
 
     private $mock_cmd_runner;
 
     function setUp() {
         parent::setUp();
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
 
         vfsStream::setup('testDir');
     }
