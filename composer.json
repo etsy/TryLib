@@ -1,6 +1,7 @@
 {
     "name": "etsy/TryLib",
     "description": "Try lib : send your diffs to your CI cluster.",
+    "version": "2.0.0",
     "license": "MIT",
     "keywords": ["try", "etsy", "ci", "continuous integration"],
     "authors": [
@@ -8,7 +9,7 @@
             "name": "Nassim Kammah",
             "email": "nkammah@etsy.com"
         },
-        {
+
             "name": "Laura Beth Lincoln Denker"
         }
     ],
