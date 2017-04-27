@@ -2,21 +2,18 @@
 
 namespace tests\phpunit\TryRunner;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_TryRunner_Options as Options;
-use TryLib_TryRunner_Runner as Runner;
-use TryLib_RepoManager as RepoManager;
+use TryLib\TryRunner\Options as Options;
+use TryLib\TryRunner\Runner as Runner;
+use TryLib\RepoManager as RepoManager;
 use RuntimeException;
-use TryLib_JenkinsRunner as JenkinsRunner;
+use TryLib\JenkinsRunner as JenkinsRunner;
 
-require_once 'TryLib/TryRunner/Options.php';
-require_once 'TryLib/TryRunner/Runner.php';
 
 /**
  * Simple integration tests for TryLib_TryRunner_Runner to make sure expected method calls are made
  * given certain options.
  */
-class RunnerTest extends TestCase {
+class RunnerTest extends \PHPUnit\Framework\TestCase {
 
     public function testSimple() {
         $options_tuple = Options::parse(
@@ -26,8 +23,8 @@ class RunnerTest extends TestCase {
             "jenkins_server",
             "/path/to/working/copy");
 
-        $repo_manager = new TryRunner_RunnerTest__TestRepoManager();
-        $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
+        $repo_manager = new TestRepoManager();
+        $jenkins_runner = new TestJenkinsRunner();
         list($options, $flags, $extra) = $options_tuple;
 
         $try_runner = new Runner(
@@ -66,8 +63,8 @@ class RunnerTest extends TestCase {
             "/path/to/working/copy",
             null  /* Set no default remote, to enable branch auto-detection. */);
 
-        $repo_manager = new TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch();
-        $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
+        $repo_manager = new TestRepoManagerWithDetectedBranch();
+        $jenkins_runner = new TestJenkinsRunner();
 
         $try_runner = new Runner(
             $repo_manager,
@@ -91,7 +88,7 @@ class RunnerTest extends TestCase {
 }
 
 
-class TryRunner_RunnerTest__TestRepoManager implements RepoManager {
+class TestRepoManager implements RepoManager {
 
     public $remote_branch = null;
     public $ran_prechecks = false;
@@ -115,8 +112,8 @@ class TryRunner_RunnerTest__TestRepoManager implements RepoManager {
     }
 }
 
-class TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch
-    extends TryRunner_RunnerTest__TestRepoManager {
+class TestRepoManagerWithDetectedBranch
+    extends TestRepoManager {
 
     public function setRemoteBranch($remote_branch) {
         if (!is_null($remote_branch)) {
@@ -130,7 +127,7 @@ class TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch
     }
 }
 
-class TryRunner_RunnerTest__TestJenkinsRunner extends JenkinsRunner {
+class TestJenkinsRunner extends JenkinsRunner {
 
     public $commands_run = array();
     public $ssh_key_path = null;
