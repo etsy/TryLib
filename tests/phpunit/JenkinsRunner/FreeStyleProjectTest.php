@@ -2,12 +2,9 @@
 
 namespace tests\phpunit\JenkinsRunner;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_JenkinsRunner_FreeStyleProject as FreeStyleProject;
+use TryLib\JenkinsRunner\FreeStyleProject as FreeStyleProject;
 
-require_once "TryLib/Autoload.php";
-
-class FreeStyleProjectTest extends TestCase {
+class FreeStyleProjectTest extends \PHPUnit\Framework\TestCase {
     const JENKINS_URL = 'http://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
@@ -18,7 +15,8 @@ class FreeStyleProjectTest extends TestCase {
     function setUp() {
         parent::setUp();
 
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
 
         $this->jenkins_runner = new FreeStyleProject(
             self::JENKINS_URL,
