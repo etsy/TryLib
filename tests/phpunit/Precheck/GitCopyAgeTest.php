@@ -2,18 +2,16 @@
 
 namespace tests\phpunit\Precheck;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_Precheck_GitCopyAge as GitCopyAge;
+use TryLib\Precheck\GitCopyAge as GitCopyAge;
 
-require_once "TryLib/Autoload.php";
-
-class GitCopyAgeTest extends TestCase {
+class GitCopyAgeTest extends \PHPUnit\Framework\TestCase {
 
     private $mock_cmd_runner;
 
     function setUp() {
         parent::setUp();
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
     }
 
     function testGetLastFetchDateWithoutRemoteBranchSuccess() {
@@ -56,11 +54,10 @@ class GitCopyAgeTest extends TestCase {
     function testWorkingCopyPastMaxBlockingAge() {
         $last_fetch = 'Sun Feb 10 10:00:00 2013';
         
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyAge',
-                array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
-                array(12, 72, 'branch')
-        );
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyAge')
+                              ->setMethods(['getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'])
+                              ->setConstructorArgs([12, 72, 'branch'])
+                              ->getMock();
         
         $script_runner->expects($this->once())
                       ->method('getLastFetchDate')
@@ -87,12 +84,11 @@ class GitCopyAgeTest extends TestCase {
     function testWorkingCopyPastMaxWarningAge() {
         $last_fetch = 'Sun Feb 10 10:00:00 2013';
         
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyAge',
-                array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
-                array(12, 72, 'branch')
-        );
-        
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyAge')
+                              ->setMethods(['getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'])
+                              ->setConstructorArgs([12, 72, 'branch'])
+                              ->getMock();
+
         $script_runner->expects($this->once())
                       ->method('getLastFetchDate')
                       ->with($this->mock_cmd_runner)
@@ -121,11 +117,10 @@ class GitCopyAgeTest extends TestCase {
     function testWorkingCopySuccess() {
         $last_fetch = 'Sun Feb 10 10:00:00 2013';
         
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyAge',
-                array('getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'),
-                array(12, 72, 'branch')
-        );
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyAge')
+                              ->setMethods(['getLastFetchDate', 'getTimeDelta', 'formatTimeDiff'])
+                              ->setConstructorArgs([12, 72, 'branch'])
+                              ->getMock();
         
         $script_runner->expects($this->once())
                       ->method('getLastFetchDate')
