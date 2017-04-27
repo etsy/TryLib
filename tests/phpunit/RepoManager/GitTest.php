@@ -2,12 +2,9 @@
 
 namespace tests\phpunit\RepoManager;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_RepoManager_Git as Git;
+use TryLib\RepoManager\Git as Git;
 
-require_once "TryLib/Autoload.php";
-
-class GitTest extends TestCase {
+class GitTest extends \PHPUnit\Framework\TestCase {
     const REPO_PATH = '/path/to/repo';
 
     private $mock_cmd_runner;
@@ -15,15 +12,15 @@ class GitTest extends TestCase {
     function setUp() {
         parent::setUp();
 
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
     }   
     
     function testGenerateDiffStagedSuccessfull() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getUpstream'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getUpstream'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->once())
                      ->method('getUpstream')
@@ -52,11 +49,10 @@ class GitTest extends TestCase {
     }
     
     function testGenerateDiffFailure() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getUpstream'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getUpstream'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->once())
                      ->method('getUpstream')
@@ -126,12 +122,11 @@ class GitTest extends TestCase {
     }
     
     function testGetRemoteSuccess() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
-        
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
+
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
                      ->will($this->returnValue('master'));
@@ -145,11 +140,10 @@ class GitTest extends TestCase {
     }
     
     function testGetRemoteFailWithDefault() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
@@ -164,12 +158,11 @@ class GitTest extends TestCase {
     }
     
     function testGetRemoteFailNoDefault() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
-        
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
+
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
                      ->will($this->returnValue('master'));
@@ -184,11 +177,10 @@ class GitTest extends TestCase {
     
     
     function testGetRemoteBranchFromTrackingConfig() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
@@ -203,11 +195,10 @@ class GitTest extends TestCase {
     }
     
     function testGetRemoteBranchNoTrackingRemoteWithSameName() {
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->at(0))
                      ->method('getLocalBranch')
@@ -232,15 +223,16 @@ class GitTest extends TestCase {
 
         $this->assertEquals('local_branch', $repo_manager->getRemoteBranch());
     }
-    
-    function testGetRemoteBranchNoTrackingNoRemote() {
-        $this->setExpectedException('RuntimeException', 'No remote branch was found');
 
-        $repo_manager = $this->getMock(
-                'TryLib_RepoManager_Git',
-                array('getLocalBranch', 'getConfig'),
-                array(self::REPO_PATH, $this->mock_cmd_runner)
-        );
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage No remote branch was found
+     */ 
+    function testGetRemoteBranchNoTrackingNoRemote() {
+        $repo_manager = $this->getMockBuilder('TryLib\RepoManager\Git')
+                             ->setMethods(['getLocalBranch', 'getConfig'])
+                             ->setConstructorArgs([self::REPO_PATH, $this->mock_cmd_runner])
+                             ->getMock();
         
         $repo_manager->expects($this->at(0))
                      ->method('getLocalBranch')
