@@ -1,9 +1,13 @@
 <?php
 
+namespace TryLib\Precheck;
+
+use TryLib\Precheck as Precheck;
+
 /**
   * Warn a user if there are any blocklisted files in the patch
   */
-class TryLib_Precheck_GitWarnOnBlocklisted implements TryLib_Precheck {
+class GitWarnOnBlocklisted implements Precheck {
     protected $blocklist;
     protected $safelist;
     protected $staged;

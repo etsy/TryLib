@@ -1,9 +1,16 @@
 <?php
 
+namespace tests\phpunit\Precheck;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use vfsStream;
+use TryLib_Precheck_ScriptRunner as ScriptRunner;
+use vfsStreamWrapper;
+
 require_once "TryLib/Autoload.php";
 require_once 'vfsStream/vfsStream.php';
 
-class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
+class ScriptRunnerTest extends TestCase {
 
     private $mock_cmd_runner;
 
@@ -16,7 +23,7 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
 
     function testScriptDoesNotExists() {
 
-        $script_runner = new TryLib_Precheck_ScriptRunner(vfsStream::url('testDir/script'));
+        $script_runner = new ScriptRunner(vfsStream::url('testDir/script'));
         
         $this->mock_cmd_runner->expects($this->never())
                               ->method('run');
@@ -31,7 +38,7 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
         vfsStream::newFile('script')
             ->at(vfsStreamWrapper::getRoot());
 
-        $script_runner = new TryLib_Precheck_ScriptRunner(vfsStream::url('testDir/script'));
+        $script_runner = new ScriptRunner(vfsStream::url('testDir/script'));
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
@@ -48,7 +55,7 @@ class ScriptRunnerTest extends PHPUnit_Framework_TestCase {
         vfsStream::newFile('script')
             ->at(vfsStreamWrapper::getRoot());
 
-        $script_runner = new TryLib_Precheck_ScriptRunner(vfsStream::url('testDir/script'));
+        $script_runner = new ScriptRunner(vfsStream::url('testDir/script'));
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')

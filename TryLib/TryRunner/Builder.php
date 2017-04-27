@@ -1,19 +1,28 @@
 <?php
 
+namespace TryLib\TryRunner;
+
+use InvalidArgumentException;
+use TryLib\CommandRunner;
+use TryLib\RepoManager\Git;
+use TryLib\JenkinsRunner\MasterProject;
+use TryLib\JenkinsRunner\FreeStyleProject;
+use RuntimeException;
+
 /**
- * A builder for configuring and creating a TryLib_TryRunner_Runner.
+ * A builder for configuring and creating a TryLib\TryRunner\Runner.
  */
-final class TryLib_TryRunner_Builder {
+final class Builder {
 
     const PROJECT_TYPE_FREESTYLE = 1;
     const PROJECT_TYPE_MASTER = 2;
 
     public static function freeStyleProject() {
-        return new TryLib_TryRunner_Builder(self::PROJECT_TYPE_FREESTYLE);
+        return new static(self::PROJECT_TYPE_FREESTYLE);
     }
 
     public static function masterProject() {
-        return new TryLib_TryRunner_Builder(self::PROJECT_TYPE_MASTER);
+        return new static(self::PROJECT_TYPE_MASTER);
     }
 
     private $project_type = null;
@@ -38,11 +47,11 @@ final class TryLib_TryRunner_Builder {
                 . "but this Try job doesn't accept subjobs since it's not a master project.");
         }
 
-        $cmd_runner = new TryLib_CommandRunner($options->verbose);
-        $repo_manager = new TryLib_RepoManager_Git($options->wcpath, $cmd_runner);
+        $cmd_runner = new CommandRunner($options->verbose);
+        $repo_manager = new Git($options->wcpath, $cmd_runner);
 
         if ($this->project_type === self::PROJECT_TYPE_MASTER) {
-            $jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+            $jenkins_runner = new MasterProject(
                 $options->jenkinsserver,
                 $this->jenkins_cli_jar_path,
                 $options->jenkinsjob,
@@ -52,7 +61,7 @@ final class TryLib_TryRunner_Builder {
             $jenkins_runner->setSubJobs($subjobs);
 
         } else if ($this->project_type === self::PROJECT_TYPE_FREESTYLE) {
-            $jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
+            $jenkins_runner = new FreeStyleProject(
                 $options->jenkinsserver,
                 $this->jenkins_cli_jar_path,
                 $options->jenkinsjob,
@@ -63,7 +72,7 @@ final class TryLib_TryRunner_Builder {
             throw new RuntimeException("Unknown project type");
         }
 
-        return new TryLib_TryRunner_Runner(
+        return new Runner(
             $repo_manager,
             $jenkins_runner,
             $this->jenkins_cli_jar_path,
@@ -99,7 +108,7 @@ final class TryLib_TryRunner_Builder {
     }
 
     /**
-     * An array of TryLib_Precheck instances to run on your local working copy before sending a job
+     * An array of TryLib\Precheck instances to run on your local working copy before sending a job
      * to Jenkins.
      *
      * Defaults to an empty array.
@@ -110,7 +119,7 @@ final class TryLib_TryRunner_Builder {
     }
 
     /**
-     * Command-line options as parsed by TryLib_TryRunner_Options::parse().
+     * Command-line options as parsed by TryLib\TryRunner\Options::parse().
      */
     public function optionsTuple(array $options_tuple) {
         $this->options_tuple = $options_tuple;

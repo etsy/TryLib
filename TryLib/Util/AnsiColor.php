@@ -1,4 +1,11 @@
 <?php
+
+namespace TryLib\Util;
+
+use InvalidArgumentException;
+use BadMethodCallException;
+use Exception;
+
 /**
  * Helpful tool for generating colored text on the linux prompt
  *
@@ -27,10 +34,10 @@
  *     bold, underline, blink, reverse
  *
  */
-class TryLib_Util_AnsiColor {
+class AnsiColor {
     public function __construct() {
         if (!(defined('STDERR') && posix_isatty(STDERR))) {
-            throw new TryLib_Util_DisplayException('Colored output not supported');
+            throw new DisplayException('Colored output not supported');
         }
     }
 
@@ -95,9 +102,9 @@ class TryLib_Util_AnsiColor {
 
     public function __toString() {
         $seq = $this->seq."\033[0m";
-        $this->seq = '';
+        $this->seq = 'TryLib\Util\PHPOptions\test';
         return $seq;
     }
 }
 
-class TryLib_Util_DisplayException extends Exception {};
+class DisplayException extends Exception {};

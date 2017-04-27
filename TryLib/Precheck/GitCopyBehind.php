@@ -1,5 +1,9 @@
 <?php
 
+namespace TryLib\Precheck;
+
+use TryLib\Precheck as Precheck;
+
 /** Check to prevent generating a diff when the local work copy
   * has been fetched but not merged. When it's the case, the diff
   * generated via "git diff origin/branch" will "undo" the un-merged commits.
@@ -7,7 +11,7 @@
   * the latest copy of the code with the local changes, but instead the exact same code
   * than the local working copy.
   */
-class TryLib_Precheck_GitCopyBehind implements TryLib_Precheck {
+class GitCopyBehind implements Precheck {
     protected $branches_to_check;
 
     function __construct(array $branches_to_check) {

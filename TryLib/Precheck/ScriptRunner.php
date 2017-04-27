@@ -1,6 +1,10 @@
 <?php
 
-class TryLib_Precheck_ScriptRunner implements TryLib_Precheck {
+namespace TryLib\Precheck;
+
+use TryLib\Precheck as Precheck;
+
+class ScriptRunner implements Precheck {
     protected $script_path;
 
     function __construct($script_path) {

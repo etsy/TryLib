@@ -1,0 +1,26 @@
+{
+    "name": "etsy/TryLib",
+    "description": "Try lib : send your diffs to your CI cluster.",
+    "license": "MIT",
+    "keywords": ["try", "etsy", "ci", "continuous integration"],
+    "authors": [
+        {
+            "name": "Nassim Kammah",
+            "email": "nkammah@etsy.com"
+        },
+        {
+            "name": "Laura Beth Lincoln Denker"
+        }
+    ],
+    "require": {
+         "php": ">=5.3.10"
+     },
+    "require-dev": {
+        "phpunit/phpunit": ">=5.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TryLib\\": "TryLib"
+        }
+    }
+}

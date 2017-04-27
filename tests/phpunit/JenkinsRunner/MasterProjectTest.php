@@ -1,8 +1,13 @@
 <?php
 
+namespace tests\phpunit\JenkinsRunner;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_JenkinsRunner_MasterProject as MasterProject;
+
 require_once "TryLib/Autoload.php";
 
-class MasterProjectTest extends PHPUnit_Framework_TestCase {
+class MasterProjectTest extends TestCase {
     const JENKINS_URL = 'http://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
@@ -15,7 +20,7 @@ class MasterProjectTest extends PHPUnit_Framework_TestCase {
 
         $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
 
-        $this->jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+        $this->jenkins_runner = new MasterProject(
             self::JENKINS_URL,
             self::JENKINS_CLI,
             self::JENKINS_JOB,

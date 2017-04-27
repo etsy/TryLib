@@ -1,6 +1,10 @@
 <?php
 
-class TryLib_JenkinsRunner_FreeStyleProject extends TryLib_JenkinsRunner{
+namespace TryLib\JenkinsRunner;
+
+use TryLib\JenkinsRunner;
+
+class FreeStyleProject extends JenkinsRunner{
 
     public function getBuildCommand() {
         return 'build';

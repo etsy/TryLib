@@ -1,8 +1,13 @@
 <?php
 
+namespace tests\phpunit\Precheck;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_Precheck_GitCopyBehind as GitCopyBehind;
+
 require_once "TryLib/Autoload.php";
 
-class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
+class GitCopyBehindTest extends TestCase {
 
     function testShouldRunCheckShouldRun() {
         $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
@@ -15,7 +20,7 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                         ->method('getOutput')
                         ->will($this->returnValue('master'));
 
-        $git_copy_behind_check = new TryLib_Precheck_GitCopyBehind(array('master'));
+        $git_copy_behind_check = new GitCopyBehind(array('master'));
 
         $this->assertTrue($git_copy_behind_check->shouldRunCheck($mock_cmd_runner));
     }
@@ -31,7 +36,7 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                         ->method('getOutput')
                         ->will($this->returnValue('myfeature'));
 
-        $git_copy_behind_check = new TryLib_Precheck_GitCopyBehind(array('master'));
+        $git_copy_behind_check = new GitCopyBehind(array('master'));
 
         $this->assertFalse($git_copy_behind_check->shouldRunCheck($mock_cmd_runner));
     }
@@ -47,7 +52,7 @@ class GitCopyBehindTest extends PHPUnit_Framework_TestCase {
                         ->method('getOutput')
                         ->will($this->returnValue('master'));
 
-        $git_copy_behind_check = new TryLib_Precheck_GitCopyBehind(array());
+        $git_copy_behind_check = new GitCopyBehind(array());
 
         $this->assertFalse($git_copy_behind_check->shouldRunCheck($mock_cmd_runner));
     }

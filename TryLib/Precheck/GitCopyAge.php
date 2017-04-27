@@ -1,6 +1,12 @@
 <?php
 
-class TryLib_Precheck_GitCopyAge implements TryLib_Precheck {
+namespace TryLib\Precheck;
+
+use TryLib\Precheck as Precheck;
+use DateTime;
+use DateInterval;
+
+class GitCopyAge implements Precheck {
     protected $max_age_warning;
     protected $max_age_blocking;
     protected $remote_branch;

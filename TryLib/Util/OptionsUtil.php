@@ -1,6 +1,8 @@
 <?php
 
-class TryLib_Util_OptionsUtil {
+namespace TryLib\Util;
+
+class OptionsUtil {
 
     /**
       * parse a param string in the form of k=v
@@ -22,10 +24,10 @@ class TryLib_Util_OptionsUtil {
     public static function parseExtraParameters($extra_param_option) {
         $params = array();
         if (is_string($extra_param_option)) {
-            $params[] = Trylib_Util_OptionsUtil::parseParam($extra_param_option);
+            $params[] = self::parseParam($extra_param_option);
         } elseif (is_array($extra_param_option)) {
             foreach ($extra_param_option as $param) {
-                $params[] = Trylib_Util_OptionsUtil::parseParam($param);
+                $params[] = self::parseParam($param);
             }
         }
         return $params;

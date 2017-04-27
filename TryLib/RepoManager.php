@@ -1,6 +1,8 @@
 <?php
 
-interface TryLib_RepoManager {
+namespace TryLib;
+
+interface RepoManager {
 
     function getRemoteBranch();
 

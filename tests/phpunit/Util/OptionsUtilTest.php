@@ -1,8 +1,13 @@
 <?php
 
+namespace tests\phpunit\Util;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_Util_OptionsUtil as OptionsUtil;
+
 require_once "TryLib/Autoload.php";
 
-class OptionsUtilTest extends PHPUnit_Framework_TestCase {
+class OptionsUtilTest extends TestCase {
 
     function provideExtraParameters() {
         return array(
@@ -43,7 +48,7 @@ class OptionsUtilTest extends PHPUnit_Framework_TestCase {
       * @dataProvider provideExtraParameters
       */
     function testParseExtraParameters($extra_param_option, $expected_params) {
-        $actual_params = TryLib_Util_OptionsUtil::parseExtraParameters($extra_param_option);
+        $actual_params = OptionsUtil::parseExtraParameters($extra_param_option);
         $this->assertEquals($expected_params, $actual_params);
     }
 }

@@ -1,5 +1,14 @@
 <?php
 
+namespace tests\phpunit\TryRunner;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_TryRunner_Options as Options;
+use TryLib_TryRunner_Runner as Runner;
+use TryLib_RepoManager as RepoManager;
+use RuntimeException;
+use TryLib_JenkinsRunner as JenkinsRunner;
+
 require_once 'TryLib/TryRunner/Options.php';
 require_once 'TryLib/TryRunner/Runner.php';
 
@@ -7,10 +16,10 @@ require_once 'TryLib/TryRunner/Runner.php';
  * Simple integration tests for TryLib_TryRunner_Runner to make sure expected method calls are made
  * given certain options.
  */
-class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
+class RunnerTest extends TestCase {
 
     public function testSimple() {
-        $options_tuple = TryLib_TryRunner_Options::parse(
+        $options_tuple = Options::parse(
             array("--branch", "testbranch", "-U", 10),
             "jenkins_job",
             "jenkins_job_prefix",
@@ -21,7 +30,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
         $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
         list($options, $flags, $extra) = $options_tuple;
 
-        $try_runner = new TryLib_TryRunner_Runner(
+        $try_runner = new Runner(
             $repo_manager,
             $jenkins_runner,
             "test_cli_jar_path",
@@ -49,7 +58,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
      * 'autodetected_branch' as the branch to use.
      */
     public function testHonorRemoteBranch() {
-        $options_tuple = TryLib_TryRunner_Options::parse(
+        $options_tuple = Options::parse(
             array(),
             "jenkins_job",
             "jenkins_job_prefix",
@@ -60,7 +69,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
         $repo_manager = new TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch();
         $jenkins_runner = new TryRunner_RunnerTest__TestJenkinsRunner();
 
-        $try_runner = new TryLib_TryRunner_Runner(
+        $try_runner = new Runner(
             $repo_manager,
             $jenkins_runner,
             "test_cli_jar_path",
@@ -82,7 +91,7 @@ class TryRunner_RunnerTest extends PHPUnit_Framework_TestCase {
 }
 
 
-class TryRunner_RunnerTest__TestRepoManager implements TryLib_RepoManager {
+class TryRunner_RunnerTest__TestRepoManager implements RepoManager {
 
     public $remote_branch = null;
     public $ran_prechecks = false;
@@ -121,7 +130,7 @@ class TryRunner_RunnerTest__TestRepoManagerWithDetectedBranch
     }
 }
 
-class TryRunner_RunnerTest__TestJenkinsRunner extends TryLib_JenkinsRunner {
+class TryRunner_RunnerTest__TestJenkinsRunner extends JenkinsRunner {
 
     public $commands_run = array();
     public $ssh_key_path = null;

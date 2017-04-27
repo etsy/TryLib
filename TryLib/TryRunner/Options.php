@@ -1,9 +1,11 @@
 <?php
 
+namespace TryLib\TryRunner;
+
 /**
  * A standard set of command-line options for use with TryRunner.
  */
-final class TryLib_TryRunner_Options {
+final class Options {
 
     const USAGE_SPEC = "
 try [options...] [subjob] [subjob] ...
@@ -58,7 +60,7 @@ wcpath=               Working Copy Path           [\$default_wc_path]
             $formattedUsageSpec = str_replace("\$default_remote_branch", $default_remote_branch, $formattedUsageSpec);
         }
 
-        $parser = new TryLib_Util_PHPOptions_Options($formattedUsageSpec);
+        $parser = new \TryLib\Util\PHPOptions\Options($formattedUsageSpec);
 
         return $parser->parse($argv);
     }

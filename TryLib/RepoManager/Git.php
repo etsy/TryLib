@@ -1,6 +1,11 @@
 <?php
 
-class TryLib_RepoManager_Git implements TryLib_RepoManager {
+namespace TryLib\RepoManager;
+
+use TryLib\RepoManager;
+use RuntimeException;
+
+class Git implements RepoManager {
     protected $repo_path;
     protected $cmd_runner;
     protected $branch;

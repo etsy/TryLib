@@ -1,15 +1,20 @@
 <?php
 
+namespace tests\phpunit\Precheck;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_Precheck_GitWarnOnBlocklisted as GitWarnOnBlocklisted;
+
 require_once "TryLib/Autoload.php";
 
-class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
+class GitWarnOnBlocklistedTest extends TestCase {
     function setUp() {
         parent::setUp();
         $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
     }
 
     function testNoChanges() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array(),
             null,
             false
@@ -32,7 +37,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testNoBlockListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array('my/foo.php'),
             false,
             false
@@ -55,7 +60,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWithBlockListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array('my/foo.php', 'my/bar.php'),
             null,
             false
@@ -78,7 +83,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWithSafeListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array(),
             array('my/foo.php', 'my/bar.php'),
             false
@@ -101,7 +106,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWithSafeListedAndBlockListedFiles() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array('my/bar.php'),
             array('my/foo.php', 'my/bar.php'),
             false
@@ -123,7 +128,7 @@ class GitWarnOnBlocklistedTest extends PHPUnit_Framework_TestCase {
     }
 
     function testStagedOnly() {
-        $script_runner = new TryLib_Precheck_GitWarnOnBlocklisted(
+        $script_runner = new GitWarnOnBlocklisted(
             array('my/foo.php', 'my/bar.php'),
             null,
             true

@@ -1,10 +1,17 @@
 <?php
 
+namespace tests\phpunit;
+
+use TryLib_JenkinsRunner as JenkinsRunner;
+use PHPUnit_Framework_TestCase as TestCase;
+use vfsStream;
+use vfsStreamWrapper;
+
 require_once "TryLib/Autoload.php";
 require_once 'vfsStream/vfsStream.php';
 
 
-class TestRunner extends TryLib_JenkinsRunner{
+class JenkinsRunnerTest extends JenkinsRunner{
 
     public function getBuildCommand() {
         return 'test';
@@ -19,7 +26,7 @@ class TestRunner extends TryLib_JenkinsRunner{
     }
 }
 
-class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
+class JenkinsRunnerTest extends TestCase {
     const JENKINS_URL = 'https://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
@@ -32,7 +39,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
 
         $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
 
-        $this->jenkins_runner = new TestRunner(
+        $this->jenkins_runner = new static(
             self::JENKINS_URL,
             self::JENKINS_CLI,
             self::JENKINS_JOB,
@@ -46,7 +53,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
      * @expectedException
      */
     function testInvalidUrl() {
-            $this->jenkins_runner = new TestRunner(
+            $this->jenkins_runner = new static(
                 'http://totallyvalid.com/',
                 self::JENKINS_CLI,
                 self::JENKINS_JOB,
@@ -196,7 +203,7 @@ class JenkinsRunnerTest extends PHPUnit_Framework_TestCase {
     /** @dataProvider provideStartJenkinsJobParam */
     function testStartJenkinsJob($show_results, $show_progress, $has_callbacks, $expected_call_count) {
         $jenkins_runner = $this->getMock(
-                'TestRunner',
+                'tests\phpunit\JenkinsRunnerTest',
                 array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'getCallbacks', 'executeCallbacks'),
                 array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
         );

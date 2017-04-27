@@ -1,8 +1,13 @@
 <?php
 
+namespace tests\phpunit\RepoManager;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_RepoManager_Git as Git;
+
 require_once "TryLib/Autoload.php";
 
-class GitTest extends PHPUnit_Framework_TestCase {
+class GitTest extends TestCase {
     const REPO_PATH = '/path/to/repo';
 
     private $mock_cmd_runner;
@@ -79,7 +84,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
     
     
     function testParseLocalBranchSuccess() {
-        $repo_manager = new TryLib_RepoManager_Git(
+        $repo_manager = new Git(
             self::REPO_PATH, $this->mock_cmd_runner
         );
         
@@ -100,7 +105,7 @@ class GitTest extends PHPUnit_Framework_TestCase {
     }
 
     function testParseLocalBranchFailure() {
-        $repo_manager = new TryLib_RepoManager_Git(
+        $repo_manager = new Git(
             self::REPO_PATH, $this->mock_cmd_runner
         );
         

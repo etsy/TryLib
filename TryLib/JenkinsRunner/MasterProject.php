@@ -1,6 +1,12 @@
 <?php
 
-class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
+namespace TryLib\JenkinsRunner;
+
+use TryLib\JenkinsRunner;
+use TryLib\Util\AnsiColor;
+use TryLib\Util\DisplayException as DisplayException;
+
+class MasterProject extends JenkinsRunner{
     protected $colors;
     private $jobs;
     private $excluded_jobs;
@@ -26,8 +32,8 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
         $this->excluded_jobs = array();
 
         try {
-            $this->colors = new TryLib_Util_AnsiColor();
-        } catch (TryLib_Util_DisplayException $e) {
+            $this->colors = new AnsiColor();
+        } catch (DisplayException $e) {
             $this->colors = false;
         }
 
@@ -105,7 +111,7 @@ class TryLib_JenkinsRunner_MasterProject extends TryLib_JenkinsRunner{
     public function processLogOuput($prev_text, $show_progress) {
         $try_log = $this->getJobOutput();
 
-        $new_text = str_replace($prev_text, '', $try_log);
+        $new_text = str_replace($prev_text, "", $try_log);
         $prev_text = $try_log;
 
         if ($show_progress) {

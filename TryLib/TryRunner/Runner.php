@@ -1,15 +1,20 @@
 <?php
 
+namespace TryLib\TryRunner;
+
+use InvalidArgumentException;
+use TryLib\Util\OptionsUtil;
+
 /**
  * Runs a Try job with given options.
  *
- * It's strongly recommended you use TryLib_TryRunner_Builder to create and configure an instance
+ * It's strongly recommended you use TryLib\TryRunner\Builder to create and configure an instance
  * of this class.
  *
  * Note that use of this class is optional. If you'd like, you can still put all the parts together
  * in your own try script.
  */
-final class TryLib_TryRunner_Runner {
+final class Runner {
 
     public function __construct(
             $repo_manager,
@@ -84,7 +89,7 @@ final class TryLib_TryRunner_Runner {
         $this->jenkins_runner->setParam('branch', $remote_branch);
         $this->jenkins_runner->setParam('guid', $this->override_user . time());
 
-        $extra_params = TryLib_Util_OptionsUtil::parseExtraParameters($options->extra_param);
+        $extra_params = OptionsUtil::parseExtraParameters($options->extra_param);
         foreach($extra_params as $param) {
             $this->jenkins_runner->setParam($param[0], $param[1]);
         }

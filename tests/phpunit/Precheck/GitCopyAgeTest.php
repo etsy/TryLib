@@ -1,8 +1,13 @@
 <?php
 
+namespace tests\phpunit\Precheck;
+
+use PHPUnit_Framework_TestCase as TestCase;
+use TryLib_Precheck_GitCopyAge as GitCopyAge;
+
 require_once "TryLib/Autoload.php";
 
-class CopyAgeTest extends PHPUnit_Framework_TestCase {
+class GitCopyAgeTest extends TestCase {
 
     private $mock_cmd_runner;
 
@@ -14,7 +19,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
     function testGetLastFetchDateWithoutRemoteBranchSuccess() {
         $last_fetch = 'Sun Feb 10 10:00:00 2013';
 
-        $script_runner = new TryLib_Precheck_GitCopyAge();
+        $script_runner = new GitCopyAge();
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
@@ -34,7 +39,7 @@ class CopyAgeTest extends PHPUnit_Framework_TestCase {
     function testGetLastFetchDateWithRemoteBranchFailure() {
         $last_fetch = 'Sun Feb 10 10:00:00 2013';
 
-        $script_runner = new TryLib_Precheck_GitCopyAge(24, 48, 'branch');
+        $script_runner = new GitCopyAge(24, 48, 'branch');
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')

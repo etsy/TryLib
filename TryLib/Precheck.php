@@ -1,5 +1,7 @@
 <?php
 
-interface TryLib_PreCheck {
+namespace TryLib;
+
+interface Precheck {
     function check($cmd_runner, $location, $upstream);
 }

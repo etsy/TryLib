@@ -1,9 +1,13 @@
 <?php
 
+namespace TryLib\Precheck;
+
+use TryLib\Precheck as Precheck;
+
 /** 
   * Warn a user if there are any untracked files in the repository
   */
-class TryLib_Precheck_GitReportUntracked implements TryLib_Precheck {
+class GitReportUntracked implements Precheck {
     /**
      * Warn the user if the working copy has any untracked changes
      *

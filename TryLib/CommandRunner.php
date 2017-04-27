@@ -1,6 +1,11 @@
 <?php
 
-class TryLib_CommandRunner {
+namespace TryLib;
+
+use TryLib\Util\AnsiColor;
+use TryLib\Util\DisplayException as DisplayException;
+
+class CommandRunner {
     protected $verbose;
     protected $stderr;
     protected $out;
@@ -24,8 +29,8 @@ class TryLib_CommandRunner {
         $this->out = '';
 
         try {
-            $this->colors = new TryLib_Util_AnsiColor();
-        } catch (TryLib_Util_DisplayException $e) {
+            $this->colors = new AnsiColor();
+        } catch (DisplayException $e) {
             $this->colors = false;
         }
     }

@@ -1,6 +1,11 @@
 <?php
 
-class TryLib_Precheck_GitInvalidRepo implements Trylib_Precheck {
+namespace TryLib\Precheck;
+
+use Trylib\Precheck as Precheck;
+use TryLib\CommandRunner;
+
+class GitInvalidRepo implements Precheck {
 
 	protected $valid_origin_urls = [];
 
@@ -40,7 +45,7 @@ class TryLib_Precheck_GitInvalidRepo implements Trylib_Precheck {
 		return $ret;	
 	}
 
-	protected function getRemote(TryLib_CommandRunner $cmd_runner) {
+	protected function getRemote(CommandRunner $cmd_runner) {
 	
 		$cmd_runner->run('git config --get remote.origin.url');
 		return $cmd_runner->getOutput();

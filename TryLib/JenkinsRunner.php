@@ -1,4 +1,9 @@
 <?php
+
+namespace TryLib;
+
+use Exception;
+
 /**
  * Abstract class for interfacing with Jenkins projects
  * Every Jenkins project should be invokable via CLI using a
@@ -7,7 +12,7 @@
  * Finally, upon calling the "build" command via the CLI, the output
  * from the CLI should be parseable to provide the results of the build.
  */
-abstract class TryLib_JenkinsRunner {
+abstract class JenkinsRunner {
     protected $jenkins_url;
     protected $jenkins_cli;
     protected $try_job_name;
