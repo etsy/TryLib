@@ -2,16 +2,11 @@
 
 namespace tests\phpunit;
 
-use TryLib_JenkinsRunner as JenkinsRunner;
-use PHPUnit_Framework_TestCase as TestCase;
-use vfsStream;
-use vfsStreamWrapper;
+use TryLib\JenkinsRunner as JenkinsRunner;
+use org\bovigo\vfs\vfsStream,
+    org\bovigo\vfs\vfsStreamWrapper;
 
-require_once "TryLib/Autoload.php";
-require_once 'vfsStream/vfsStream.php';
-
-
-class JenkinsRunnerTest extends JenkinsRunner{
+class TestRunner extends JenkinsRunner{
 
     public function getBuildCommand() {
         return 'test';
@@ -26,7 +21,7 @@ class JenkinsRunnerTest extends JenkinsRunner{
     }
 }
 
-class JenkinsRunnerTest extends TestCase {
+class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
     const JENKINS_URL = 'https://url.to.jenkins.com:8080/';
     const JENKINS_CLI = '/path/to/cli.jar';
     const JENKINS_JOB = 'test-try';
@@ -37,9 +32,10 @@ class JenkinsRunnerTest extends TestCase {
     function setUp() {
         parent::setUp();
 
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
 
-        $this->jenkins_runner = new static(
+        $this->jenkins_runner = new TestRunner(
             self::JENKINS_URL,
             self::JENKINS_CLI,
             self::JENKINS_JOB,
@@ -50,11 +46,11 @@ class JenkinsRunnerTest extends TestCase {
     }
 
     /**
-     * @expectedException
+     * @expectedException Exception
      */
     function testInvalidUrl() {
-            $this->jenkins_runner = new static(
-                'http://totallyvalid.com/',
+            $this->jenkins_runner = new TestRunner(
+                'totallyvalid.com/',
                 self::JENKINS_CLI,
                 self::JENKINS_JOB,
                 $this->mock_cmd_runner
@@ -202,11 +198,10 @@ class JenkinsRunnerTest extends TestCase {
 
     /** @dataProvider provideStartJenkinsJobParam */
     function testStartJenkinsJob($show_results, $show_progress, $has_callbacks, $expected_call_count) {
-        $jenkins_runner = $this->getMock(
-                'tests\phpunit\JenkinsRunnerTest',
-                array('runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'getCallbacks', 'executeCallbacks'),
-                array(self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner')
-        );
+        $jenkins_runner = $this->getMockBuilder('tests\phpunit\TestRunner')
+                               ->setMethods(['runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'getCallbacks', 'executeCallbacks'])
+                               ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner'])
+                               ->getMock();
 
         $jenkins_runner->expects($this->at(0))
              ->method('buildCLICommand')

@@ -14,6 +14,7 @@
            <!-- <directory suffix=".php">./tests/</directory>-->
            <file>./tests/phpunit/JenkinsRunner/MasterProjectTest.php</file>
            <file>./tests/phpunit/JenkinsRunner/FreeStyleProjectTest.php</file>
+           <file>./tests/phpunit/JenkinsRunnerTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
