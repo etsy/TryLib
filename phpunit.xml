@@ -17,6 +17,7 @@
            <file>./tests/phpunit/JenkinsRunnerTest.php</file>
            <file>./tests/phpunit/Precheck/GitCopyAgeTest.php</file>
            <file>./tests/phpunit/Precheck/GitCopyBehindTest.php</file>
+           <file>./tests/phpunit/Precheck/GitWarnOnBlocklistedTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

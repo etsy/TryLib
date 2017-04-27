@@ -2,15 +2,13 @@
 
 namespace tests\phpunit\Precheck;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_Precheck_GitWarnOnBlocklisted as GitWarnOnBlocklisted;
+use TryLib\Precheck\GitWarnOnBlocklisted as GitWarnOnBlocklisted;
 
-require_once "TryLib/Autoload.php";
-
-class GitWarnOnBlocklistedTest extends TestCase {
+class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
     function setUp() {
         parent::setUp();
-        $this->mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                      ->getMock();
     }
 
     function testNoChanges() {
