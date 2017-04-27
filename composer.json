@@ -9,7 +9,7 @@
             "name": "Nassim Kammah",
             "email": "nkammah@etsy.com"
         },
-
+        {
             "name": "Laura Beth Lincoln Denker"
         }
     ],
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TryLib\\": "TryLib/"
+            "TryLib\\": "src/"
         }
     }
 }
