@@ -2,15 +2,13 @@
 
 namespace tests\phpunit\Precheck;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use TryLib_Precheck_GitCopyBehind as GitCopyBehind;
+use TryLib\Precheck\GitCopyBehind as GitCopyBehind;
 
-require_once "TryLib/Autoload.php";
-
-class GitCopyBehindTest extends TestCase {
+class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
     function testShouldRunCheckShouldRun() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->once())
                         ->method('run')
@@ -26,7 +24,8 @@ class GitCopyBehindTest extends TestCase {
     }
 
     function testShouldRunCheckShouldNotRun() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->once())
                         ->method('run')
@@ -42,7 +41,8 @@ class GitCopyBehindTest extends TestCase {
     }
 
     function testShouldRunCheckNoBranches() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->once())
                         ->method('run')
@@ -58,7 +58,8 @@ class GitCopyBehindTest extends TestCase {
     }
 
     function testCheckWorkingCopyBehind() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->once())
                         ->method('run')
@@ -71,11 +72,10 @@ class GitCopyBehindTest extends TestCase {
         $mock_cmd_runner->expects($this->once())
                         ->method('warn');
 
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyBehind',
-                array('shouldRunCheck'),
-                array(array('master'))
-        );
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
+                              ->setMethods(['shouldRunCheck'])
+                              ->setConstructorArgs([['master']])
+                              ->getMock();
 
         $script_runner->expects($this->once())
                       ->method('shouldRunCheck')
@@ -86,7 +86,8 @@ class GitCopyBehindTest extends TestCase {
     }
 
     function testCheckWorkingCopyNotBehind() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->once())
                         ->method('run')
@@ -99,11 +100,10 @@ class GitCopyBehindTest extends TestCase {
         $mock_cmd_runner->expects($this->never())
                         ->method('warn');
 
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyBehind',
-                array('shouldRunCheck'),
-                array(array('master'))
-        );
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
+                              ->setMethods(['shouldRunCheck'])
+                              ->setConstructorArgs([['master']])
+                              ->getMock();
 
         $script_runner->expects($this->once())
                       ->method('shouldRunCheck')
@@ -114,7 +114,8 @@ class GitCopyBehindTest extends TestCase {
     }
 
     function testCheckShouldNotRun() {
-        $mock_cmd_runner = $this->getMock('TryLib_CommandRunner');
+        $mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
+                                ->getMock();
 
         $mock_cmd_runner->expects($this->never())
                         ->method('run');
@@ -125,11 +126,10 @@ class GitCopyBehindTest extends TestCase {
         $mock_cmd_runner->expects($this->never())
                         ->method('warn');
 
-        $script_runner = $this->getMock(
-                'TryLib_Precheck_GitCopyBehind',
-                array('shouldRunCheck'),
-                array(array('master'))
-        );
+        $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
+                              ->setMethods(['shouldRunCheck'])
+                              ->setConstructorArgs([['master']])
+                              ->getMock();
 
         $script_runner->expects($this->once())
                       ->method('shouldRunCheck')

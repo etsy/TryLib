@@ -16,6 +16,7 @@
            <file>./tests/phpunit/JenkinsRunner/FreeStyleProjectTest.php</file>
            <file>./tests/phpunit/JenkinsRunnerTest.php</file>
            <file>./tests/phpunit/Precheck/GitCopyAgeTest.php</file>
+           <file>./tests/phpunit/Precheck/GitCopyBehindTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
