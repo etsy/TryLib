@@ -102,7 +102,7 @@ class AnsiColor {
 
     public function __toString() {
         $seq = $this->seq."\033[0m";
-        $this->seq = 'TryLib\Util\PHPOptions\test';
+        $this->seq = '';
         return $seq;
     }
 }
