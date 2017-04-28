@@ -24,7 +24,7 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
             "/path/to/working/copy");
 
         $repo_manager = new TestRepoManager();
-        $jenkins_runner = new TestJenkinsRunner();
+        $jenkins_runner = new TestJenkinsRunner('http://jenkins.com', null, null, null);
         list($options, $flags, $extra) = $options_tuple;
 
         $try_runner = new Runner(
@@ -64,7 +64,7 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
             null  /* Set no default remote, to enable branch auto-detection. */);
 
         $repo_manager = new TestRepoManagerWithDetectedBranch();
-        $jenkins_runner = new TestJenkinsRunner();
+        $jenkins_runner = new TestJenkinsRunner('http://jenkins.com', null, null, null);
 
         $try_runner = new Runner(
             $repo_manager,
@@ -131,8 +131,6 @@ class TestJenkinsRunner extends JenkinsRunner {
 
     public $commands_run = array();
     public $ssh_key_path = null;
-
-    public function __construct() {}
 
     protected function pollForCompletion($pretty) {}
 
