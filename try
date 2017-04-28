@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-require_once "TryLib/Autoload.php";
+require_once __DIR__.'/vendor/autoload.php';
 
 # URL to your jenkins server (without http)
 $jenkins_server = 'localhost:8080';
@@ -49,23 +49,23 @@ wcpath=               Working Copy Path           [$default_wc_path]
 ";
 
 # Parse options
-$parser = new TryLib_Util_PHPOptions_Options($usage_spec);
+$parser = new TryLib\Util\PHPOptions\Options($usage_spec);
 
 list($options, $flags, $extra) = $parser->parse($argv);
 
 # [Jenkins MasterProject only] - Get the subjobs list
 $subjobs = array_slice($extra, 1);
 
-$cmd_runner = new TryLib_CommandRunner($options->verbose);
+$cmd_runner = new TryLib\CommandRunner($options->verbose);
 
-$repo_manager = new TryLib_RepoManager_Git($options->wcpath, $cmd_runner);
+$repo_manager = new TryLib\RepoManager\Git($options->wcpath, $cmd_runner);
 
 $remote_branch = $options->branch;
 
 $repo_manager->setRemoteBranch($remote_branch);
 
 # [Jenkins Freestyle project]
-#$jenkins_runner = new TryLib_JenkinsRunner_FreeStyleProject(
+#$jenkins_runner = new TryLib\JenkinsRunner\FreeStyleProject(
 #    $options->jenkinsserver,
 #    $jenkins_cli_jar,
 #    $options->jenkinsjob,
@@ -73,7 +73,7 @@ $repo_manager->setRemoteBranch($remote_branch);
 #);
 
 # [Jenkins MasterProject only]
-$jenkins_runner = new TryLib_JenkinsRunner_MasterProject(
+$jenkins_runner = new TryLib\JenkinsRunner\MasterProject(
     $options->jenkinsserver,
     $jenkins_cli_jar,
     $options->jenkinsjob,
@@ -87,8 +87,8 @@ if (is_string($safelist)) {
 }
 
 $pre_checks = array(
-    new TryLib_Precheck_GitCopyBehind(array('master')),
-    new TryLib_Precheck_GitReportUntracked(),
+    new TryLib\Precheck\GitCopyBehind(array('master')),
+    new TryLib\Precheck\GitReportUntracked(),
 );
 
 $repo_manager->runPrechecks($pre_checks);
@@ -108,7 +108,7 @@ $jenkins_runner->setSshKey( getenv('HOME') . '/.ssh/try_id_rsa');
 $jenkins_runner->setParam('branch', $remote_branch);
 $jenkins_runner->setParam('guid', $user . time());
 
-$extra_params = TryLib_Util_OptionsUtil::parseExtraParameters($options->extra_param);
+$extra_params = TryLib\Util\OptionsUtil::parseExtraParameters($options->extra_param);
 foreach($extra_params as $param) {
     $jenkins_runner->setParam($param[0], $param[1]);
 }
