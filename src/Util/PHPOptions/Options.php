@@ -514,7 +514,11 @@ class Options {
                 if (! is_array($opt[$k])) {
                     $opt[$k] = array($opt[$k], $val);
                 } else {
-                    $opt[$k][] = $val;
+                    # Need an intermediary to modify here because $opt[$k] returns
+                    # a scalar not a reference, so modifying it directly doesn't do much.
+                    $intermediary = $opt[$k];
+                    $intermediary[] = $val;
+                    $opt[$k] = $intermediary;
                 }
             } else {
                 $opt[$k] = $val;
