@@ -183,8 +183,8 @@ function _getopt_do_longs($opts, $opt, $longopts, $args) {
     if ($i === False) {
         $optarg = Null;
     } else {
-        $opt = substr($opt,0,$i);
         $optarg = substr($opt,$i+1);
+        $opt = substr($opt,0,$i);
     }
 
     list($has_arg, $opt) = _getopt_long_has_args($opt, $longopts);
@@ -514,7 +514,7 @@ class Options {
                 if (! is_array($opt[$k])) {
                     $opt[$k] = array($opt[$k], $val);
                 } else {
-                    $opt[$k][] = $val;
+                    $opt[$k] = array_merge($opt[$k],[$val]);
                 }
             } else {
                 $opt[$k] = $val;
