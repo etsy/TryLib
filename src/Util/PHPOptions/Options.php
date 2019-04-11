@@ -217,7 +217,7 @@ function _getopt_long_has_args($opt, $longopts) {
     // No exact match, so better be unique.
     if (count($possibilities) > 1)
         throw new GetoptError("option --$opt not a unique prefix");
-    assert('count($possibilities) == 1');
+    assert(count($possibilities) == 1);
     $unique_match = $possibilities[0];
     $has_arg = _endswith($unique_match,'=');
     if ($has_arg)
@@ -501,7 +501,7 @@ class Options {
             else {
                 list($k, $invert) = $opt->_unalias($k);
                 if (! $this->_hasparms[$k]) {
-                    assert('$v == ""');
+                    assert($v == "");
                     $v = (array_key_exists($k,$opt->_opts) ? $opt->_opts[$k] : 0) + 1;
                 }
                 else
