@@ -91,7 +91,7 @@ class MasterProject extends JenkinsRunner{
     public function pollForCompletion($show_progress) {
         $try_output = $this->cmd_runner->getOutput();
         // Find job URL
-        if (!preg_match('|http://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
+        if (!preg_match('|http[s]?://[^/]+/job/' . $this->try_job_name . '/\d+|m', $try_output, $matches)) {
             $this->cmd_runner->terminate('Could not find ' . $this->try_job_name . ' URL' . PHP_EOL);
         } else {
             $this->try_base_url = $matches[0];
@@ -162,7 +162,7 @@ class MasterProject extends JenkinsRunner{
      */
     public function printJobResults($log) {
 
-        if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_prefix . '[^ ]+) (\(http://[^)]+\))$|m', $log, $matches)) {
+        if (preg_match_all('|^\[([^\]]+)\] (' . $this->try_job_prefix . '[^ ]+) (\(http[s]?://[^)]+\))$|m', $log, $matches)) {
             $this->cmd_runner->info(PHP_EOL);
             foreach ($matches[0] as $k => $_) {
                 $job_status = $matches[1][$k];
