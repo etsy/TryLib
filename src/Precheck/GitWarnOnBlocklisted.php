@@ -13,7 +13,7 @@ class GitWarnOnBlocklisted implements Precheck {
     protected $staged;
 
     function __construct(array $blocklist, $safelist = null, $staged = false) {
-        $this->safelist = $safelist ?: array();
+        $this->safelist = $safelist ?: [];
         $this->blocklist = array_diff($blocklist, $this->safelist);
         $this->staged = $staged;
     }
@@ -40,7 +40,7 @@ class GitWarnOnBlocklisted implements Precheck {
 
         $changed_files = $cmd_runner->getOutput();
 
-        $blocklisted_changed_files = array();
+        $blocklisted_changed_files = [];
 
         foreach (explode(PHP_EOL, $changed_files) as $file) {
             if (in_array($file, $this->blocklist)) {

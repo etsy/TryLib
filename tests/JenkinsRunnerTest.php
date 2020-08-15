@@ -13,7 +13,7 @@ class TestRunner extends JenkinsRunner{
     }
 
     public function getBuildExtraArguments($show_results, $show_progress) {
-        return array();
+        return [];
     }
 
     public function pollForCompletion($pretty) {
@@ -29,7 +29,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
     private $jenkins_runner;
     private $mock_cmd_runner;
 
-    function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -48,7 +48,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
     /**
      * @expectedException Exception
      */
-    function testInvalidUrl() {
+    public function testInvalidUrl() {
             $this->jenkins_runner = new TestRunner(
                 'totallyvalid.com/',
                 self::JENKINS_CLI,
@@ -57,8 +57,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
             );
     }
 
-
-    function testRunJenkinsCommand() {
+    public function testRunJenkinsCommand() {
         $expected_cmd = 'java -jar ' . self::JENKINS_CLI . ' -s ' . self::JENKINS_URL . ' dummy-cmd';
 
         $this->mock_cmd_runner->expects($this->once())
@@ -68,27 +67,27 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->jenkins_runner->runJenkinsCommand('dummy-cmd');
     }
 
-    function testSetParam() {
+    public function testSetParam() {
         $this->jenkins_runner->setParam('foo', 'bar');
         $this->jenkins_runner->setParam('foo', 'baz');
 
         $actual = $this->jenkins_runner->getOptions();
-        $expected = array('-p foo=bar', '-p foo=baz');
+        $expected = ['-p foo=bar', '-p foo=baz'];
         $this->assertEquals($expected, $actual);
     }
 
-    function testSetDuplicateParam() {
+    public function testSetDuplicateParam() {
         $this->jenkins_runner->setParam('foo', 'bar');
         $this->jenkins_runner->setParam('foo', 'bar');
         $this->jenkins_runner->setParam('foo', 'baz');
         $this->jenkins_runner->setParam('foo', 'baz');
 
         $actual = $this->jenkins_runner->getOptions();
-        $expected = array('-p foo=bar', '-p foo=baz');
+        $expected = ['-p foo=bar', '-p foo=baz'];
         $this->assertEquals($expected, $actual);
     }
 
-    function testSetSshKeyFileExists() {
+    public function testSetSshKeyFileExists() {
         $expected = 'testDir/try_id_rsa';
         vfsStream::newFile('try_id_rsa')
             ->at(vfsStreamWrapper::getRoot());
@@ -97,61 +96,61 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('vfs://' . $expected, $this->jenkins_runner->getSsKey());
     }
 
-    function testSetSshKeyFileDoesNotExists() {
+    public function testSetSshKeyFileDoesNotExists() {
         $this->jenkins_runner->setSshKey('~/foo');
         $this->assertNull($this->jenkins_runner->getSsKey());
     }
 
-    function testPatchFileExists() {
+    public function testPatchFileExists() {
         $patch = 'testDir/patch.diff';
         vfsStream::newFile('patch.diff')
             ->at(vfsStreamWrapper::getRoot());
 
         $this->jenkins_runner->setPatch(vfsStream::url($patch));
 
-        $expected = array('-p patch.diff=vfs://' . $patch);
+        $expected = ['-p patch.diff=vfs://' . $patch];
         $this->assertEquals($expected, $this->jenkins_runner->getOptions());
     }
 
-    function testPatchFileDoesNotExists() {
+    public function testPatchFileDoesNotExists() {
         $this->mock_cmd_runner->expects($this->once())
                               ->method('terminate')
                               ->with($this->equalTo('Patch file not found (vfs://patch.diff)'));
 
         $this->jenkins_runner->setPatch(vfsStream::url('patch.diff'));
-        $this->assertEquals(array(), $this->jenkins_runner->getOptions());
+        $this->assertEquals([], $this->jenkins_runner->getOptions());
     }
 
-    function testAddNullCallback() {
+    public function testAddNullCallback() {
         $this->jenkins_runner->addCallback(null);
-        $this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
+        $this->assertEquals([], $this->jenkins_runner->getCallbacks());
     }
 
-    function testAddStringCallback() {
+    public function testAddStringCallback() {
         $callback = 'echo "Hello Test"';
         $this->jenkins_runner->addCallback($callback);
-        $this->assertEquals(array($callback), $this->jenkins_runner->getCallbacks());
+        $this->assertEquals([$callback], $this->jenkins_runner->getCallbacks());
     }
 
-    function testAddObjallback() {
+    public function testAddObjallback() {
         $this->mock_cmd_runner->expects($this->once())
                               ->method('warn')
                               ->with($this->equalTo('Invalid callback - must be a string'));
         $this->jenkins_runner->addCallback((object) 'echo');
-        $this->assertEquals(array(), $this->jenkins_runner->getCallbacks());
+        $this->assertEquals([], $this->jenkins_runner->getCallbacks());
     }
 
-    function provideCallbackData() {
-        return array(
-            array('echo "hello world"', 'SUCCESS', 'URL', 'echo "hello world"'),
-            array('echo "${status}"', 'SUCCESS', 'URL', 'echo "SUCCESS"'),
-            array('echo "${url}"', 'SUCCESS', 'URL', 'echo "URL"'),
-            array('echo "${status} : ${url}"', 'SUCCESS', 'URL', 'echo "SUCCESS : URL"')
-        );
+    public function provideCallbackData() {
+        return [
+            ['echo "hello world"', 'SUCCESS', 'URL', 'echo "hello world"'],
+            ['echo "${status}"', 'SUCCESS', 'URL', 'echo "SUCCESS"'],
+            ['echo "${url}"', 'SUCCESS', 'URL', 'echo "URL"'],
+            ['echo "${status} : ${url}"', 'SUCCESS', 'URL', 'echo "SUCCESS : URL"']
+        ];
     }
 
     /** @dataProvider provideCallbackData */
-    function testExecuteCallback($callback, $status, $url, $expected) {
+    public function testExecuteCallback($callback, $status, $url, $expected) {
         $this->jenkins_runner->try_status = $status;
         $this->jenkins_runner->try_base_url = $url;
         $this->mock_cmd_runner->expects($this->once())
@@ -161,7 +160,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    function testBuildCLICommandNoSshKey() {
+    public function testBuildCLICommandNoSshKey() {
         $this->jenkins_runner->setParam('foo', 'bar');
         $this->jenkins_runner->setParam('foo', 'baz');
 
@@ -170,7 +169,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($expected, $actual);
     }
 
-    function testBuildCLICommandWithSshKey() {
+    public function testBuildCLICommandWithSshKey() {
         $this->jenkins_runner->setParam('foo', 'bar');
 
         $ssh_key = 'testDir/try_id_rsa';
@@ -183,21 +182,21 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($expected, $actual);
     }
 
-    function provideStartJenkinsJobParam() {
-        return array(
-            array(false, false, false, $this->never()),
-            array(true, false, false, $this->any()),
-            array(false, true, false, $this->any()),
-            array(false, false, true, $this->any()),
-            array(true, true, true, $this->any()),
-            array(false, true, true, $this->any()),
-            array(true, true, false, $this->any()),
-            array(true, false, true, $this->any()) 
-        );
+    public function provideStartJenkinsJobParam() {
+        return [
+            [false, false, false, $this->never()],
+            [true, false, false, $this->any()],
+            [false, true, false, $this->any()],
+            [false, false, true, $this->any()],
+            [true, true, true, $this->any()],
+            [false, true, true, $this->any()],
+            [true, true, false, $this->any()],
+            [true, false, true, $this->any()]
+        ];
     }
 
     /** @dataProvider provideStartJenkinsJobParam */
-    function testStartJenkinsJob($show_results, $show_progress, $has_callbacks, $expected_call_count) {
+    public function testStartJenkinsJob($show_results, $show_progress, $has_callbacks, $expected_call_count) {
         $jenkins_runner = $this->getMockBuilder('tests\phpunit\TestRunner')
                                ->setMethods(['runJenkinsCommand', 'buildCLICommand', 'pollForCompletion', 'getCallbacks', 'executeCallbacks'])
                                ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, 'mock_runner'])

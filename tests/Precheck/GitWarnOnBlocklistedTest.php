@@ -5,15 +5,15 @@ namespace tests\phpunit\Precheck;
 use TryLib\Precheck\GitWarnOnBlocklisted as GitWarnOnBlocklisted;
 
 class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
-    function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
                                       ->getMock();
     }
 
-    function testNoChanges() {
+    public function testNoChanges() {
         $script_runner = new GitWarnOnBlocklisted(
-            array(),
+            [],
             null,
             false
         );
@@ -34,9 +34,9 @@ class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
         $script_runner->check($this->mock_cmd_runner, 'repoPath', 'some/origin');
     }
 
-    function testNoBlockListedFiles() {
+    public function testNoBlockListedFiles() {
         $script_runner = new GitWarnOnBlocklisted(
-            array('my/foo.php'),
+            ['my/foo.php'],
             false,
             false
         );
@@ -57,9 +57,9 @@ class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    function testWithBlockListedFiles() {
+    public function testWithBlockListedFiles() {
         $script_runner = new GitWarnOnBlocklisted(
-            array('my/foo.php', 'my/bar.php'),
+            ['my/foo.php', 'my/bar.php'],
             null,
             false
         );
@@ -80,10 +80,10 @@ class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    function testWithSafeListedFiles() {
+    public function testWithSafeListedFiles() {
         $script_runner = new GitWarnOnBlocklisted(
-            array(),
-            array('my/foo.php', 'my/bar.php'),
+            [],
+            ['my/foo.php', 'my/bar.php'],
             false
         );
 
@@ -103,10 +103,10 @@ class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    function testWithSafeListedAndBlockListedFiles() {
+    public function testWithSafeListedAndBlockListedFiles() {
         $script_runner = new GitWarnOnBlocklisted(
-            array('my/bar.php'),
-            array('my/foo.php', 'my/bar.php'),
+            ['my/bar.php'],
+            ['my/foo.php', 'my/bar.php'],
             false
         );
 
@@ -125,9 +125,9 @@ class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
         $script_runner->check($this->mock_cmd_runner, 'repoPath', 'some/origin');
     }
 
-    function testStagedOnly() {
+    public function testStagedOnly() {
         $script_runner = new GitWarnOnBlocklisted(
-            array('my/foo.php', 'my/bar.php'),
+            ['my/foo.php', 'my/bar.php'],
             null,
             true
         );

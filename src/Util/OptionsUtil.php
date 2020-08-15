@@ -22,7 +22,7 @@ class OptionsUtil {
       * and return an array of key->value
       */
     public static function parseExtraParameters($extra_param_option) {
-        $params = array();
+        $params = [];
         if (is_string($extra_param_option)) {
             $params[] = self::parseParam($extra_param_option);
         } elseif (is_array($extra_param_option)) {

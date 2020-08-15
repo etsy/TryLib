@@ -12,7 +12,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
     private $jenkins_runner;
     private $mock_cmd_runner;
 
-    function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -26,74 +26,73 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         );
     }
 
-    function getSubjobs() {
-        return array(
-            array(
-                array(),
-                array(),
-                array(),
-            ),
-            array(
-                array('a','b','c'),
-                array(),
-                array('test-try-a','test-try-b','test-try-c')
-            ),
-            array(
-                array(),
-                array('a', 'b', 'c'),
-                array('-test-try-a','-test-try-b','-test-try-c')
-            ),
-            array(
-                array('a','b'),
-                array('c'),
-                array('test-try-a','test-try-b','-test-try-c')
-            ),
-            array(
-                array('a','b','c'),
-                array('a','c'),
-                array('test-try-b','-test-try-a','-test-try-c')
-            ),
-            array(
-                array('a','a','c'),
-                array('c','c'),
-                array('test-try-a', '-test-try-c')
-            ),
-        );
+    public function getSubjobs() {
+        return [
+            [
+                [],
+                [],
+                [],
+            ],
+            [
+                ['a','b','c'],
+                [],
+                ['test-try-a','test-try-b','test-try-c']
+            ],
+            [
+                [],
+                ['a', 'b', 'c'],
+                ['-test-try-a','-test-try-b','-test-try-c']
+            ],
+            [
+                ['a','b'],
+                ['c'],
+                ['test-try-a','test-try-b','-test-try-c']
+            ],
+            [
+                ['a','b','c'],
+                ['a','c'],
+                ['test-try-b','-test-try-a','-test-try-c']
+            ],
+            [
+                ['a','a','c'],
+                ['c','c'],
+                ['test-try-a', '-test-try-c']
+            ],
+        ];
     }
 
     /** @dataProvider getSubJobs */
-    function testGetJobList($included, $excluded, $expected_joblist) {
+    public function testGetJobList($included, $excluded, $expected_joblist) {
         $this->jenkins_runner->setSubJobs($included);
         $this->jenkins_runner->setExcludedSubJobs($excluded);
         $joblist = $this->jenkins_runner->getJobsList();
         $this->assertEquals($expected_joblist, $joblist);
     }
 
-
-    function provideShowProgressJobResultsData() {
-        return array(
-            array(
+    public function provideShowProgressJobResultsData() {
+        return [
+            [
                 '[SUCCESS] test-try-validate-css (http://link/to/job/testReport)',
                 'SUCCESS',
                 '           test-try-validate-css \e[color SUCCESS\[0m ',
-            ),
-            array(
+            ],
+            [
                 '[UNSTABLE] test-try-validate-css (http://link/to/job/testReport)',
                 'UNSTABLE',
                 '           test-try-validate-css \e[color UNSTABLE\[0m (http://link/to/job/testReport)',
-            ),
-            array(
+            ],
+            [
                 '[FAILURE] test-try-validate-css (http://link/to/job/testReport)',
                 'FAILURE',
                 '           test-try-validate-css \e[color FAILURE\[0m (http://link/to/job/testReport)',
-            )
+            ]
 
 
-        );
+        ];
     }
 
     /** @dataProvider provideShowProgressJobResultsData */
-    function testPrintJobResultSuccessAndShowProgress($log_line, $status, $expected_output) {
+    public function testPrintJobResultSuccessAndShowProgress($log_line, $status, $expected_output) {
         $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
                                ->setMethods(['colorStatus'])
                                ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
@@ -115,7 +114,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($jenkins_runner->printJobResults($log_line));
     }
 
-    function testPrintJobResultNoMatch() {
+    public function testPrintJobResultNoMatch() {
         $jenkins_runner = $this->getMockBuilder('TryLib\JenkinsRunner\MasterProject')
                                ->setMethods(['colorStatus'])
                                ->setConstructorArgs([self::JENKINS_URL, self::JENKINS_CLI, self::JENKINS_JOB, $this->mock_cmd_runner])
@@ -131,7 +130,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse($jenkins_runner->printJobResults("random line"));
     }
 
-    function testProcessLogOutputNotFinishedShowProgress() {
+    public function testProcessLogOutputNotFinishedShowProgress() {
         $prev_text = '
             ......... try-replication-tests (pending)
             ......... try-hphp (pending)
@@ -162,7 +161,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($new_text, $actual);
     }
 
-    function testProcessLogOutputNotFinishedDoNotShowProgress() {
+    public function testProcessLogOutputNotFinishedDoNotShowProgress() {
         $prev_text = '
             ......... try-replication-tests (pending)
             ......... try-hphp (pending)
@@ -193,7 +192,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($new_text, $actual);
     }
 
-    function testProcessLogOutputFinishedShowProgress() {
+    public function testProcessLogOutputFinishedShowProgress() {
         $prev_text = '
             ......... try-replication-tests (pending)
             ......... try-hphp (pending)
@@ -232,7 +231,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('FAILURE', $jenkins_runner->try_status);
     }
 
-    function testProcessLogOutputFinishedDoNotShowProgress() {
+    public function testProcessLogOutputFinishedDoNotShowProgress() {
         $prev_text = '
             ......... try-replication-tests (pending)
             ......... try-hphp (pending)
@@ -270,7 +269,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('SUCCESS', $jenkins_runner->try_status);
     }
 
-    function testProcessLogOutputDifferentPrefixFinishedDoNotShowProgress() {
+    public function testProcessLogOutputDifferentPrefixFinishedDoNotShowProgress() {
         $prev_text = '
             ......... bar-replication-tests (pending)
             ......... bar-hphp (pending)
@@ -308,7 +307,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('SUCCESS', $jenkins_runner->try_status);
     }
 
-    function testPollForCompletionJobUrlNotFound() {
+    public function testPollForCompletionJobUrlNotFound() {
         $this->mock_cmd_runner->expects($this->once())
                               ->method('getOutput')
                               ->will($this->returnValue('no url in here'));
@@ -327,7 +326,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('', $jenkins_runner->try_base_url);
     }
 
-    function testPollForCompletionJobFinished() {
+    public function testPollForCompletionJobFinished() {
         $expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
         $this->mock_cmd_runner->expects($this->once())
                               ->method('getOutput')
@@ -349,7 +348,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($expected_job_url, $jenkins_runner->try_base_url);
     }
 
-    function testPollForCompletionJobPollsAndFinishes() {
+    public function testPollForCompletionJobPollsAndFinishes() {
         $expected_job_url = 'http://some.other.domain:8080/job/' . self::JENKINS_JOB . '/1234';
         $this->mock_cmd_runner->expects($this->once())
                               ->method('getOutput')

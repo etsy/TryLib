@@ -110,8 +110,8 @@ function _endswith($haystack, $needle) {
 
 function _remove_negative_kv($k, $v) {
     if ( _startswith($k, 'no-') || _startswith($k, 'no_') )
-        return array(substr($k, 3), ! $v);
-    return array($k,$v);
+        return [substr($k, 3), ! $v];
+    return [$k,$v];
 }
 
 
@@ -131,11 +131,11 @@ If the first character of the option string is `+', or if the
 environment variable POSIXLY_CORRECT is set, then option
 processing stops as soon as a non-option argument is encountered.
 **/
-function _gnu_getopt($args, $shortopts, $longopts=array()) {
-    $opts = array();
-    $prog_args = array();
+function _gnu_getopt($args, $shortopts, $longopts=[]) {
+    $opts = [];
+    $prog_args = [];
     if (is_string($longopts))
-        $longopts = array($longopts);
+        $longopts = [$longopts];
 
     // Allow options after non-option arguments?
     if (_startswith($shortopts, '+')) {
@@ -173,7 +173,7 @@ function _gnu_getopt($args, $shortopts, $longopts=array()) {
         }
     }
 
-    return array($opts, $prog_args);
+    return [$opts, $prog_args];
 }
 
 class GetoptError extends Exception { }
@@ -198,12 +198,12 @@ function _getopt_do_longs($opts, $opt, $longopts, $args) {
     } elseif ($optarg !== Null) {
         throw new GetoptError("option --$opt must not have an argument");
     }
-    array_push($opts,array('--' . $opt, $optarg ? $optarg : ''));
-    return array($opts, $args);
+    array_push($opts,['--' . $opt, $optarg ? $optarg : '']);
+    return [$opts, $args];
 }
 
 function _getopt_long_has_args($opt, $longopts) {
-    $possibilities = array();
+    $possibilities = [];
     foreach ($longopts as $o)
         if (_startswith($o,$opt))
             array_push($possibilities,$o);
@@ -211,9 +211,9 @@ function _getopt_long_has_args($opt, $longopts) {
         throw new GetoptError("option --$opt not recognized");
     // Is there an exact match?
     if (in_array($opt, $possibilities))
-        return array(False, $opt);
+        return [False, $opt];
     elseif (in_array($opt . '=', $possibilities))
-        return array(True, $opt);
+        return [True, $opt];
     // No exact match, so better be unique.
     if (count($possibilities) > 1)
         throw new GetoptError("option --$opt not a unique prefix");
@@ -222,7 +222,7 @@ function _getopt_long_has_args($opt, $longopts) {
     $has_arg = _endswith($unique_match,'=');
     if ($has_arg)
         $unique_match = substr($unique_match,0,-1);
-    return array($has_arg, $unique_match);
+    return [$has_arg, $unique_match];
 }
 
 function _getopt_do_shorts($opts, $optstring, $shortopts, $args) {
@@ -241,9 +241,9 @@ function _getopt_do_shorts($opts, $optstring, $shortopts, $args) {
         } else {
             $optarg = '';
         }
-        array_push($opts,array('-' . $opt, $optarg));
+        array_push($opts,['-' . $opt, $optarg]);
     }
-    return array($opts, $args);
+    return [$opts, $args];
 }
 
 function _getopt_short_has_arg($opt, $shortopts) {
@@ -266,8 +266,8 @@ class OptDict extends ArrayObject {
     private $_aliases;
 
     public function __construct($aliases) {
-        parent::__construct(array(), ArrayObject::STD_PROP_LIST | ArrayObject::ARRAY_AS_PROPS);
-        $this->_opts = array();
+        parent::__construct([], ArrayObject::STD_PROP_LIST | ArrayObject::ARRAY_AS_PROPS);
+        $this->_opts = [];
         $this->_aliases = $aliases;
     }
 
@@ -277,7 +277,7 @@ class OptDict extends ArrayObject {
         if (! array_key_exists($k, $this->_aliases))
             throw new Exception("KeyError: Option '$k' is unknown.");
         list($k, $invert) = $this->_aliases[$k];
-        return array($k, $invert xor $reinvert);
+        return [$k, $invert xor $reinvert];
     }
 
     public function offsetSet($k, $v) {
@@ -361,16 +361,16 @@ class Options {
         $this->optspec = $optspec;
         $this->_onabort = $onabort;
         $this->optfunc = $optfunc;
-        $this->_aliases = array();
+        $this->_aliases = [];
         $this->_shortopts = 'h?';
-        $this->_longopts = array('help', 'usage');
-        $this->_hasparms = array();
-        $this->_defaults = array();
+        $this->_longopts = ['help', 'usage'];
+        $this->_hasparms = [];
+        $this->_defaults = [];
         $this->_usagestr = $this->_gen_usage();  // this also parses the optspec
     }
 
     private function _gen_usage() {
-        $out = array();
+        $out = [];
         $lines = explode("\n", trim($this->optspec));
         $lines = array_reverse($lines);
         $first_syn = True;
@@ -399,19 +399,19 @@ class Options {
                 } else {
                     $has_parm = 0;
                 }
-                $g = array();
+                $g = [];
                 $gr = preg_match('/\[([^\]]*)\]$/', $extra, $g);
                 if ($gr)
                     $defval = _intify($g[1]);
                 else
                     $defval = Null;
                 $flagl = explode(',', $flags);
-                $flagl_nice = array();
+                $flagl_nice = [];
                 list($flag_main, $invert_main) = _remove_negative_kv($flagl[0], False);
                 $this->_defaults[$flag_main] = _invert($defval, $invert_main);
                 foreach ($flagl as $_f) {
                     list($f,$invert) = _remove_negative_kv($_f, 0);
-                    $this->_aliases[$f] = array($flag_main, $invert_main xor $invert);
+                    $this->_aliases[$f] = [$flag_main, $invert_main xor $invert];
                     $this->_hasparms[$f] = $has_parm;
                     if ($f == '#') {
                         $this->_shortopts .= '0123456789';
@@ -421,8 +421,8 @@ class Options {
                         array_push($flagl_nice, '-' . $f);
                     } else {
                         $f_nice = preg_replace('/\W/', '_', $f);
-                        $this->_aliases[$f_nice] = array($flag_main,
-                                                 $invert_main xor $invert);
+                        $this->_aliases[$f_nice] = [$flag_main,
+                                                 $invert_main xor $invert];
                         array_push($this->_longopts, $f . ($has_parm ? '=' : ''));
                         array_push($this->_longopts, 'no-' . $f);
                         array_push($flagl_nice, '--' . $_f);
@@ -490,10 +490,10 @@ class Options {
         foreach ($flags as $f) {
             $k = ltrim($f[0],'-');
             $v = $f[1];
-            if (in_array($k, array('h', '?', 'help', 'usage')))
+            if (in_array($k, ['h', '?', 'help', 'usage']))
                 $this->usage();
             if (array_key_exists('#', $this->_aliases) &&
-                  in_array($k, array('0','1','2','3','4','5','6','7','8','9'))) {
+                  in_array($k, ['0','1','2','3','4','5','6','7','8','9'])) {
                 $v = _atoi($k);  # guaranteed to be exactly one digit
                 list($k, $invert) = $this->_aliases['#'];
                 $opt['#'] = $v;
@@ -512,7 +512,7 @@ class Options {
             $val = _invert($v, $invert);
             if ( $opt[$k] != $this->_defaults[$k]) {
                 if (! is_array($opt[$k])) {
-                    $opt[$k] = array($opt[$k], $val);
+                    $opt[$k] = [$opt[$k], $val];
                 } else {
                     $opt[$k] = array_merge($opt[$k],[$val]);
                 }
@@ -520,6 +520,6 @@ class Options {
                 $opt[$k] = $val;
             }
         }
-        return array($opt,$flags,$extra);
+        return [$opt,$flags,$extra];
     }
 }

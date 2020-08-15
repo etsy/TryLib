@@ -41,8 +41,8 @@ abstract class JenkinsRunner {
         $this->try_job_name = $try_job_name;
         $this->cmd_runner = $cmd_runner;
 
-        $this->options = array();
-        $this->callbacks = array();
+        $this->options = [];
+        $this->callbacks = [];
         $this->ssh_key_path = null;
         $this->branch = null;
         $this->try_status = '';
@@ -127,7 +127,7 @@ abstract class JenkinsRunner {
      * Build the Jenkins CLI command, based on all options
      */
     function buildCLICommand($show_results, $show_progress) {
-        $command = array();
+        $command = [];
 
         if (!is_null($this->getSsKey())) {
             $command[] = '-i ' . $this->getSsKey();
@@ -153,8 +153,8 @@ abstract class JenkinsRunner {
 
     function executeCallback($callback) {
         $callback = str_replace(
-            array('${status}', '${url}'),
-            array($this->try_status, $this->try_base_url),
+            ['${status}', '${url}'],
+            [$this->try_status, $this->try_base_url],
             $callback
         );
         $this->cmd_runner->run($callback, false, true);
