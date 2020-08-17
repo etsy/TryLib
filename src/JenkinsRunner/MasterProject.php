@@ -28,8 +28,8 @@ class MasterProject extends JenkinsRunner{
             $cmd_runner
         );
 
-        $this->jobs = array();
-        $this->excluded_jobs = array();
+        $this->jobs = [];
+        $this->excluded_jobs = [];
 
         try {
             $this->colors = new AnsiColor();
@@ -58,7 +58,7 @@ class MasterProject extends JenkinsRunner{
     }
 
     public function getJobsList() {
-        $tryjobs = array();
+        $tryjobs = [];
         foreach ($this->jobs as $job) {
             if ( !in_array($job, $this->excluded_jobs)) {
                 $tryjobs[] = $this->try_job_prefix . '-' . $job;

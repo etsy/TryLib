@@ -28,9 +28,9 @@ final class Runner {
         $this->repo_manager = self::requireArg($repo_manager);
         $this->jenkins_runner = self::requireArg($jenkins_runner);
         $this->jenkins_cli_jar_path = self::requireArg($jenkins_cli_jar_path);
-        $this->safelisted_files = $safelisted_files ?: array();
+        $this->safelisted_files = $safelisted_files ?: [];
         $this->override_user = $override_user ?: getenv("USER");
-        $this->prechecks = $prechecks ?: array();
+        $this->prechecks = $prechecks ?: [];
         $this->options_tuple = self::requireArg($options_tuple);
         $this->ssh_key_path = $ssh_key_path;
         $this->patch = null;
@@ -58,7 +58,7 @@ final class Runner {
             if ($options->safelist) {
                 $safelist = $options->safelist;
                 if (is_string($safelist)) {
-                    $safelist = array($safelist);
+                    $safelist = [$safelist];
                 }
             } else {
                 $safelist = $this->safelisted_files;

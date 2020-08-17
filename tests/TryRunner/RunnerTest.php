@@ -17,7 +17,7 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
 
     public function testSimple() {
         $options_tuple = Options::parse(
-            array("--branch", "testbranch", "-U", 10),
+            ["--branch", "testbranch", "-U", 10],
             "jenkins_job",
             "jenkins_job_prefix",
             "jenkins_server",
@@ -31,9 +31,9 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
             $repo_manager,
             $jenkins_runner,
             "test_cli_jar_path",
-            array(),
+            [],
             "test_user",
-            array(),
+            [],
             $options_tuple,
             "/test/ssh/key/path"
         );
@@ -56,7 +56,7 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
      */
     public function testHonorRemoteBranch() {
         $options_tuple = Options::parse(
-            array(),
+            [],
             "jenkins_job",
             "jenkins_job_prefix",
             "jenkins_server",
@@ -70,9 +70,9 @@ class RunnerTest extends \PHPUnit\Framework\TestCase {
             $repo_manager,
             $jenkins_runner,
             "test_cli_jar_path",
-            array(),
+            [],
             "test_user",
-            array(),
+            [],
             $options_tuple,
             "/test/ssh/key/path"
         );
@@ -129,7 +129,7 @@ class TestRepoManagerWithDetectedBranch
 
 class TestJenkinsRunner extends JenkinsRunner {
 
-    public $commands_run = array();
+    public $commands_run = [];
     public $ssh_key_path = null;
 
     protected function pollForCompletion($pretty) {}

@@ -11,7 +11,7 @@ class FreeStyleProject extends JenkinsRunner{
     }
 
     public function getBuildExtraArguments($show_results, $show_progress) {
-        $args = array();
+        $args = [];
 
         if ($show_results || $show_progress) {
             $args[] = '-s';

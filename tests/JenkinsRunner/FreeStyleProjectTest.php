@@ -12,7 +12,7 @@ class FreeStyleProjectTest extends \PHPUnit\Framework\TestCase {
     private $jenkins_runner;
     private $mock_cmd_runner;
 
-    function setUp() {
+    protected function setUp() {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -26,43 +26,43 @@ class FreeStyleProjectTest extends \PHPUnit\Framework\TestCase {
         );
     }
 
-    function testGetBuildCommand() {
+    public function testGetBuildCommand() {
         $this->assertEquals('build', $this->jenkins_runner->getBuildCommand());
     }
 
-    function provideDataForBuildExtraArgs() {
-        return array(
-            array(false, false, array()),
-            array(false, true, array('-s', '-v')),
-            array(true, false, array('-s')),
-            array(true, true, array('-s', '-v')),
-        );
+    public function provideDataForBuildExtraArgs() {
+        return [
+            [false, false, []],
+            [false, true, ['-s', '-v']],
+            [true, false, ['-s']],
+            [true, true, ['-s', '-v']],
+        ];
     }
 
     /**
       * @dataProvider provideDataForBuildExtraArgs
       */
-    function testGetBuildExtraArguments($show_results, $show_progress, $expected_args) {
+    public function testGetBuildExtraArguments($show_results, $show_progress, $expected_args) {
         $actual_args = $this->jenkins_runner->getBuildExtraArguments($show_results, $show_progress);
         $this->assertEquals($expected_args, $actual_args);
     }
 
-    function providePollForCompletionData() {
-        return array(
-            array('Completed ' . self::JENKINS_JOB . ' #1234 : SUCCESS',
+    public function providePollForCompletionData() {
+        return [
+            ['Completed ' . self::JENKINS_JOB . ' #1234 : SUCCESS',
                   'SUCCESS',
-                  'http://' . self::JENKINS_URL . '/job/' . self::JENKINS_JOB .'/1234'),
+                  'http://' . self::JENKINS_URL . '/job/' . self::JENKINS_JOB .'/1234'],
 
-            array('Completed ' . self::JENKINS_JOB . ' #1 : failure',
+            ['Completed ' . self::JENKINS_JOB . ' #1 : failure',
                   'failure',
-                  'http://' . self::JENKINS_URL . '/job/' . self::JENKINS_JOB .'/1'),
+                  'http://' . self::JENKINS_URL . '/job/' . self::JENKINS_JOB .'/1'],
 
-            array('Random string', '', '')
-        );
+            ['Random string', '', '']
+        ];
     }
 
     /** @dataProvider providePollForCompletionData */
-    function testPollForCompletion($output, $status, $url){
+    public function testPollForCompletion($output, $status, $url){
         $this->mock_cmd_runner->expects($this->once())
                               ->method('getOutput')
                               ->will($this->returnValue($output));

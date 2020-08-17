@@ -105,11 +105,11 @@ class Git implements RepoManager {
     function generateDiff($staged_only = false, $safelist = null, $lines_of_context = false) {
         $patch = $this->repo_path . "/patch.diff";
 
-        $args = array(
+        $args = [
             "--binary",
             "--no-color",
             $this->getUpstream(),
-        );
+        ];
 
         if ($staged_only) {
             $args[] = "--staged";

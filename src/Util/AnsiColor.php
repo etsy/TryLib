@@ -41,7 +41,7 @@ class AnsiColor {
         }
     }
 
-    private $color_opts = array(
+    private $color_opts = [
         'black'   => '30',
         'red'     => '31',
         'green'   => '32',
@@ -58,14 +58,14 @@ class AnsiColor {
         'ipurple' => '95',
         'icyan'   => '96',
         'iwhite'  => '97',
-    );
+    ];
 
-    private $text_opts = array(
+    private $text_opts = [
         'bold'      => '1',
         'underline' => '4',
         'blink'     => '5',
         'reverse'   => '7',
-    );
+    ];
 
     private $seq = '';
 
