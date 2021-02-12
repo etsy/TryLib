@@ -9,7 +9,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
     private $mock_cmd_runner;
     
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -250,6 +250,8 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $cmd = 'git ls-remote --exit-code git@github.com:Etsy/try.git refs/heads/local_branch';
         
+        $this->expectException(\RuntimeException::class);
+
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
                               ->with($cmd, true, true)
