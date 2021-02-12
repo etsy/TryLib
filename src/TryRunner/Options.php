@@ -36,12 +36,13 @@ wcpath=               Working Copy Path           [\$default_wc_path]
     private function __construct() {}  // Do not instantiate.
 
     public static function parse(
-            $argv,
-            $jenkins_server,
-            $default_jenkins_job,
-            $default_jenkins_job_prefix = null,
-            $default_wc_path = null,
-            $default_remote_branch = "master") {
+        $argv,
+        $jenkins_server,
+        $default_jenkins_job,
+        $default_jenkins_job_prefix = null,
+        $default_wc_path = null,
+        $default_remote_branch = "main"
+    ) {
 
         $default_jenkins_job_prefix = $default_jenkins_job_prefix ?: $default_jenkins_job;
         $default_wc_path = $default_wc_path ?: ".";

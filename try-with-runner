@@ -19,7 +19,7 @@ $try_runner = TryLib\TryRunner\Builder::masterProject()
     ->optionsTuple($options_tuple)
     ->jenkinsCliJarPath("/usr/etsy/jenkins-cli.jar")
     ->prechecks(array(
-        new TryLib\Precheck\GitCopyBehind(array('master')),
+        new TryLib\Precheck\GitCopyBehind(array('main')),
         new TryLib\Precheck\GitReportUntracked(),
     ))
     ->build();
