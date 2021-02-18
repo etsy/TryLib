@@ -28,7 +28,7 @@ class ScriptRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('terminate');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/main');              
     }
     
     function testScriptExistsAndSucceeds() {
@@ -45,7 +45,7 @@ class ScriptRunnerTest extends \PHPUnit\Framework\TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('terminate');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/main');              
     }
     
     function testScriptExistsAndFails() {
@@ -63,6 +63,6 @@ class ScriptRunnerTest extends \PHPUnit\Framework\TestCase {
                               ->method('terminate')
                               ->with('Failed running pre-check script vfs://testDir/script');
         
-        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/master');              
+        $script_runner->check($this->mock_cmd_runner, 'repoPath', 'origin/main');              
     }
 }
