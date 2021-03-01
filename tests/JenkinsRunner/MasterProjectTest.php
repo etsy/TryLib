@@ -12,7 +12,7 @@ class MasterProjectTest extends \PHPUnit\Framework\TestCase {
     private $jenkins_runner;
     private $mock_cmd_runner;
 
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')

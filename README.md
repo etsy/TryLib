@@ -21,7 +21,7 @@ TryLib currently supports **Freestyle** projects, when your test suite consist o
         -U, --lines-of-context ...  Generate a diff with n lines of context (like git-diff's -U option)
         -s, --staged          Use staged changes only to generate the diff
         -w, --safelist ...    Generate the patch for only the safelisted files
-        -b, --branch ...      Remote branch to diff and try against [master]
+        -b, --branch ...      Remote branch to diff and try against [main]
 
         -c, --show-results    Show final try job results
         -P, --show-progress   Print subtasks progressively as they complete
@@ -152,8 +152,8 @@ More info can be found in the [divide and concur](http://codeascraft.etsy.com/20
 
 Try will work with your branches! The below scenarios are supported:
 
-* You are working on **master**:
-    * You want to try against master
+* You are working on **main**:
+    * You want to try against main
 
             try [options] [subjobs]
     * You want to diff and try against a different branch
@@ -164,13 +164,13 @@ Try will work with your branches! The below scenarios are supported:
     * You want to try against that branch
 
             try [options] [subjobs]
-    * You want to diff and try against a different branch (master for example)
+    * You want to diff and try against a different branch (main for example)
 
-            try --branch=master [options] [subjobs]
+            try --branch=main [options] [subjobs]
 
 * You are working on a **local branch not tracked**
     * If the remote has a branch with the same name, it will be used to generate the diff and try against it
-    * If the remote does not have a branch with the same name, it will use the default remote : **master**
+    * If the remote does not have a branch with the same name, it will use the default remote : **main**
     * You want to diff and try against a specific remote branch
 
             try --branch=my_branch [options] [subjobs]
@@ -181,7 +181,7 @@ Prior to generate the diff, you can configure try to run a list of pre-checks.
 
     $pre_checks = array(
         new TryLib\Precheck\ScriptRunner('/path/to/some/script'),
-        new TryLib\Precheck\GitCopyBehind(array('master')),
+        new TryLib\Precheck\GitCopyBehind(array('main')),
         new TryLib\Precheck\GitCopyAge(48, 96, $remote_branch)
         new TryLib\Precheck\GitReportUntracked(),
     );

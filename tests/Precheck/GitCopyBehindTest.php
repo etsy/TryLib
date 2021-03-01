@@ -16,9 +16,9 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
         $mock_cmd_runner->expects($this->once())
                         ->method('getOutput')
-                        ->will($this->returnValue('master'));
+                        ->will($this->returnValue('main'));
 
-        $git_copy_behind_check = new GitCopyBehind(array('master'));
+        $git_copy_behind_check = new GitCopyBehind(array('main'));
 
         $this->assertTrue($git_copy_behind_check->shouldRunCheck($mock_cmd_runner));
     }
@@ -35,7 +35,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
                         ->method('getOutput')
                         ->will($this->returnValue('myfeature'));
 
-        $git_copy_behind_check = new GitCopyBehind(array('master'));
+        $git_copy_behind_check = new GitCopyBehind(array('main'));
 
         $this->assertFalse($git_copy_behind_check->shouldRunCheck($mock_cmd_runner));
     }
@@ -50,7 +50,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
         $mock_cmd_runner->expects($this->once())
                         ->method('getOutput')
-                        ->will($this->returnValue('master'));
+                        ->will($this->returnValue('main'));
 
         $git_copy_behind_check = new GitCopyBehind(array());
 
@@ -74,7 +74,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
         $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
                               ->setMethods(['shouldRunCheck'])
-                              ->setConstructorArgs([['master']])
+                              ->setConstructorArgs([['main']])
                               ->getMock();
 
         $script_runner->expects($this->once())
@@ -82,7 +82,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(true));
 
-        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/main');
     }
 
     function testCheckWorkingCopyNotBehind() {
@@ -102,7 +102,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
         $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
                               ->setMethods(['shouldRunCheck'])
-                              ->setConstructorArgs([['master']])
+                              ->setConstructorArgs([['main']])
                               ->getMock();
 
         $script_runner->expects($this->once())
@@ -110,7 +110,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(true));
 
-        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/main');
     }
 
     function testCheckShouldNotRun() {
@@ -128,7 +128,7 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
 
         $script_runner = $this->getMockBuilder('TryLib\Precheck\GitCopyBehind')
                               ->setMethods(['shouldRunCheck'])
-                              ->setConstructorArgs([['master']])
+                              ->setConstructorArgs([['main']])
                               ->getMock();
 
         $script_runner->expects($this->once())
@@ -136,6 +136,6 @@ class GitCopyBehindTest extends \PHPUnit\Framework\TestCase {
                       ->with($mock_cmd_runner)
                       ->will($this->returnValue(false));
 
-        $script_runner->check($mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($mock_cmd_runner, 'path', 'origin/main');
     }
 }

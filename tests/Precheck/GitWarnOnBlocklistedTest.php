@@ -5,7 +5,7 @@ namespace tests\phpunit\Precheck;
 use TryLib\Precheck\GitWarnOnBlocklisted as GitWarnOnBlocklisted;
 
 class GitWarnOnBlocklistedTest extends \PHPUnit\Framework\TestCase {
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
                                       ->getMock();

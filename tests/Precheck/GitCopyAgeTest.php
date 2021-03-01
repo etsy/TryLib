@@ -8,7 +8,7 @@ class GitCopyAgeTest extends \PHPUnit\Framework\TestCase {
 
     private $mock_cmd_runner;
 
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
                                       ->getMock();
@@ -78,7 +78,7 @@ class GitCopyAgeTest extends \PHPUnit\Framework\TestCase {
                               ->method('terminate')
                               ->with($this->stringContains('you working copy is 100 hours old.'));
         
-        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/main');
     }
 
     function testWorkingCopyPastMaxWarningAge() {
@@ -110,7 +110,7 @@ class GitCopyAgeTest extends \PHPUnit\Framework\TestCase {
         $this->mock_cmd_runner->expects($this->once())
                               ->method('warn');
         
-        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/main');
     }
 
 
@@ -141,6 +141,6 @@ class GitCopyAgeTest extends \PHPUnit\Framework\TestCase {
         $this->mock_cmd_runner->expects($this->never())
                               ->method('warn');
         
-        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/master');
+        $script_runner->check($this->mock_cmd_runner, 'path', 'origin/main');
     }
 }

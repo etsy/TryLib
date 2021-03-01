@@ -9,7 +9,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
     private $mock_cmd_runner;
     
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -24,7 +24,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
         
         $repo_manager->expects($this->once())
                      ->method('getUpstream')
-                     ->will($this->returnValue('origin/master'));
+                     ->will($this->returnValue('origin/main'));
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('chdir')
@@ -32,7 +32,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $expected_patch = self::REPO_PATH . '/patch.diff';
         $expected_cmd = 'git -c diff.noprefix=false diff --binary '
-                      . '--no-color origin/master '
+                      . '--no-color origin/main '
                       . '--staged > '
                       . $expected_patch;          
 
@@ -56,7 +56,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
         
         $repo_manager->expects($this->once())
                      ->method('getUpstream')
-                     ->will($this->returnValue('origin/master'));
+                     ->will($this->returnValue('origin/main'));
         
         $this->mock_cmd_runner->expects($this->once())
                               ->method('chdir')
@@ -64,7 +64,7 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $expected_patch = self::REPO_PATH . '/patch.diff';
         $expected_cmd = 'git -c diff.noprefix=false diff --binary '
-                      . '--no-color origin/master > '
+                      . '--no-color origin/main > '
                       . $expected_patch;          
 
         $this->mock_cmd_runner->expects($this->once())
@@ -95,9 +95,9 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $this->mock_cmd_runner->expects($this->once())
                               ->method('getOutput')
-                              ->will($this->returnValue('refs/heads/master '));
+                              ->will($this->returnValue('refs/heads/main '));
         
-        $this->assertEquals('master', $repo_manager->parseLocalBranch());
+        $this->assertEquals('main', $repo_manager->parseLocalBranch());
     }
 
     function testParseLocalBranchFailure() {
@@ -129,11 +129,11 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
-                     ->will($this->returnValue('master'));
+                     ->will($this->returnValue('main'));
 
         $repo_manager->expects($this->once())
                      ->method('getConfig')
-                     ->with('branch.master.remote')
+                     ->with('branch.main.remote')
                      ->will($this->returnValue('origin'));
 
         $this->assertEquals('origin', $repo_manager->getRemote('default'));
@@ -147,11 +147,11 @@ class GitTest extends \PHPUnit\Framework\TestCase {
         
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
-                     ->will($this->returnValue('master'));
+                     ->will($this->returnValue('main'));
 
         $repo_manager->expects($this->once())
                      ->method('getConfig')
-                     ->with('branch.master.remote')
+                     ->with('branch.main.remote')
                      ->will($this->returnValue(null));
 
         $this->assertEquals('default', $repo_manager->getRemote('default'));
@@ -165,11 +165,11 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $repo_manager->expects($this->once())
                      ->method('getLocalBranch')
-                     ->will($this->returnValue('master'));
+                     ->will($this->returnValue('main'));
 
         $repo_manager->expects($this->once())
                      ->method('getConfig')
-                     ->with('branch.master.remote')
+                     ->with('branch.main.remote')
                      ->will($this->returnValue(null));
 
         $this->assertNull($repo_manager->getRemote());
@@ -250,6 +250,8 @@ class GitTest extends \PHPUnit\Framework\TestCase {
 
         $cmd = 'git ls-remote --exit-code git@github.com:Etsy/try.git refs/heads/local_branch';
         
+        $this->expectException(\RuntimeException::class);
+
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')
                               ->with($cmd, true, true)

@@ -29,7 +29,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
     private $jenkins_runner;
     private $mock_cmd_runner;
 
-    function setUp() {
+    function setUp(): void {
         parent::setUp();
 
         $this->mock_cmd_runner = $this->getMockBuilder('TryLib\CommandRunner')
@@ -49,12 +49,13 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
      * @expectedException Exception
      */
     function testInvalidUrl() {
-            $this->jenkins_runner = new TestRunner(
-                'totallyvalid.com/',
-                self::JENKINS_CLI,
-                self::JENKINS_JOB,
-                $this->mock_cmd_runner
-            );
+        $this->expectException(\Exception::class);
+        $this->jenkins_runner = new TestRunner(
+            'totallyvalid.com/',
+            self::JENKINS_CLI,
+            self::JENKINS_JOB,
+            $this->mock_cmd_runner
+        );
     }
 
 
