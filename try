@@ -1,13 +1,36 @@
 #!/usr/bin/php
 <?php
 
-require_once __DIR__.'/vendor/autoload.php';
+if(PHP_OS=='Darwin') {
+    $HOME = getenv('HOME');
+    $trylib = "../TryLib/src";
+    require_once "$trylib/Util/PHPOptions/Options.php";
+    require_once "$trylib/CommandRunner.php";
+    require_once "$trylib/Util/AnsiColor.php";
+    require_once "$trylib/RepoManager.php";
+    require_once "$trylib/RepoManager/Git.php";
+    require_once "$trylib/JenkinsRunner.php";
+    require_once "$trylib/JenkinsRunner/MasterProject.php";
+    require_once "$trylib/Precheck.php";
+    require_once "$trylib/Precheck/GitCopyBehind.php";
+    require_once "$trylib/Precheck/GitReportUntracked.php";
+    require_once "$trylib/Util/OptionsUtil.php";
 
-# URL to your jenkins server (without http)
-$jenkins_server = 'localhost:8080';
+    # URL to your jenkins server
+    $jenkins_server = 'https://try.etsycloud.com';
 
-# Path to the jenkins cli.jar - download it from http://your.jenkins.instance/cli
-$jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
+    # Path to the jenkins cli.jar - download it from http://your.jenkins.instance/cli
+    $jenkins_cli_jar = "$HOME/Library/Jenkins/jenkins-cli.jar";
+}
+else {
+    require_once __DIR__.'/vendor/autoload.php';
+
+    # URL to your jenkins server (without http)
+    $jenkins_server = 'localhost:8080';
+
+    # Path to the jenkins cli.jar - download it from http://your.jenkins.instance/cli
+    $jenkins_cli_jar = '/usr/bin/jenkins-cli.jar';
+}
 
 # Jenkins job name
 $default_jenkins_job = 'try';
