@@ -60,7 +60,7 @@ class JenkinsRunnerTest extends \PHPUnit\Framework\TestCase {
 
 
     function testRunJenkinsCommand() {
-        $expected_cmd = 'java -jar ' . self::JENKINS_CLI . ' -s ' . self::JENKINS_URL . ' dummy-cmd';
+        $expected_cmd = 'java -jar ' . self::JENKINS_CLI . '  -s ' . self::JENKINS_URL . ' dummy-cmd';
 
         $this->mock_cmd_runner->expects($this->once())
                               ->method('run')

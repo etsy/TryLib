@@ -1,0 +1,116 @@
+#!/usr/bin/env php
+<?php
+
+use TryLib\JenkinsCli;
+
+require_once __DIR__.'/vendor/autoload.php';
+
+$user = getenv('LDAP_USER') ?: getenv('USER');
+
+$default_wc_path = getenv('ETSY_SRC');
+if (!$default_wc_path) {
+    if (preg_match(";development/([^/]+);", getcwd(), $matches) > 0) {
+        $default_wc_path = "/home/$user/development/".$matches[1];
+    } else {
+        $default_wc_path = "/home/$user/development/Etsyweb"; // Backwards compatibility
+    }
+}
+
+$default_branch = 'main';
+
+// In the following, in_array matches _only_ -b <branch> and preg_grep matches _both_ 
+// --branch <branch> and --branch=<branch>
+if (in_array("-b", $argv) || preg_grep("/--branch.*/", $argv)) { 
+    // Branch was manually passed in, we can continue as-is
+    echo "The branch has been set manually, continuing with specified branch...\n";
+} else {
+    // Manually set the 'default' branch
+    array_push($argv, "-b", $default_branch);
+}
+
+$options_tuple = TryLib\TryRunner\Options::parse(
+    $argv,
+    "https://try.etsycloud.com/",
+    "try",
+    "try",
+    $default_wc_path
+);
+
+$blocklist = array(
+    'phplib/EtsyConfig/production.php',
+    'phplib/EtsyConfig/giftcards_production.php'
+);
+
+$safelist = $options_tuple[0]->safelist;
+if (is_string($safelist)) {
+    $safelist = array($safelist);
+}
+
+$branch = $options_tuple[0]->branch;
+
+$jira_ticket_specified = false;
+$get_rodeo_tickets_in_commit_script = $options_tuple[0]->wcpath . '/bin/rodeo/reportRodeoTicketInLocalCommits.php';
+
+if (file_exists($get_rodeo_tickets_in_commit_script)) {
+    # Let's add a ROD-XX ticket to the extra-param if not specified
+    # Extra param is an option of the TryLib_Util_PHPOptions_OptDict of $options_tuple[0]
+    $extra_param = $options_tuple[0]->offsetGet('extra_param');
+
+    # Start by transforming the extra_param argument into an array
+    #(can be null, a string if --extra_param is passed once or an array if --extra_param is passed multiple times)
+    if (is_null($extra_param) || is_string($extra_param)) {
+        $extra_param = array($extra_param);
+    }
+
+    # Function to check if extra_param is a jira param
+    $is_jira_param = function($k) {return strpos($k, 'jira=') === 0;};
+    if (empty (array_filter($extra_param, $is_jira_param))) {
+        # No JIRA param specified - let's try to add one
+        $branch = $options_tuple[0]->branch;
+        exec($get_rodeo_tickets_in_commit_script . ' ' . $branch, $jira_ticket, $ret);
+        if ($ret === 0) {
+            echo "Try Rodeo Sniffer using Rodeo ticket from commit message: " . reset($jira_ticket) . "\n";
+            $extra_param[] = "jira=" . reset($jira_ticket);
+            $jira_ticket_specified = true;
+        }
+    } else {
+        $jira_ticket_specified = true;
+    }
+    // Filter out potential emtpy values in extra-param and set them back
+    $options_tuple[0]->offsetSet('extra_param', array_filter($extra_param));
+}
+
+$jenkinsserver = $options_tuple[0]->jenkinsserver;
+$jenkins_cli_info = JenkinsCli::get_jenkins_cli_info($jenkinsserver);
+$jenkins_cli_jar = $jenkins_cli_info[0];
+$jenkins_cli_version = $jenkins_cli_info[1];
+echo "try-next " . $jenkins_cli_jar . "," . PHP_EOL;
+$try_runner = TryLib\TryRunner\Builder::masterProject()
+    ->optionsTuple($options_tuple)
+    ->jenkinsCliJarPath($jenkins_cli_jar)
+    ->prechecks(array(
+        new TryLib\Precheck\ScriptRunner($options_tuple[0]->wcpath . '/bin/asset-validator.php'),
+        new TryLib\Precheck\GitWarnOnBlocklisted($blocklist, $safelist, $options_tuple[0]->staged),
+        new TryLib\Precheck\GitCopyBehind(array($branch)),
+        new TryLib\Precheck\GitReportUntracked()
+    ))
+    ->sshKeyPath(getenv('HOME') . '/.ssh/try_id_rsa')
+    ->overrideUser($user)
+    ->build();
+
+
+if (!$jira_ticket_specified) {
+    $report_scoped_files_in_diff_script = $options_tuple[0]->wcpath . '/bin/rodeo/reportScopedFilesInDiff.php';
+    if (file_exists($report_scoped_files_in_diff_script)) {
+        system($report_scoped_files_in_diff_script . ' ' . $try_runner->getPatchLocation(), $ret);
+        if ($ret !== 0) {
+            // The rodeo sniffer is gonna fail so prompt if they want to continue or not.
+            $contin = readline("Would you like to continue (y/N)? ");
+            if (strlen($contin) === 0 || strtolower(trim($contin))[0] !== 'y') {
+                exit($ret);
+            }
+        }
+    }
+}
+
+exit($try_runner->run());
