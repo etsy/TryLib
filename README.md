@@ -1,7 +1,7 @@
 # TryLib [![Build Status](https://travis-ci.org/etsy/TryLib.png?branch=master)](https://travis-ci.org/etsy/TryLib)
 ## "try" your changes on your CI server before committing them to the repository!
 
-TryLib is a simple php library that helps you generate a diff of your working copy and send it to
+TryLib is a simple PHP library that helps you generate a diff of your working copy and send it to
 Jenkins to run the test suite(s) on the latest code patched with your changes.
 You can read more about try
 on Etsy technical blog [Code As Craft](http://codeascraft.etsy.com/2011/10/11/did-you-try-it-before-you-committed/).

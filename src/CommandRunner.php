@@ -10,6 +10,7 @@ class CommandRunner {
     protected $stderr;
     protected $out;
     protected $colors;
+    public $stdOut;
 
     public function __construct($verbose = false, $stdout = null, $stderr = null) {
         $this->verbose = $verbose;

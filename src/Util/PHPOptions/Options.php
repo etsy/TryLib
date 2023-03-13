@@ -280,7 +280,7 @@ class OptDict extends ArrayObject {
         return array($k, $invert xor $reinvert);
     }
 
-    public function offsetSet($k, $v) {
+    public function offsetSet($k, $v): void {
         if ($k == '_opts' || $k == '_aliases') {
             $this->$k = $v;
             return;
@@ -289,7 +289,7 @@ class OptDict extends ArrayObject {
         $this->_opts[$k] = _invert($v, $invert);
     }
 
-    public function offsetGet($k) {
+    public function offsetGet($k): mixed {
         if ($k == '_opts' || $k == '_aliases')
             return $this->$k;
         list($k, $invert) = $this->_unalias($k);
