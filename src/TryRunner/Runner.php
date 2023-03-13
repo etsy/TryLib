@@ -16,6 +16,16 @@ use TryLib\Util\OptionsUtil;
  */
 final class Runner {
 
+    public $repo_manager;
+    public $jenkins_runner;
+    public $jenkins_cli_jar_path;
+    public $safelisted_files;
+    public $override_user;
+    public $prechecks;
+    public $options_tuple;
+    public $ssh_key_path;
+    public $patch;
+
     public function __construct(
             $repo_manager,
             $jenkins_runner,
