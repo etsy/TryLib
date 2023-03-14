@@ -15,6 +15,7 @@ use Exception;
 abstract class JenkinsRunner {
     protected $jenkins_url;
     protected $jenkins_cli;
+    protected $jenkins_version;
     protected $try_job_name;
     protected $cmd_runner;
 
@@ -25,6 +26,7 @@ abstract class JenkinsRunner {
     private $options;
     private $callbacks;
     private $ssh_key_path;
+    private $user;
 
     public function __construct(
         $jenkins_url,
@@ -32,21 +34,28 @@ abstract class JenkinsRunner {
         $try_job_name,
         $cmd_runner
     ) {
+        $debug_info = sprintf( "__construct(%s, %s, %s \n",
+            $jenkins_url,
+            $jenkins_cli,
+            $try_job_name,
+        );
+        echo $debug_info;
         if (filter_var($jenkins_url, FILTER_VALIDATE_URL) !== false) {
             $this->jenkins_url = $jenkins_url;
         } else {
             throw new Exception("jenkins url must include protocol, ie http://, and trailing /, $jenkins_url given");
         }
-        $this->jenkins_cli = $jenkins_cli;
+
         $this->try_job_name = $try_job_name;
         $this->cmd_runner = $cmd_runner;
-
+        $this->jenkins_cli = $jenkins_cli;
         $this->options = array();
         $this->callbacks = array();
         $this->ssh_key_path = null;
         $this->branch = null;
         $this->try_status = '';
         $this->try_base_url = '';
+        $this->user = getenv("USER");
     }
 
     abstract protected function pollForCompletion($pretty);
@@ -56,11 +65,7 @@ abstract class JenkinsRunner {
     abstract protected function getBuildExtraArguments($show_results, $show_progress);
 
     public function runJenkinsCommand($command) {
-        $cmd = sprintf( "java -jar %s -s %s %s",
-            $this->jenkins_cli,
-            $this->jenkins_url,
-            $command
-        );
+        $cmd = JenkinsCli::get_jenkins_cli_command($this->jenkins_cli, $this->jenkins_url, $this->user , $command);
         $this->cmd_runner->run($cmd, false, false);
     }
 
